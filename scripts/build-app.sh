@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 swift build -c release --arch arm64
 APP=build/Evenly.app
 rm -rf "$APP"; mkdir -p "$APP/Contents/MacOS"
-cp .build/arm64-apple-macosx/release/Evenly "$APP/Contents/MacOS/Evenly"
+cp "$(swift build -c release --arch arm64 --show-bin-path)/Evenly" "$APP/Contents/MacOS/Evenly"
 cat > "$APP/Contents/Info.plist" <<PL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
