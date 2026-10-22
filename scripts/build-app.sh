@@ -7,6 +7,10 @@ swift build -c release --arch arm64
 APP=build/Evenly.app
 rm -rf "$APP"; mkdir -p "$APP/Contents/MacOS"
 cp "$(swift build -c release --arch arm64 --show-bin-path)/Evenly" "$APP/Contents/MacOS/Evenly"
+mkdir -p "$APP/Contents/Resources"
+rm -rf build/Evenly.iconset
+swift scripts/make-icon.swift build/Evenly.iconset
+iconutil -c icns build/Evenly.iconset -o "$APP/Contents/Resources/Evenly.icns"
 cat > "$APP/Contents/Info.plist" <<PL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -14,6 +18,7 @@ cat > "$APP/Contents/Info.plist" <<PL
 <key>CFBundleIdentifier</key><string>app.evenly.Evenly</string>
 <key>CFBundleName</key><string>Evenly</string>
 <key>CFBundleExecutable</key><string>Evenly</string>
+<key>CFBundleIconFile</key><string>Evenly</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleShortVersionString</key><string>0.1.0</string>
 <key>CFBundleVersion</key><string>1</string>
