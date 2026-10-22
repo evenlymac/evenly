@@ -1,6 +1,6 @@
 import Foundation
 
-/// Режимы Simple Compressor: makeup / push / speed (см. soundsource-ALGORITHM.md).
+/// Режимы Simple Compressor: makeup / push / speed.
 public struct CompressorMode: Equatable {
     public var makeup: Float
     public var push: Float

@@ -27,7 +27,6 @@ p{margin:0 0 12px;max-width:65ch}
 .span{position:absolute;top:0;bottom:0;border-radius:6px}
 .base .span{background:var(--muted);opacity:.55}
 .ev .span{background:var(--accent)}
-.ss .span{background:var(--fg);opacity:.4}
 .axis{display:grid;grid-template-columns:minmax(90px,150px) 1fr;gap:12px;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
 .ticks{display:flex;justify-content:space-between}
 .note{font-size:.9rem;color:var(--muted)}
@@ -49,14 +48,13 @@ ul.todo{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
 
 <section>
 <h2>Что слышно на выходе</h2>
-<p>Замер 30 секунд джазового трека (Airmen of Note, общественное достояние) в тех же условиях для всех трёх случаев. Полоса показывает, как уровень скачет от тихих мест к громким.</p>
-<div class="meter" role="img" aria-label="Диапазон уровня: без обработки в среднем минус 22,5 дБ при разбросе 10, Evenly минус 15 при разбросе 5, SoundSource минус 14,3 при разбросе 5">
+<p>Замер 30 секунд джазового трека (Airmen of Note, общественное достояние) в одинаковых условиях. Полоса показывает, как уровень скачет от тихих мест к громким.</p>
+<div class="meter" role="img" aria-label="Диапазон уровня: без обработки в среднем минус 22,5 дБ при разбросе 10, Evenly минус 15 при разбросе 5">
 <div class="row base"><b>Без обработки</b><div class="track"><div class="span" style="left:2.5%;width:50%"></div></div></div>
 <div class="row ev"><b>Evenly</b><div class="track"><div class="span" style="left:52.5%;width:25%"></div></div></div>
-<div class="row ss"><b>SoundSource</b><div class="track"><div class="span" style="left:56%;width:25%"></div></div></div>
 <div class="axis"><span></span><div class="ticks"><span>−28</span><span>−23</span><span>−18</span><span>−13</span><span>−8 дБ</span></div></div>
 </div>
-<p class="note">Средний уровень: без обработки −22,5 дБ, Evenly −15,0, SoundSource −14,3. Разброс уровня сократился с 10 до 5 дБ. Между Evenly и SoundSource в среднем 0,7 дБ. Положение полос приблизительное, цифры точные.</p>
+<p class="note">Средний уровень: без обработки −22,5 дБ, с Evenly −15,0. Разброс уровня сократился с 10 до 5 дБ. Положение полос приблизительное, цифры точные.</p>
 </section>
 
 <section>
