@@ -82,3 +82,12 @@ final class CompressorTests: XCTestCase {
         XCTAssertEqual(c48.currentGain, c44.currentGain, accuracy: c44.currentGain * 0.1)
     }
 }
+
+final class UniversalModeTests: XCTestCase {
+    func testUniversalIsBetweenMusicAndMovieSpeed() {
+        XCTAssertGreaterThan(CompressorMode.universal.speed, CompressorMode.music.speed)
+        XCTAssertLessThan(CompressorMode.universal.speed, CompressorMode.movie.speed)
+        XCTAssertEqual(CompressorMode.universal.push, 1)
+        XCTAssertEqual(Normalizer(channelCount: 2, sampleRate: 44100).mode, .universal)
+    }
+}

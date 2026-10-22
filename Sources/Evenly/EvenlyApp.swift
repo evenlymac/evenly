@@ -27,13 +27,8 @@ final class AppState: ObservableObject {
     }
 
     private func apply() {
-        if isOn {
-            do { try engine.start(); error = nil } catch {
-                self.error = "\(error)"
-            }
-        } else {
-            engine.stop(); error = nil
-        }
+        engine.onError = { [weak self] in self?.error = $0 }
+        if isOn { engine.enable() } else { engine.disable() }
     }
 
     func setLaunchAtLogin(_ on: Bool) {
@@ -43,7 +38,7 @@ final class AppState: ObservableObject {
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
-    func shutdown() { engine.stop() }
+    func shutdown() { engine.disable() }
 }
 
 struct MenuView: View {

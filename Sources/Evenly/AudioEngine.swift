@@ -3,6 +3,7 @@ import CoreAudio
 import AudioToolbox
 import EvenlyDSP
 import os
+import AppKit
 
 /// Захват всего системного звука через Core Audio tap (оригинал глушится),
 /// обработка нормализатором и вывод на текущее устройство по умолчанию.
@@ -17,6 +18,78 @@ final class AudioEngine {
     private var scratchOut: [[Float]] = []
 
     var isRunning: Bool { procID != nil }
+
+    // Автоперезапуск: смена устройства вывода, смена его частоты, пробуждение после сна.
+    private(set) var wanted = false
+    var onError: ((String?) -> Void)?
+    private var listenersInstalled = false
+    private var watchedDevice = AudioObjectID(kAudioObjectUnknown)
+    private var restartWork: DispatchWorkItem?
+    private lazy var deviceListener: AudioObjectPropertyListenerBlock = { [weak self] _, _ in self?.scheduleRestart("смена устройства или частоты") }
+    private let slog = Logger(subsystem: "app.evenly", category: "engine")
+
+    /// Включить и держать включённым: сам перезапускается при смене устройства, частоты, после сна.
+    func enable() {
+        wanted = true
+        installListeners()
+        restartNow()
+    }
+
+    func disable() {
+        wanted = false
+        restartWork?.cancel()
+        stop()
+        onError?(nil)
+    }
+
+    private func installListeners() {
+        guard !listenersInstalled else { return }
+        listenersInstalled = true
+        var addr = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyDefaultOutputDevice,
+                                              mScope: kAudioObjectPropertyScopeGlobal,
+                                              mElement: kAudioObjectPropertyElementMain)
+        AudioObjectAddPropertyListenerBlock(AudioObjectID(kAudioObjectSystemObject), &addr, .main, deviceListener)
+        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.scheduleRestart("пробуждение")
+        }
+    }
+
+    private func watchSampleRate(of device: AudioObjectID) {
+        var addr = AudioObjectPropertyAddress(mSelector: kAudioDevicePropertyNominalSampleRate,
+                                              mScope: kAudioObjectPropertyScopeGlobal,
+                                              mElement: kAudioObjectPropertyElementMain)
+        if watchedDevice != kAudioObjectUnknown, watchedDevice != device {
+            AudioObjectRemovePropertyListenerBlock(watchedDevice, &addr, .main, deviceListener)
+        }
+        if watchedDevice != device { AudioObjectAddPropertyListenerBlock(device, &addr, .main, deviceListener) }
+        watchedDevice = device
+    }
+
+    private func scheduleRestart(_ reason: String) {
+        guard wanted else { return }
+        slog.notice("перезапуск: \(reason, privacy: .public)")
+        restartWork?.cancel()
+        let w = DispatchWorkItem { [weak self] in self?.restartNow() }
+        restartWork = w
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0, execute: w)
+    }
+
+    private func restartNow(attempt: Int = 0) {
+        guard wanted else { return }
+        stop()
+        do {
+            try start()
+            if let d = try? Self.defaultOutputDevice() { watchSampleRate(of: d) }
+            onError?(nil)
+        } catch {
+            onError?("\(error)")
+            if attempt < 5 {  // устройство может быть ещё не готово после смены или сна
+                let w = DispatchWorkItem { [weak self] in self?.restartNow(attempt: attempt + 1) }
+                restartWork = w
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: w)
+            }
+        }
+    }
 
     // Диагностика: пики за период (пишутся из потока аудио, читаются таймером; гонка безвредна).
     private var peakIn: Float = 0

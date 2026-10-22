@@ -16,6 +16,8 @@ public struct CompressorMode: Equatable {
     public static let music = CompressorMode(makeup: 1, push: 1, speed: 0)
     public static let movie = CompressorMode(makeup: 1, push: 0.7, speed: 0.3)
     public static let voice = CompressorMode(makeup: 1, push: 0.8, speed: 0.3)
+    /// Единый режим для MVP: Music (Magic Boost, проверен замерами) с отпусканием на полпути к Movie/Voice.
+    public static let universal = CompressorMode(makeup: 1, push: 1, speed: 0.15)
     public static let radio = CompressorMode(makeup: 0.88, push: 0.9, speed: 1.0)
 }
 
@@ -25,6 +27,8 @@ public struct ChannelCompressor {
     public static let lookahead = 512
     static let attackRate: Float = 0.015
     static let releaseRate: Float = 5e-7
+    /// Поправка по замерам против эталона: усиление у эталона нарастает ~1,3 раза быстрее, чем по тексту спецификации.
+    static let releaseCalibration: Float = 1.3
     static let maximumGain: Float = 100
     static let kneeMax: Float = 200
 
@@ -73,7 +77,7 @@ public struct ChannelCompressor {
                 if releaseKnee > 1 { releaseKnee -= 5 }
                 if releaseKnee < 1 { releaseKnee = 1 }
             } else {
-                gain += k * s * Self.releaseRate * releaseKnee / speedFactor
+                gain += k * s * Self.releaseRate * Self.releaseCalibration * releaseKnee / speedFactor
                 if gain > Self.maximumGain { gain = Self.maximumGain }
                 if releaseKnee < Self.kneeMax { releaseKnee += 0.1 }
             }
@@ -87,7 +91,7 @@ public struct ChannelCompressor {
 
 /// Многоканальная обёртка: независимое состояние на каждый канал.
 public final class Normalizer {
-    public var mode: CompressorMode = .music
+    public var mode: CompressorMode = .universal
     public var enabled: Bool = true
     private var channels: [ChannelCompressor]
 
