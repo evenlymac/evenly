@@ -96,6 +96,7 @@ public final class Normalizer {
     }
 
     public var channelCount: Int { channels.count }
+    public var gain: Float { channels.first?.currentGain ?? 1 }
 
     /// Один канал блоком (планарно).
     public func process(channel: Int, input: UnsafePointer<Float>, output: UnsafeMutablePointer<Float>, count: Int) {

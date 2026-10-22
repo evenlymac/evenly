@@ -2,6 +2,7 @@ import Foundation
 import CoreAudio
 import AudioToolbox
 import EvenlyDSP
+import os
 
 /// Захват всего системного звука через Core Audio tap (оригинал глушится),
 /// обработка нормализатором и вывод на текущее устройство по умолчанию.
@@ -16,6 +17,25 @@ final class AudioEngine {
     private var scratchOut: [[Float]] = []
 
     var isRunning: Bool { procID != nil }
+
+    // Диагностика: пики за период (пишутся из потока аудио, читаются таймером; гонка безвредна).
+    private var peakIn: Float = 0
+    private var peakOut: Float = 0
+    private var diagTimer: DispatchSourceTimer?
+    private let log = Logger(subsystem: "app.evenly", category: "levels")
+
+    private func startDiagnostics() {
+        let t = DispatchSource.makeTimerSource(queue: .global(qos: .utility))
+        t.schedule(deadline: .now() + 1, repeating: 1)
+        t.setEventHandler { [weak self] in
+            guard let self else { return }
+            let gain = self.normalizer?.gain ?? 0
+            self.log.notice("in=\(self.peakIn, format: .fixed(precision: 4)) out=\(self.peakOut, format: .fixed(precision: 4)) gain=\(gain, format: .fixed(precision: 2))")
+            self.peakIn = 0; self.peakOut = 0
+        }
+        t.resume()
+        diagTimer = t
+    }
 
     func start() throws {
         guard !isRunning else { return }
@@ -61,11 +81,13 @@ final class AudioEngine {
         }
         if status != noErr { stop(); throw EngineError.os("CreateIOProc", status) }
         procID = proc
+        startDiagnostics()
         let startStatus = AudioDeviceStart(agg, proc)
         if startStatus != noErr { stop(); throw EngineError.os("DeviceStart", startStatus) }
     }
 
     func stop() {
+        diagTimer?.cancel(); diagTimer = nil
         if let p = procID, aggregateID != kAudioObjectUnknown {
             AudioDeviceStop(aggregateID, p)
             AudioDeviceDestroyIOProcID(aggregateID, p)
@@ -108,6 +130,10 @@ final class AudioEngine {
                 }
             }
         }
+        var pi: Float = 0, po: Float = 0
+        for i in 0..<n { pi = max(pi, abs(ip[i * inCh])) }
+        for i in 0..<n { po = max(po, abs(scratchOut[0][i])) }
+        peakIn = max(peakIn, pi); peakOut = max(peakOut, po)
         for i in 0..<n {
             for c in 0..<outCh { op[i * outCh + c] = scratchOut[min(c, norm.channelCount - 1)][i] }
         }
