@@ -1,0 +1,5 @@
+.build/
+.dev-out/
+build/
+*.app
+.DS_Store

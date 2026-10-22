@@ -1,0 +1,56 @@
+import SwiftUI
+import ServiceManagement
+
+final class AppState: ObservableObject {
+    private let engine = AudioEngine()
+    @Published var isOn: Bool { didSet { UserDefaults.standard.set(isOn, forKey: "on"); apply() } }
+    @Published var launchAtLogin: Bool
+    @Published var error: String?
+
+    init() {
+        isOn = UserDefaults.standard.object(forKey: "on") as? Bool ?? true
+        launchAtLogin = SMAppService.mainApp.status == .enabled
+        apply()
+    }
+
+    private func apply() {
+        if isOn {
+            do { try engine.start(); error = nil } catch {
+                self.error = "\(error)"
+            }
+        } else {
+            engine.stop(); error = nil
+        }
+    }
+
+    func setLaunchAtLogin(_ on: Bool) {
+        do {
+            if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+        } catch { self.error = "\(error)" }
+        launchAtLogin = SMAppService.mainApp.status == .enabled
+    }
+
+    func shutdown() { engine.stop() }
+}
+
+struct MenuView: View {
+    @ObservedObject var state: AppState
+    var body: some View {
+        Toggle("Evenly", isOn: $state.isOn)
+        Toggle("Запускать при входе", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
+        if let e = state.error { Text(e).font(.caption) }
+        Divider()
+        Button("Выйти") { state.shutdown(); NSApplication.shared.terminate(nil) }
+            .keyboardShortcut("q")
+    }
+}
+
+@main
+struct EvenlyApp: App {
+    @StateObject private var state = AppState()
+    var body: some Scene {
+        MenuBarExtra("Evenly", systemImage: state.isOn ? "waveform.circle.fill" : "waveform.circle") {
+            MenuView(state: state)
+        }
+    }
+}
