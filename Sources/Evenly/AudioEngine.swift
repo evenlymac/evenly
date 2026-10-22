@@ -42,7 +42,7 @@ final class AudioEngine {
         let outputID = try Self.defaultOutputDevice()
         let outputUID = try Self.stringProperty(outputID, kAudioDevicePropertyDeviceUID)
 
-        let desc = CATapDescription(stereoGlobalTapButExcludeProcesses: [])
+        let desc = CATapDescription(stereoGlobalTapButExcludeProcesses: Self.ownProcessObjects())
         desc.name = "Evenly"
         desc.isPrivate = true
         desc.muteBehavior = .muted
@@ -135,7 +135,7 @@ final class AudioEngine {
         for i in 0..<n { po = max(po, abs(scratchOut[0][i])) }
         peakIn = max(peakIn, pi); peakOut = max(peakOut, po)
         for i in 0..<n {
-            for c in 0..<outCh { op[i * outCh + c] = scratchOut[min(c, norm.channelCount - 1)][i] }
+            for c in 0..<outCh { op[i * outCh + c] = min(max(scratchOut[min(c, norm.channelCount - 1)][i], -1), 1) }
         }
     }
 
@@ -143,6 +143,19 @@ final class AudioEngine {
 
     private func check(_ s: OSStatus, _ what: String) throws {
         if s != noErr { throw EngineError.os(what, s) }
+    }
+
+    /// Свой процесс исключаем из захвата, иначе выход Evenly попадает обратно на вход (петля).
+    static func ownProcessObjects() -> [AudioObjectID] {
+        var addr = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyTranslatePIDToProcessObject,
+                                              mScope: kAudioObjectPropertyScopeGlobal,
+                                              mElement: kAudioObjectPropertyElementMain)
+        var pid = getpid()
+        var obj = AudioObjectID(kAudioObjectUnknown)
+        var size = UInt32(MemoryLayout<AudioObjectID>.size)
+        let s = AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &addr,
+                                           UInt32(MemoryLayout<pid_t>.size), &pid, &size, &obj)
+        return s == noErr && obj != kAudioObjectUnknown ? [obj] : []
     }
 
     static func defaultOutputDevice() throws -> AudioDeviceID {
