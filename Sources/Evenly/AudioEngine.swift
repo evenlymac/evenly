@@ -115,27 +115,24 @@ final class AudioEngine {
         let frames = Int(inBuf.mDataByteSize) / (MemoryLayout<Float>.size * max(inCh, 1))
         let outFrames = Int(outBuf.mDataByteSize) / (MemoryLayout<Float>.size * max(outCh, 1))
         let n = min(frames, outFrames)
-        if scratchIn.count != norm.channelCount || (scratchIn.first?.count ?? 0) < n {
-            scratchIn = [[Float]](repeating: [Float](repeating: 0, count: max(n, 4096)), count: norm.channelCount)
+        // Гипотеза эталона: одно состояние на все каналы, цикл по interleaved-сэмплам.
+        if scratchIn.count != 1 || scratchIn[0].count < n * norm.channelCount {
+            scratchIn = [[Float](repeating: 0, count: max(n * norm.channelCount, 8192))]
             scratchOut = scratchIn
         }
-        for c in 0..<norm.channelCount {
-            let src = min(c, inCh - 1)
-            scratchIn[c].withUnsafeMutableBufferPointer { b in
-                for i in 0..<n { b[i] = ip[i * inCh + src] }
-            }
-            scratchIn[c].withUnsafeBufferPointer { ib in
-                scratchOut[c].withUnsafeMutableBufferPointer { ob in
-                    norm.process(channel: c, input: ib.baseAddress!, output: ob.baseAddress!, count: n)
-                }
+        let nc = norm.channelCount
+        for i in 0..<n { for c in 0..<nc { scratchIn[0][i * nc + c] = ip[i * inCh + min(c, inCh - 1)] } }
+        scratchIn[0].withUnsafeBufferPointer { ib in
+            scratchOut[0].withUnsafeMutableBufferPointer { ob in
+                norm.process(channel: 0, input: ib.baseAddress!, output: ob.baseAddress!, count: n * nc)
             }
         }
         var pi: Float = 0, po: Float = 0
         for i in 0..<n { pi = max(pi, abs(ip[i * inCh])) }
-        for i in 0..<n { po = max(po, abs(scratchOut[0][i])) }
+        for i in 0..<n { po = max(po, abs(scratchOut[0][i * nc])) }
         peakIn = max(peakIn, pi); peakOut = max(peakOut, po)
         for i in 0..<n {
-            for c in 0..<outCh { op[i * outCh + c] = min(max(scratchOut[min(c, norm.channelCount - 1)][i], -1), 1) }
+            for c in 0..<outCh { op[i * outCh + c] = min(max(scratchOut[0][i * nc + min(c, nc - 1)], -1), 1) }
         }
     }
 

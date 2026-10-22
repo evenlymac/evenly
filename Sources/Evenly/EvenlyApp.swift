@@ -3,6 +3,7 @@ import ServiceManagement
 
 final class AppState: ObservableObject {
     private let engine = AudioEngine()
+    private var probe: Probe?
     @Published var isOn: Bool { didSet { UserDefaults.standard.set(isOn, forKey: "on"); apply() } }
     @Published var launchAtLogin: Bool
     @Published var error: String?
@@ -10,7 +11,12 @@ final class AppState: ObservableObject {
     init() {
         isOn = UserDefaults.standard.object(forKey: "on") as? Bool ?? true
         launchAtLogin = SMAppService.mainApp.status == .enabled
-        apply()
+        if let req = Probe.requested {
+            probe = Probe()
+            probe?.run(path: req.path, seconds: req.seconds)
+        } else {
+            apply()
+        }
     }
 
     private func apply() {

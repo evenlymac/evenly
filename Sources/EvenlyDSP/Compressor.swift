@@ -92,10 +92,11 @@ public final class Normalizer {
     private var channels: [ChannelCompressor]
 
     public init(channelCount: Int, sampleRate: Double) {
-        channels = (0..<channelCount).map { _ in ChannelCompressor(sampleRate: sampleRate) }
+        self.channelCount = channelCount
+        channels = (0..<1).map { _ in ChannelCompressor(sampleRate: sampleRate) }
     }
 
-    public var channelCount: Int { channels.count }
+    public let channelCount: Int
     public var gain: Float { channels.first?.currentGain ?? 1 }
 
     /// Один канал блоком (планарно).
