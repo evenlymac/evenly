@@ -9,6 +9,13 @@ final class AppState: ObservableObject {
     @Published var error: String?
 
     init() {
+        // Одна копия: если Evenly уже запущен, второй экземпляр сразу выходит (режим замера не считается).
+        if Probe.requested == nil, let id = Bundle.main.bundleIdentifier {
+            let me = ProcessInfo.processInfo.processIdentifier
+            if NSRunningApplication.runningApplications(withBundleIdentifier: id).contains(where: { $0.processIdentifier != me }) {
+                exit(0)
+            }
+        }
         isOn = UserDefaults.standard.object(forKey: "on") as? Bool ?? true
         launchAtLogin = SMAppService.mainApp.status == .enabled
         if let req = Probe.requested {
