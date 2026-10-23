@@ -4,7 +4,6 @@ import ServiceManagement
 final class AppState: ObservableObject {
     private let engine = AudioEngine()
     private var probe: Probe?
-    @Published var isOn: Bool { didSet { UserDefaults.standard.set(isOn, forKey: "on"); apply() } }
     @Published var launchAtLogin: Bool
     @Published var error: String?
 
@@ -16,19 +15,22 @@ final class AppState: ObservableObject {
                 exit(0)
             }
         }
-        isOn = UserDefaults.standard.object(forKey: "on") as? Bool ?? true
         launchAtLogin = SMAppService.mainApp.status == .enabled
         if let req = Probe.requested {
             probe = Probe()
             probe?.run(path: req.path, seconds: req.seconds)
         } else {
-            apply()
+            // Приложение открыто = Evenly работает: выключателя нет.
+            engine.onError = { [weak self] in self?.error = $0 }
+            engine.enable()
         }
     }
 
-    private func apply() {
-        engine.onError = { [weak self] in self?.error = $0 }
-        if isOn { engine.enable() } else { engine.disable() }
+    /// Автозапуск можно отключить снаружи (Настройки → Основные → Объекты входа): перечитываем состояние
+    /// при каждом открытии меню и раз в минуту, чтобы переключатель не врал.
+    func refreshLaunchAtLogin() {
+        let on = SMAppService.mainApp.status == .enabled
+        if on != launchAtLogin { launchAtLogin = on }
     }
 
     func setLaunchAtLogin(_ on: Bool) {
@@ -44,8 +46,8 @@ final class AppState: ObservableObject {
 struct MenuView: View {
     @ObservedObject var state: AppState
     var body: some View {
-        Toggle("Evenly", isOn: $state.isOn)
         Toggle("Запускать при входе", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
+            .onAppear { state.refreshLaunchAtLogin() }
         if let e = state.error { Text(e).font(.caption) }
         Divider()
         Button("Выйти") { state.shutdown(); NSApplication.shared.terminate(nil) }
@@ -79,11 +81,13 @@ enum MenuBarIcon {
 @main
 struct EvenlyApp: App {
     @StateObject private var state = AppState()
+    private let loginCheck = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     var body: some Scene {
         MenuBarExtra {
             MenuView(state: state)
         } label: {
-            Image(nsImage: MenuBarIcon.image(on: state.isOn))
+            Image(nsImage: MenuBarIcon.image(on: true))
+                .onReceive(loginCheck) { _ in state.refreshLaunchAtLogin() }
         }
     }
 }
