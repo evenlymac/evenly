@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Громкость по ITU-R BS.1770-4 и диапазон громкости (LRA) по EBU R128 / Tech 3342.
 
-Использование: loudness.py [--skip сек] [--csv файл] a.wav [b.wav ...]
+Использование: loudness.py [--skip сек] [--trim сек_звука] [--csv файл] a.wav [b.wav ...]
 Читает WAV float32/int16 (в том числе записи `Evenly --probe`). Без внешних библиотек.
 Мгновенная громкость (400 мс) и кратковременная (3 с) считаются с шагом 100 мс.
 """
@@ -85,8 +85,11 @@ def lra(e3s):
     lo, hi = v[int(0.10 * (len(v) - 1))], v[int(0.95 * (len(v) - 1))]
     return hi - lo, lo, hi
 
-def analyze(path, skip=0.0, csv=None):
+def analyze(path, skip=0.0, csv=None, trim=False, dur=None):
     chans, fs = read_wav(path)
+    if trim:  # убрать тишину в начале записи и обрезать до dur секунд звука
+        i = next((k for k in range(len(chans[0])) if max(abs(c[k]) for c in chans) > 0.003), 0)
+        chans = [c[i:i + int(dur * fs) if dur else None] for c in chans]
     if skip:
         chans = [c[int(skip * fs):] for c in chans]
     peak = max(max(abs(v) for v in c) for c in chans)
@@ -104,13 +107,14 @@ def analyze(path, skip=0.0, csv=None):
                 mrange=(max(ml) - min(ml)) if ml else 0.0, peak=peak, clipped=clipped)
 
 if __name__ == '__main__':
-    args, skip, csv = sys.argv[1:], 0.0, None
+    args, skip, csv, trim = sys.argv[1:], 0.0, None, None
     while args and args[0].startswith('--'):
         if args[0] == '--skip': skip = float(args[1])
         elif args[0] == '--csv': csv = args[1]
+        elif args[0] == '--trim': trim = float(args[1])
         args = args[2:]
     print(f'{"файл":<22}{"сек":>5}{"I LUFS":>8}{"LRA LU":>8}{"p10":>7}{"p95":>7}{"мгн.размах":>11}{"пик":>6}{"срез":>6}')
     for p in args:
-        r = analyze(p, skip, csv)
+        r = analyze(p, skip, csv, trim is not None, trim)
         print(f'{p.split("/")[-1]:<22}{r["dur"]:>5.0f}{r["I"]:>8.1f}{r["LRA"]:>8.1f}{r["lo"]:>7.1f}{r["hi"]:>7.1f}'
               f'{r["mrange"]:>11.1f}{r["peak"]:>6.2f}{r["clipped"]:>6d}')
