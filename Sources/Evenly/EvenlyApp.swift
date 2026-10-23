@@ -74,15 +74,36 @@ struct MenuView: View {
 /// Значок меню-бара: шаблонное изображение 18×18 pt (максимум по HIG для значка в строке меню высотой 24 pt),
 /// пять скруглённых столбиков на всю высоту; при выключении те же столбики бледнее.
 enum MenuBarIcon {
-    /// Буква E из ровных планок: ствол и три одинаковые «полки». Шаблон 18×18 pt.
+    /// Планка: слева скруглена, справа скруглена или срезана под прямой угол.
+    static func bar(_ r: NSRect, radius k: CGFloat, roundRight: Bool) -> NSBezierPath {
+        let p = NSBezierPath()
+        let rr = roundRight ? k : 0
+        p.move(to: NSPoint(x: r.minX + k, y: r.minY))
+        p.line(to: NSPoint(x: r.maxX - rr, y: r.minY))
+        if roundRight { p.appendArc(withCenter: NSPoint(x: r.maxX - k, y: r.minY + k), radius: k, startAngle: -90, endAngle: 0) }
+        else { p.line(to: NSPoint(x: r.maxX, y: r.minY)) }
+        p.line(to: NSPoint(x: r.maxX, y: r.maxY - rr))
+        if roundRight { p.appendArc(withCenter: NSPoint(x: r.maxX - k, y: r.maxY - k), radius: k, startAngle: 0, endAngle: 90) }
+        else { p.line(to: NSPoint(x: r.maxX, y: r.maxY)) }
+        p.line(to: NSPoint(x: r.minX + k, y: r.maxY))
+        p.appendArc(withCenter: NSPoint(x: r.minX + k, y: r.maxY - k), radius: k, startAngle: 90, endAngle: 180)
+        p.line(to: NSPoint(x: r.minX, y: r.minY + k))
+        p.appendArc(withCenter: NSPoint(x: r.minX + k, y: r.minY + k), radius: k, startAngle: 180, endAngle: 270)
+        p.close()
+        return p
+    }
+
+    /// Буква E из трёх планок: нижняя полной длины, средняя короче на полвысоты, верхняя на высоту. Шаблон 18×18 pt.
     static func image(on: Bool) -> NSImage {
         let img = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { _ in
             NSColor.black.withAlphaComponent(on ? 1 : 0.4).setFill()
-            let t: CGFloat = 3.2, top: CGFloat = 16.5, bottom: CGFloat = 1.5, left: CGFloat = 3.5, arm: CGFloat = 11
-            NSBezierPath(roundedRect: NSRect(x: left, y: bottom, width: t, height: top - bottom), xRadius: 0.8, yRadius: 0.8).fill()
-            let gap = (top - bottom - 3 * t) / 2
+            let t: CGFloat = 3.2, gap = t * 0.853, len = t * 3.45
+            let totalH = 3 * t + 2 * gap
+            let ox = (18 - len) / 2, oy = (18 - totalH) / 2
+            let lens = [len, len - t / 2, len - t]
+            for i in 0..<2 { NSRect(x: ox, y: oy + CGFloat(i) * (t + gap) + t, width: t, height: gap).fill() }
             for i in 0..<3 {
-                NSBezierPath(roundedRect: NSRect(x: left, y: bottom + CGFloat(i) * (t + gap), width: arm, height: t), xRadius: 0.8, yRadius: 0.8).fill()
+                bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: 0.7, roundRight: i == 0).fill()
             }
             return true
         }

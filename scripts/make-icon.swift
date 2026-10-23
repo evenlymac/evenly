@@ -7,6 +7,24 @@ try? FileManager.default.createDirectory(atPath: out, withIntermediateDirectorie
 func color(_ hex: Int) -> NSColor {
     NSColor(red: CGFloat((hex >> 16) & 255) / 255, green: CGFloat((hex >> 8) & 255) / 255, blue: CGFloat(hex & 255) / 255, alpha: 1)
 }
+    /// Планка: слева скруглена, справа скруглена или срезана под прямой угол.
+func bar(_ r: NSRect, radius k: CGFloat, roundRight: Bool) -> NSBezierPath {
+    let p = NSBezierPath()
+    let rr = roundRight ? k : 0
+    p.move(to: NSPoint(x: r.minX + k, y: r.minY))
+    p.line(to: NSPoint(x: r.maxX - rr, y: r.minY))
+    if roundRight { p.appendArc(withCenter: NSPoint(x: r.maxX - k, y: r.minY + k), radius: k, startAngle: -90, endAngle: 0) }
+    else { p.line(to: NSPoint(x: r.maxX, y: r.minY)) }
+    p.line(to: NSPoint(x: r.maxX, y: r.maxY - rr))
+    if roundRight { p.appendArc(withCenter: NSPoint(x: r.maxX - k, y: r.maxY - k), radius: k, startAngle: 0, endAngle: 90) }
+    else { p.line(to: NSPoint(x: r.maxX, y: r.maxY)) }
+    p.line(to: NSPoint(x: r.minX + k, y: r.maxY))
+    p.appendArc(withCenter: NSPoint(x: r.minX + k, y: r.maxY - k), radius: k, startAngle: 90, endAngle: 180)
+    p.line(to: NSPoint(x: r.minX, y: r.minY + k))
+    p.appendArc(withCenter: NSPoint(x: r.minX + k, y: r.minY + k), radius: k, startAngle: 180, endAngle: 270)
+    p.close()
+    return p
+}
 func render(_ px: Int) -> Data {
     let s = CGFloat(px)
     let img = NSImage(size: NSSize(width: s, height: s))
@@ -15,17 +33,17 @@ func render(_ px: Int) -> Data {
     let rect = NSRect(x: m, y: m, width: s - 2 * m, height: s - 2 * m)
     color(0x17192E).setFill()
     NSBezierPath(roundedRect: rect, xRadius: rect.width * 0.225, yRadius: rect.width * 0.225).fill()
-    // E: пропорции как в MenuBarIcon (сетка 18×18)
-    let u = rect.width * 0.66 / 15
-    let t = 3.2 * u, armLen = 11 * u
-    let ox = rect.midX - armLen / 2, oy = rect.midY - 15 * u / 2
-    let gap = (15 * u - 3 * t) / 2
+    // E: нижняя планка полной длины, средняя короче на полвысоты, верхняя на высоту (срез под прямой угол)
+    let t = rect.width * 0.66 / 15 * 3.2, gap = t * 0.853, len = t * 3.45
+    let totalH = 3 * t + 2 * gap
+    let ox = rect.midX - len / 2, oy = rect.midY - totalH / 2
+    let lens = [len, len - t / 2, len - t]  // снизу вверх
+    let arms: [Int] = [0x2FD6A4, 0xFFC233, 0xFF5C66]
     color(0xF2F3F8).setFill()
-    NSBezierPath(rect: NSRect(x: ox, y: oy + t / 2, width: t, height: 15 * u - t)).fill()
-    let arms: [Int] = [0x2FD6A4, 0xFFC233, 0xFF5C66]  // снизу вверх
-    for (i, c) in arms.enumerated() {
-        color(c).setFill()
-        NSBezierPath(roundedRect: NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: armLen, height: t), xRadius: t * 0.18, yRadius: t * 0.18).fill()
+    for i in 0..<2 { NSRect(x: ox, y: oy + CGFloat(i) * (t + gap) + t, width: t, height: gap).fill() }
+    for i in 0..<3 {
+        color(arms[i]).setFill()
+        bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: t * 0.18, roundRight: i == 0).fill()
     }
     img.unlockFocus()
     let rep = NSBitmapImageRep(data: img.tiffRepresentation!)!
