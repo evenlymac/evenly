@@ -33,17 +33,17 @@ func render(_ px: Int) -> Data {
     let rect = NSRect(x: m, y: m, width: s - 2 * m, height: s - 2 * m)
     color(0x17192E).setFill()
     NSBezierPath(roundedRect: rect, xRadius: rect.width * 0.225, yRadius: rect.width * 0.225).fill()
-    // E: нижняя планка полной длины, средняя короче на полвысоты, верхняя на высоту (срез под прямой угол)
+    // E: нижняя планка полной длины, средняя короче на полвысоты, верхняя на высоту (скруглённый конец)
     let t = rect.width * 0.66 / 15 * 3.2, gap = t * 0.853, len = t * 3.45
     let totalH = 3 * t + 2 * gap
     let ox = rect.midX - len / 2, oy = rect.midY - totalH / 2
     let lens = [len, len - t / 2, len - t]  // снизу вверх
     let arms: [Int] = [0x2FD6A4, 0xFFC233, 0xFF5C66]
     color(0xF2F3F8).setFill()
-    for i in 0..<2 { NSRect(x: ox, y: oy + CGFloat(i) * (t + gap) + t, width: t, height: gap).fill() }
+    NSRect(x: ox, y: oy + t * 0.18, width: t, height: totalH - t * 0.36).fill()
     for i in 0..<3 {
         color(arms[i]).setFill()
-        bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: t * 0.18, roundRight: i == 0).fill()
+        bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: t * 0.18, roundRight: true).fill()
     }
     img.unlockFocus()
     let rep = NSBitmapImageRep(data: img.tiffRepresentation!)!

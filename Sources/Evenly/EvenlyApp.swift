@@ -101,9 +101,9 @@ enum MenuBarIcon {
             let totalH = 3 * t + 2 * gap
             let ox = (18 - len) / 2, oy = (18 - totalH) / 2
             let lens = [len, len - t / 2, len - t]
-            for i in 0..<2 { NSRect(x: ox, y: oy + CGFloat(i) * (t + gap) + t, width: t, height: gap).fill() }
+            NSRect(x: ox, y: oy + 0.6, width: t, height: totalH - 1.2).fill()
             for i in 0..<3 {
-                bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: 0.7, roundRight: i == 0).fill()
+                bar(NSRect(x: ox, y: oy + CGFloat(i) * (t + gap), width: lens[i], height: t), radius: 0.7, roundRight: true).fill()
             }
             return true
         }
