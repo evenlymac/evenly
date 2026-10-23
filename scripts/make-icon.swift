@@ -1,24 +1,56 @@
-// Рисует иконку Evenly (скруглённый квадрат, выровненные столбики) в набор .iconset. Запуск: swift scripts/make-icon.swift build/Evenly.iconset
+// Рисует иконку Evenly в набор .iconset: тёмный скруглённый квадрат, десять цветных столбиков
+// (слева громкость скачет, справа выровнена; цвет идёт от тёплого к холодному).
+// Запуск: swift scripts/make-icon.swift build/Evenly.iconset
 import AppKit
 let out = CommandLine.arguments[1]
 try? FileManager.default.createDirectory(atPath: out, withIntermediateDirectories: true)
+// Те же пропорции, что в MenuBarIcon.relative
+let rel: [CGFloat] = [1.0, 0.16, 0.82, 0.30, 0.62, 0.40, 0.52, 0.45, 0.47, 0.46]
+let colors: [NSColor] = [
+    NSColor(red: 1.00, green: 0.36, blue: 0.40, alpha: 1), NSColor(red: 1.00, green: 0.50, blue: 0.30, alpha: 1),
+    NSColor(red: 1.00, green: 0.68, blue: 0.20, alpha: 1), NSColor(red: 1.00, green: 0.84, blue: 0.25, alpha: 1),
+    NSColor(red: 0.74, green: 0.90, blue: 0.30, alpha: 1), NSColor(red: 0.40, green: 0.86, blue: 0.45, alpha: 1),
+    NSColor(red: 0.18, green: 0.84, blue: 0.64, alpha: 1), NSColor(red: 0.15, green: 0.76, blue: 0.82, alpha: 1),
+    NSColor(red: 0.28, green: 0.60, blue: 0.98, alpha: 1), NSColor(red: 0.45, green: 0.45, blue: 1.00, alpha: 1)]
 func render(_ px: Int) -> Data {
     let s = CGFloat(px)
     let img = NSImage(size: NSSize(width: s, height: s))
     img.lockFocus()
-    let rect = NSRect(x: s * 0.06, y: s * 0.06, width: s * 0.88, height: s * 0.88)
-    let bg = NSBezierPath(roundedRect: rect, xRadius: s * 0.2, yRadius: s * 0.2)
-    NSGradient(colors: [NSColor(red: 0.20, green: 0.78, blue: 0.62, alpha: 1), NSColor(red: 0.10, green: 0.42, blue: 0.62, alpha: 1)])!.draw(in: bg, angle: -60)
-    NSColor.white.setFill()
-    let heights: [CGFloat] = [0.26, 0.38, 0.38, 0.38, 0.26]
-    let w = s * 0.075, gap = s * 0.055
-    let total = CGFloat(heights.count) * w + CGFloat(heights.count - 1) * gap
-    var x = (s - total) / 2
-    for h in heights {
-        let bh = s * h
-        NSBezierPath(roundedRect: NSRect(x: x, y: (s - bh) / 2, width: w, height: bh), xRadius: w / 2, yRadius: w / 2).fill()
+    let m = s * 0.098
+    let rect = NSRect(x: m, y: m, width: s - 2 * m, height: s - 2 * m)
+    let r = rect.width * 0.225
+    let bg = NSBezierPath(roundedRect: rect, xRadius: r, yRadius: r)
+    // тень под плиткой
+    NSGraphicsContext.saveGraphicsState()
+    let sh = NSShadow(); sh.shadowColor = NSColor.black.withAlphaComponent(0.35)
+    sh.shadowBlurRadius = s * 0.025; sh.shadowOffset = NSSize(width: 0, height: -s * 0.012); sh.set()
+    NSColor(red: 0.07, green: 0.08, blue: 0.16, alpha: 1).setFill(); bg.fill()
+    NSGraphicsContext.restoreGraphicsState()
+    NSGradient(colors: [NSColor(red: 0.16, green: 0.17, blue: 0.34, alpha: 1), NSColor(red: 0.05, green: 0.06, blue: 0.13, alpha: 1)])!.draw(in: bg, angle: -90)
+    // блик по верхней кромке плитки
+    NSGraphicsContext.saveGraphicsState()
+    bg.addClip()
+    NSGradient(colors: [NSColor.white.withAlphaComponent(0.16), NSColor.white.withAlphaComponent(0)])!
+        .draw(in: NSRect(x: rect.minX, y: rect.midY + rect.height * 0.12, width: rect.width, height: rect.height * 0.38), angle: -90)
+    NSGraphicsContext.restoreGraphicsState()
+    // столбики
+    let area = rect.insetBy(dx: rect.width * 0.14, dy: rect.height * 0.17)
+    let n = CGFloat(rel.count)
+    let w = area.width / (n + (n - 1) * 0.62), gap = w * 0.62
+    var x = area.minX
+    for (i, k) in rel.enumerated() {
+        let h = max(area.height * k, w)
+        let bar = NSRect(x: x, y: area.midY - h / 2, width: w, height: h)
+        let p = NSBezierPath(roundedRect: bar, xRadius: w / 2, yRadius: w / 2)
+        NSGraphicsContext.saveGraphicsState()
+        let glow = NSShadow(); glow.shadowColor = colors[i].withAlphaComponent(0.55)
+        glow.shadowBlurRadius = s * 0.03; glow.shadowOffset = .zero; glow.set()
+        colors[i].setFill(); p.fill()
+        NSGraphicsContext.restoreGraphicsState()
+        NSGradient(colors: [colors[i].highlight(withLevel: 0.35)!, colors[i], colors[i].shadow(withLevel: 0.18)!])!.draw(in: p, angle: -90)
         x += w + gap
     }
+    NSColor.white.withAlphaComponent(0.10).setStroke(); bg.lineWidth = max(1, s * 0.004); bg.stroke()
     img.unlockFocus()
     let rep = NSBitmapImageRep(data: img.tiffRepresentation!)!
     return rep.representation(using: .png, properties: [:])!
