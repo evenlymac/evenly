@@ -8,6 +8,7 @@ APP=build/Evenly.app
 rm -rf "$APP"; mkdir -p "$APP/Contents/MacOS"
 cp "$(swift build -c release --arch arm64 --show-bin-path)/Evenly" "$APP/Contents/MacOS/Evenly"
 mkdir -p "$APP/Contents/Resources"
+cp -R Resources/en.lproj Resources/ru.lproj "$APP/Contents/Resources/"
 rm -rf build/Evenly.iconset
 swift scripts/make-icon.swift build/Evenly.iconset
 iconutil -c icns build/Evenly.iconset -o "$APP/Contents/Resources/Evenly.icns"
@@ -17,6 +18,8 @@ cat > "$APP/Contents/Info.plist" <<PL
 <plist version="1.0"><dict>
 <key>CFBundleIdentifier</key><string>app.evenly.Evenly</string>
 <key>CFBundleName</key><string>Evenly</string>
+<key>CFBundleDevelopmentRegion</key><string>en</string>
+<key>CFBundleLocalizations</key><array><string>en</string><string>ru</string></array>
 <key>CFBundleExecutable</key><string>Evenly</string>
 <key>CFBundleIconFile</key><string>Evenly</string>
 <key>CFBundlePackageType</key><string>APPL</string>
@@ -24,7 +27,7 @@ cat > "$APP/Contents/Info.plist" <<PL
 <key>CFBundleVersion</key><string>1</string>
 <key>LSMinimumSystemVersion</key><string>14.2</string>
 <key>LSUIElement</key><true/>
-<key>NSAudioCaptureUsageDescription</key><string>Evenly нормализует громкость системного звука.</string>
+<key>NSAudioCaptureUsageDescription</key><string>Evenly levels out the volume of system audio.</string>
 </dict></plist>
 PL
 IDENT="Evenly Dev"

@@ -34,11 +34,11 @@ final class AppState: ObservableObject {
         guard SMAppService.mainApp.status != .enabled else { return }
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
-        alert.messageText = "Запускать Evenly при входе в систему?"
-        alert.informativeText = "Тогда громкость будет выравниваться сразу после включения Mac, без ручного запуска. Отключить можно в меню Evenly или в Настройках → Основные → Объекты входа."
+        alert.messageText = NSLocalizedString("Launch Evenly at login?", comment: "")
+        alert.informativeText = NSLocalizedString("Evenly will then level your volume right after your Mac starts, without launching it by hand. You can turn this off in the Evenly menu or in System Settings → General → Login Items.", comment: "")
         alert.icon = NSApp.applicationIconImage
-        alert.addButton(withTitle: "Включить автозапуск")
-        alert.addButton(withTitle: "Не сейчас")
+        alert.addButton(withTitle: NSLocalizedString("Turn On", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Not Now", comment: ""))
         if alert.runModal() == .alertFirstButtonReturn { setLaunchAtLogin(true) }
     }
 
@@ -62,11 +62,11 @@ final class AppState: ObservableObject {
 struct MenuView: View {
     @ObservedObject var state: AppState
     var body: some View {
-        Toggle("Запускать при входе", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
+        Toggle("Launch Evenly at Login", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
             .onAppear { state.refreshLaunchAtLogin() }
         if let e = state.error { Text(e).font(.caption) }
         Divider()
-        Button("Выйти") { state.shutdown(); NSApplication.shared.terminate(nil) }
+        Button("Quit Evenly") { state.shutdown(); NSApplication.shared.terminate(nil) }
             .keyboardShortcut("q")
     }
 }
