@@ -1,6 +1,6 @@
 "Launch Evenly at Login" = "Запускать Evenly при входе";
 "Quit Evenly" = "Закрыть Evenly";
 "Launch Evenly at login?" = "Запускать Evenly при входе в систему?";
-"Evenly will then level your volume right after your Mac starts, without launching it by hand. You can turn this off in the Evenly menu or in System Settings → General → Login Items." = "Тогда громкость будет выравниваться сразу после включения Mac, без ручного запуска. Отключить можно в меню Evenly или в Настройках → Основные → Объекты входа.";
-"Turn On" = "Включить автозапуск";
+"Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login." = "Evenly выравнивает громкость, только пока он запущен. Если он не открывается при входе, после каждой перезагрузки или входа в систему он остаётся выключенным, пока вы не запустите его сами. Изменить это можно в любой момент в меню Evenly или в Настройках → Основные → Объекты входа. Evenly спросит снова при следующем запуске без автозапуска.";
+"Launch at Login" = "Запускать при входе";
 "Not Now" = "Не сейчас";

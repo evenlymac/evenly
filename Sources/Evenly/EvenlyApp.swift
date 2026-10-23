@@ -35,9 +35,9 @@ final class AppState: ObservableObject {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.messageText = NSLocalizedString("Launch Evenly at login?", comment: "")
-        alert.informativeText = NSLocalizedString("Evenly will then level your volume right after your Mac starts, without launching it by hand. You can turn this off in the Evenly menu or in System Settings → General → Login Items.", comment: "")
+        alert.informativeText = NSLocalizedString("Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login.", comment: "")
         alert.icon = NSApp.applicationIconImage
-        alert.addButton(withTitle: NSLocalizedString("Turn On", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Launch at Login", comment: ""))
         alert.addButton(withTitle: NSLocalizedString("Not Now", comment: ""))
         if alert.runModal() == .alertFirstButtonReturn { setLaunchAtLogin(true) }
     }
