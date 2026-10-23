@@ -1,2 +1,2 @@
-"NSAudioCaptureUsageDescription" = "Evenly levels out the volume of system audio.";
+"NSAudioCaptureUsageDescription" = "Evenly needs access to your Mac's audio output so it can even out quiet and loud sounds. Audio is processed live on your Mac; nothing is saved or sent anywhere.";
 "CFBundleName" = "Evenly";

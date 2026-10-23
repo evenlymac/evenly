@@ -27,7 +27,7 @@ cat > "$APP/Contents/Info.plist" <<PL
 <key>CFBundleVersion</key><string>1</string>
 <key>LSMinimumSystemVersion</key><string>14.2</string>
 <key>LSUIElement</key><true/>
-<key>NSAudioCaptureUsageDescription</key><string>Evenly levels out the volume of system audio.</string>
+<key>NSAudioCaptureUsageDescription</key><string>Evenly needs access to your Mac's audio output so it can even out quiet and loud sounds. Audio is processed live on your Mac; nothing is saved or sent anywhere.</string>
 </dict></plist>
 PL
 IDENT="Evenly Dev"

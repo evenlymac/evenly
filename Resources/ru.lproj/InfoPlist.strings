@@ -1,2 +1,2 @@
-"NSAudioCaptureUsageDescription" = "Evenly нормализует громкость системного звука.";
+"NSAudioCaptureUsageDescription" = "Evenly нужен доступ к звуку вашего Mac, чтобы выравнивать тихое и громкое. Звук обрабатывается на лету на вашем Mac: ничего не сохраняется и никуда не отправляется.";
 "CFBundleName" = "Evenly";
