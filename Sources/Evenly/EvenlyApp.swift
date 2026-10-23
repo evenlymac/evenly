@@ -74,21 +74,15 @@ struct MenuView: View {
 /// Значок меню-бара: шаблонное изображение 18×18 pt (максимум по HIG для значка в строке меню высотой 24 pt),
 /// пять скруглённых столбиков на всю высоту; при выключении те же столбики бледнее.
 enum MenuBarIcon {
-    /// Десять столбиков: слева громкость скачет, справа выровнена. Шаблон 38×18 pt.
-    static let relative: [CGFloat] = [1.0, 0.16, 0.82, 0.30, 0.62, 0.40, 0.52, 0.45, 0.47, 0.46]
-
+    /// Буква E из ровных планок: ствол и три одинаковые «полки». Шаблон 18×18 pt.
     static func image(on: Bool) -> NSImage {
-        let size = NSSize(width: 38, height: 18)
-        let barW: CGFloat = 2.3, gap: CGFloat = 1.5
-        let total = barW * CGFloat(relative.count) + gap * CGFloat(relative.count - 1)
-        let img = NSImage(size: size, flipped: false) { rect in
+        let img = NSImage(size: NSSize(width: 18, height: 18), flipped: false) { _ in
             NSColor.black.withAlphaComponent(on ? 1 : 0.4).setFill()
-            var x = (rect.width - total) / 2
-            for r in relative {
-                let h = max(3, r * rect.height)
-                NSBezierPath(roundedRect: NSRect(x: x, y: (rect.height - h) / 2, width: barW, height: h),
-                             xRadius: barW / 2, yRadius: barW / 2).fill()
-                x += barW + gap
+            let t: CGFloat = 3.2, top: CGFloat = 16.5, bottom: CGFloat = 1.5, left: CGFloat = 3.5, arm: CGFloat = 11
+            NSBezierPath(roundedRect: NSRect(x: left, y: bottom, width: t, height: top - bottom), xRadius: 0.8, yRadius: 0.8).fill()
+            let gap = (top - bottom - 3 * t) / 2
+            for i in 0..<3 {
+                NSBezierPath(roundedRect: NSRect(x: left, y: bottom + CGFloat(i) * (t + gap), width: arm, height: t), xRadius: 0.8, yRadius: 0.8).fill()
             }
             return true
         }
