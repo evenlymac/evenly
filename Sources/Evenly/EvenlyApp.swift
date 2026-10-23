@@ -39,7 +39,7 @@ final class AppState: ObservableObject {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.messageText = NSLocalizedString("Evenly can't hear your Mac's audio", comment: "")
-        alert.informativeText = NSLocalizedString("Other apps are playing sound, but none of it reaches Evenly. This usually means access to system audio wasn't granted. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly. If your sound is simply off right now, you can ignore this message.", comment: "")
+        alert.informativeText = NSLocalizedString("Access to your Mac's system audio is turned off for Evenly, so it can't level the volume. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly.", comment: "")
         alert.icon = NSApp.applicationIconImage
         alert.addButton(withTitle: NSLocalizedString("Open Settings", comment: ""))
         alert.addButton(withTitle: NSLocalizedString("Not Now", comment: ""))

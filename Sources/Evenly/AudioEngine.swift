@@ -97,9 +97,8 @@ final class AudioEngine {
     private var diagTimer: DispatchSourceTimer?
     private let log = Logger(subsystem: "app.evenly", category: "levels")
 
-    /// Нет доступа к звуку: другие программы воспроизводят звук, а на входе tap сплошная тишина.
+    /// Доступ к системному звуку отклонён (проверяется раз в секунду по системному статусу TCC).
     var onAccessIssue: ((Bool) -> Void)?
-    private var silentWhileOthersPlay = 0
     private var accessIssue = false
 
     private func startDiagnostics() {
@@ -109,11 +108,8 @@ final class AudioEngine {
             guard let self else { return }
             let gain = self.normalizer?.gain ?? 0
             self.log.notice("in=\(self.peakIn, format: .fixed(precision: 4)) out=\(self.peakOut, format: .fixed(precision: 4)) gain=\(gain, format: .fixed(precision: 2))")
-            let silent = self.peakIn == 0
             self.peakIn = 0; self.peakOut = 0
-            // Через 20 с тишины на входе при чужом звуке считаем, что доступ не выдан (проходит и при выключенном звуке: сообщение мягкое).
-            self.silentWhileOthersPlay = silent && Self.otherProcessesOutputting() ? self.silentWhileOthersPlay + 1 : 0
-            let issue = self.silentWhileOthersPlay >= 20
+            let issue = Self.audioCaptureAccess() == .denied
             if issue != self.accessIssue {
                 self.accessIssue = issue
                 DispatchQueue.main.async { self.onAccessIssue?(issue) }
@@ -241,25 +237,19 @@ final class AudioEngine {
         return s == noErr && obj != kAudioObjectUnknown ? [obj] : []
     }
 
-    /// Есть ли другие процессы, которые прямо сейчас выводят звук.
-    static func otherProcessesOutputting() -> Bool {
-        var addr = AudioObjectPropertyAddress(mSelector: kAudioHardwarePropertyProcessObjectList,
-                                              mScope: kAudioObjectPropertyScopeGlobal,
-                                              mElement: kAudioObjectPropertyElementMain)
-        var size: UInt32 = 0
-        guard AudioObjectGetPropertyDataSize(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil, &size) == noErr, size > 0 else { return false }
-        var ids = [AudioObjectID](repeating: 0, count: Int(size) / MemoryLayout<AudioObjectID>.size)
-        guard AudioObjectGetPropertyData(AudioObjectID(kAudioObjectSystemObject), &addr, 0, nil, &size, &ids) == noErr else { return false }
-        let mine = ownProcessObjects()
-        for id in ids where !mine.contains(id) {
-            var running: UInt32 = 0
-            var sz = UInt32(MemoryLayout<UInt32>.size)
-            var a = AudioObjectPropertyAddress(mSelector: kAudioProcessPropertyIsRunningOutput,
-                                               mScope: kAudioObjectPropertyScopeGlobal,
-                                               mElement: kAudioObjectPropertyElementMain)
-            if AudioObjectGetPropertyData(id, &a, 0, nil, &sz, &running) == noErr, running != 0 { return true }
+    enum Access { case granted, denied, undetermined }
+
+    /// Статус разрешения «Запись системного звука» (kTCCServiceAudioCapture). Публичного API для этого нет,
+    /// как и у других приложений на Core Audio taps используется TCCAccessPreflight; если его не найти, считаем «не определено».
+    static func audioCaptureAccess() -> Access {
+        typealias Preflight = @convention(c) (CFString, CFDictionary?) -> Int
+        guard let h = dlopen("/System/Library/PrivateFrameworks/TCC.framework/Versions/A/TCC", RTLD_NOW),
+              let f = dlsym(h, "TCCAccessPreflight") else { return .undetermined }
+        switch unsafeBitCast(f, to: Preflight.self)("kTCCServiceAudioCapture" as CFString, nil) {
+        case 0: return .granted
+        case 1: return .denied
+        default: return .undetermined
         }
-        return false
     }
 
     static func defaultOutputDevice() throws -> AudioDeviceID {

@@ -5,6 +5,6 @@
 "Launch at Login" = "Запускать при входе";
 "Not Now" = "Не сейчас";
 "Evenly can't hear your Mac's audio" = "Evenly не слышит звук вашего Mac";
-"Other apps are playing sound, but none of it reaches Evenly. This usually means access to system audio wasn't granted. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly. If your sound is simply off right now, you can ignore this message." = "Другие программы воспроизводят звук, но до Evenly он не доходит. Обычно это значит, что доступ к системному звуку не выдан. Откройте Системные настройки → Конфиденциальность и безопасность → Запись экрана и системного звука и включите Evenly. Если звук сейчас просто выключен, это сообщение можно пропустить.";
+"Access to your Mac's system audio is turned off for Evenly, so it can't level the volume. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly." = "Доступ к системному звуку Mac для Evenly выключен, поэтому он не может выравнивать громкость. Откройте Системные настройки → Конфиденциальность и безопасность → Запись экрана и системного звука и включите Evenly.";
 "Open Settings" = "Открыть настройки";
 "Allow Access to System Audio…" = "Разрешить доступ к системному звуку…";
