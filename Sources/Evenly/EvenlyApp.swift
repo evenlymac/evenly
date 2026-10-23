@@ -7,6 +7,8 @@ final class AppState: ObservableObject {
     private var probe: Probe?
     @Published var launchAtLogin: Bool
     @Published var error: String?
+    @Published var noAccess = false
+    private var accessAlertShown = false
 
     init() {
         // Одна копия: если Evenly уже запущен, второй экземпляр сразу выходит (режим замера не считается).
@@ -23,9 +25,29 @@ final class AppState: ObservableObject {
         } else {
             // Приложение открыто = Evenly работает: выключателя нет.
             engine.onError = { [weak self] in self?.error = $0 }
+            engine.onAccessIssue = { [weak self] in self?.accessIssueChanged($0) }
             engine.enable()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in self?.offerLaunchAtLogin() }
         }
+    }
+
+    /// Нет доступа к системному звуку: значок бледнеет, в меню появляется кнопка, один раз за запуск показываем объяснение.
+    private func accessIssueChanged(_ issue: Bool) {
+        noAccess = issue
+        guard issue, !accessAlertShown else { return }
+        accessAlertShown = true
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = NSLocalizedString("Evenly can't hear your Mac's audio", comment: "")
+        alert.informativeText = NSLocalizedString("Other apps are playing sound, but none of it reaches Evenly. This usually means access to system audio wasn't granted. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly. If your sound is simply off right now, you can ignore this message.", comment: "")
+        alert.icon = NSApp.applicationIconImage
+        alert.addButton(withTitle: NSLocalizedString("Open Settings", comment: ""))
+        alert.addButton(withTitle: NSLocalizedString("Not Now", comment: ""))
+        if alert.runModal() == .alertFirstButtonReturn { Self.openAudioSettings() }
+    }
+
+    static func openAudioSettings() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AudioCapture") { NSWorkspace.shared.open(url) }
     }
 
     /// При каждом запуске, если автозапуск выключен, показываем окно с предложением включить его.
@@ -62,6 +84,10 @@ final class AppState: ObservableObject {
 struct MenuView: View {
     @ObservedObject var state: AppState
     var body: some View {
+        if state.noAccess {
+            Button("Allow Access to System Audio…") { AppState.openAudioSettings() }
+            Divider()
+        }
         Toggle("Launch Evenly at Login", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
             .onAppear { state.refreshLaunchAtLogin() }
         if let e = state.error { Text(e).font(.caption) }
@@ -120,7 +146,7 @@ struct EvenlyApp: App {
         MenuBarExtra {
             MenuView(state: state)
         } label: {
-            Image(nsImage: MenuBarIcon.image(on: true))
+            Image(nsImage: MenuBarIcon.image(on: !state.noAccess))
                 .onReceive(loginCheck) { _ in state.refreshLaunchAtLogin() }
         }
     }

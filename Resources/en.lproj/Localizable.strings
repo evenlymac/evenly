@@ -4,3 +4,7 @@
 "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login." = "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login.";
 "Launch at Login" = "Launch at Login";
 "Not Now" = "Not Now";
+"Evenly can't hear your Mac's audio" = "Evenly can't hear your Mac's audio";
+"Other apps are playing sound, but none of it reaches Evenly. This usually means access to system audio wasn't granted. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly. If your sound is simply off right now, you can ignore this message." = "Other apps are playing sound, but none of it reaches Evenly. This usually means access to system audio wasn't granted. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly. If your sound is simply off right now, you can ignore this message.";
+"Open Settings" = "Open Settings";
+"Allow Access to System Audio…" = "Allow Access to System Audio…";
