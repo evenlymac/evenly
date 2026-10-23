@@ -1,5 +1,6 @@
 import SwiftUI
 import ServiceManagement
+import os
 
 final class AppState: ObservableObject {
     private let engine = AudioEngine()
@@ -23,7 +24,22 @@ final class AppState: ObservableObject {
             // Приложение открыто = Evenly работает: выключателя нет.
             engine.onError = { [weak self] in self?.error = $0 }
             engine.enable()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in self?.offerLaunchAtLogin() }
         }
+    }
+
+    /// При каждом запуске, если автозапуск выключен, показываем окно с предложением включить его.
+    private func offerLaunchAtLogin() {
+        Logger(subsystem: "app.evenly", category: "login").info("login status=\(SMAppService.mainApp.status.rawValue)")
+        guard SMAppService.mainApp.status != .enabled else { return }
+        NSApp.activate(ignoringOtherApps: true)
+        let alert = NSAlert()
+        alert.messageText = "Запускать Evenly при входе в систему?"
+        alert.informativeText = "Тогда громкость будет выравниваться сразу после включения Mac, без ручного запуска. Отключить можно в меню Evenly или в Настройках → Основные → Объекты входа."
+        alert.icon = NSApp.applicationIconImage
+        alert.addButton(withTitle: "Включить автозапуск")
+        alert.addButton(withTitle: "Не сейчас")
+        if alert.runModal() == .alertFirstButtonReturn { setLaunchAtLogin(true) }
     }
 
     /// Автозапуск можно отключить снаружи (Настройки → Основные → Объекты входа): перечитываем состояние
