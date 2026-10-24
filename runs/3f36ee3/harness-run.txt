@@ -1,0 +1,23 @@
+step: LoadLibrary
+step: DllGetClassObject
+step: CreateInstance(outer, IID_IUnknown)
+step: CreateInstance returned
+step: QI inner -> IAudioProcessingObject
+step: GetLatency
+latency=Ok(0)
+step: GetRegistrationProperties
+reg clsid=5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001 ifaces=3
+step: Initialize
+init=Ok(())
+step: QI inner -> IAudioProcessingObjectRT
+calc out=480
+step: QI inner -> IAudioProcessingObjectConfiguration
+step: QI inner -> IAudioSystemEffects
+step: process: LockForProcess + APOProcess vs evenly-dsp reference
+process: blocks=600 max diff vs reference = 0e0, output peak=0.8476
+latency after lock=Ok(53333)
+step: release interfaces
+step: release inner
+step: release outer/factory
+step: OK
+exit=0
