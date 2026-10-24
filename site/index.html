@@ -43,6 +43,11 @@ p{margin:0;max-width:52ch}
 .how b{font-family:var(--display);font-size:1.15rem}
 .how span{color:var(--muted);font-size:.98rem}
 .foot{border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:.9rem;display:flex;flex-direction:column;gap:6px}
+.faq{display:flex;flex-direction:column;gap:12px}
+.faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.faq summary{cursor:pointer;font-family:var(--display);font-weight:800;font-size:1.15rem;line-height:1.25}
+.faq summary:focus-visible{outline:2px solid var(--fg);outline-offset:4px;border-radius:4px}
+.faq details p{margin-top:10px;color:var(--muted);font-size:.98rem}
 @media (max-width:560px){.pair{grid-template-columns:1fr}.how{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.wave i{transition:none}}
 </style>
@@ -78,6 +83,11 @@ p{margin:0;max-width:52ch}
 <section class="scene"><h2>Как это выглядит в работе</h2>
 <div class="how"><div><b>Значок в меню-баре</b><span>Открыто приложение — звук выровнен; закрыли — всё как было.</span></div><div><b>Сам включается</b><span>Запускается вместе с Mac, настраивать нечего.</span></div><div><b>Для всего звука</b><span>Браузер, плееры, игры, созвоны: любое приложение.</span></div></div>
 <p>В нашем замере на живой музыке разница между самыми тихими и самыми громкими местами сократилась вдвое.</p></section>
+
+<section class="faq"><h2>Вопросы и ответы</h2>
+<details><summary>Почему в строке меню появилась цветная точка?</summary>
+<p>Так macOS показывает, что приложение получает звук вашего Mac. Для Evenly это часть работы: он слушает то, что играет на компьютере, выравнивает громкость на лету и сразу отдаёт звук обратно в колонки или наушники. Звук не записывается в файл, не сохраняется и не отправляется в интернет: в приложении нет сетевого кода. Пока Evenly запущен, точка будет на месте. Закройте Evenly через меню, и она исчезнет.</p></details>
+</section>
 
 <footer class="foot"><span>Evenly 0.2 · Mac на Apple silicon, macOS 14.2 и новее · закрытый просмотр</span><span>Схемы на странице иллюстративные. Видео с защитой DRM пока не проверяли.</span></footer>
 </main>
