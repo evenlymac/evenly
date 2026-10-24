@@ -1,0 +1,205 @@
+os: Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100
+secure boot/ci: 
+EmodePolicyRequired : 0
+SkuPolicyRequired   : 0
+PSPath              : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CI\Policy
+PSParentPath        : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\CI
+PSChildName         : Policy
+PSDrive             : HKLM
+PSProvider          : Microsoft.PowerShell.Core\Registry
+
+
+=== slot EFX
+installed: slot=EFX endpoints={11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+Running
+
+endpoint {11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+Properties: 
+{b3f8fa53-0004-438e-9003-51a46e139bfc},15  : {65, 0, 0, 0…}
+{a45c254e-df1c-4efd-8020-67d146a850e0},2   : CABLE Input
+{b3f8fa53-0004-438e-9003-51a46e139bfc},6   : VB-Audio Virtual Cable
+{b3f8fa53-0004-438e-9003-51a46e139bfc},2   : {1}.ROOT\MEDIA\0000
+{83da6326-97a6-4088-9453-a1923f573b29},3   : oem12.inf:3beb73af0c48fa1f:VBCableInst.NT:1.0.3.5:VBAudioVACWDM
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},8   : VBAudioVACWDM
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},5   : oem12.inf
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},6   : VBCableInst.NT
+{039c335a-b204-48d5-a758-8aacd27fa183},2   : {11, 0, 0, 0…}
+{83da6326-97a6-4088-9453-a1923f573b29},100 : {64, 0, 0, 0…}
+{540b947e-8b40-45bc-a8a2-6a0b894cbda2},16  : {11, 0, 0, 0…}
+{8c7ed206-3f8a-4827-b3ab-ae9e1faefc6c},2   : {72, 0, 0, 0…}
+{9637b4b9-11ee-4c35-b43c-7b2452c993cc},1   : {81636A50-65A2-4504-A935-1A0614435B04}
+{a45c254e-df1c-4efd-8020-67d146a850e0},24  : ROOT
+{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},0   : 1
+{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},8   : {DFF21CE1-F70F-11D0-B917-00A0C9223196}
+{259abffc-50a7-47ce-af08-68c9a7d73366},12  : C:\Program Files\VB\CABLE\pin_in.ico
+{9f61a8f3-b687-44e4-9033-f3919327806c},1   : {65, 0, 0, 0…}
+{840b8171-b0ad-410f-8581-cccc0382cfef},0   : {65, 0, 0, 0…}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},0   : 1
+{24dbb0fc-9311-4b3d-9cf0-18ff155639d4},1   : {11, 0, 0, 0…}
+{6737016f-5360-48ee-af05-e616c8ff27a7},2   : {2, 0, 0, 0…}
+{fd8a7b27-0b18-4025-ab1c-bdd6b32e1604},2   : {65, 0, 0, 0…}
+{908dba32-edff-4c28-8e45-c918561f6748},2   : {65, 0, 0, 0…}
+{913bc9a7-624b-4a30-96ac-5064a9fc6589},2   : {2, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},2   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},3   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},4   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},5   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},6   : {65, 0, 0, 0…}
+{4b416b7d-8501-40c1-acfd-97aa9bdc17c8},1   : {{0.0.0.00000000}.{47ff9c21-d40e-4adf-afaf-2e8aff35fe6d}}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},24  : {11, 0, 0, 0…}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},27  : {11, 0, 0, 0…}
+{9a82a7db-3ebb-41b4-83ba-18b7311718fc},1   : 65538
+{233164c8-1b2c-4c7d-bc68-b671687a2567},1   : {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave
+{9dad2fed-2266-4b18-a759-47e7816c60bf},0   : {{2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave/Software_IO/2, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave/Software_Fixed/3, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\topology/Software_Fixed/0, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\topology/Physical_External/2}
+{9dad2fed-3c19-4cde-b3c9-1bd56be25698},0   : {VBAudioVACWDM}
+{9dad2fed-1281-408d-8bcf-7fa1db7dc788},1   : 1
+{b3f8fa53-0004-438e-9003-51a46e139bfc},43  : {65, 0, 0, 0…}
+{8943b373-388c-4395-b557-bc6dbaffafdb},2   : {11, 0, 0, 0…}
+{fb1de864-e06d-47f4-82a6-8a0aef44493c},2   : {11, 0, 0, 0…}
+{5a9125b7-f367-4924-ace2-0803a4a3a471},0   : 1610652936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},2   : 1610644936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},3   : 1610613600
+{5a9125b7-f367-4924-ace2-0803a4a3a471},4   : 1610648936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},5   : 2684394760
+{194ef948-7cdb-403e-9f47-19418f7b24fd},1   : {21, 0, 0, 0…}
+{194ef948-7cdb-403e-9f47-19418f7b24fd},2   : {64, 0, 0, 0…}
+{f19f064d-082c-4e27-bc73-6882a1bb8e4c},0   : {65, 0, 0, 0…}
+{24dbb0fc-9311-4b3d-9cf0-18ff155639d4},0   : {0.0.0.00000000}.{47ff9c21-d40e-4adf-afaf-2e8aff35fe6d}
+{a2a3fff4-353f-407c-9d86-1f9dc7d5a606},2   : {65, 0, 0, 0…}
+{74e4357a-7959-47a4-a8b2-feb2ffd48427},2   : {65, 0, 0, 0…}
+{c876062a-a276-4ed6-b15b-3962e69007f8},3   : {65, 0, 0, 0…}
+{9c119480-ddc2-4954-a150-5bd240d454ad},1   : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+{9c119480-ddc2-4954-a150-5bd240d454ad},9   : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+{9c119480-ddc2-4954-a150-5bd240d454ad},2   : SWD\MMDEVAPI\{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+{9c119480-ddc2-4954-a150-5bd240d454ad},10  : SWD\MMDEVAPI\{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+{1e94c58f-3e40-4ddb-b10c-a86d8b870a31},2   : {2, 0, 0, 0…}
+{3d6e1656-2e50-4c4c-8d85-d0acae3c6c68},3   : {65, 0, 0, 0…}
+{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04},0   : {65, 0, 0, 0…}
+{624f56de-fd24-473e-814a-de40aacaed16},3   : {65, 0, 0, 0…}
+{3d6e1656-2e50-4c4c-8d85-d0acae3c6c68},2   : {65, 0, 0, 0…}
+{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04},1   : {65, 0, 0, 0…}
+PSPath                                     : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}\Properties
+PSParentPath                               : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+PSChildName                                : Properties
+PSDrive                                    : HKLM
+PSProvider                                 : Microsoft.PowerShell.Core\Registry
+
+
+FxProperties: 
+{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},7 : {5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}
+{d3993a3f-99c2-4402-b5ec-a92a0367664b},7 : {{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}}
+PSPath                                   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}\FxProperties
+PSParentPath                             : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+PSChildName                              : FxProperties
+PSDrive                                  : HKLM
+PSProvider                               : Microsoft.PowerShell.Core\Registry
+
+
+audiodg pid: 7736
+audiodg modules during stream (non-system32): 
+evenly loaded: False
+all module count: 30
+apodll-like modules: AUDIODG.EXE, AudioSes.dll, audioeng.dll, audiokse.dll
+apo.log:
+1792868546 pid=8164 DllMain attach in C:\Windows\system32\regsvr32.exe
+
+Running
+uninstalled
+
+=== slot SFX
+installed: slot=SFX endpoints={11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+Running
+
+endpoint {11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+Properties: 
+{b3f8fa53-0004-438e-9003-51a46e139bfc},15  : {65, 0, 0, 0…}
+{a45c254e-df1c-4efd-8020-67d146a850e0},2   : CABLE Input
+{b3f8fa53-0004-438e-9003-51a46e139bfc},6   : VB-Audio Virtual Cable
+{b3f8fa53-0004-438e-9003-51a46e139bfc},2   : {1}.ROOT\MEDIA\0000
+{83da6326-97a6-4088-9453-a1923f573b29},3   : oem12.inf:3beb73af0c48fa1f:VBCableInst.NT:1.0.3.5:VBAudioVACWDM
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},8   : VBAudioVACWDM
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},5   : oem12.inf
+{a8b865dd-2e3d-4094-ad97-e593a70c75d6},6   : VBCableInst.NT
+{039c335a-b204-48d5-a758-8aacd27fa183},2   : {11, 0, 0, 0…}
+{83da6326-97a6-4088-9453-a1923f573b29},100 : {64, 0, 0, 0…}
+{540b947e-8b40-45bc-a8a2-6a0b894cbda2},16  : {11, 0, 0, 0…}
+{8c7ed206-3f8a-4827-b3ab-ae9e1faefc6c},2   : {72, 0, 0, 0…}
+{9637b4b9-11ee-4c35-b43c-7b2452c993cc},1   : {81636A50-65A2-4504-A935-1A0614435B04}
+{a45c254e-df1c-4efd-8020-67d146a850e0},24  : ROOT
+{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},0   : 1
+{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},8   : {DFF21CE1-F70F-11D0-B917-00A0C9223196}
+{259abffc-50a7-47ce-af08-68c9a7d73366},12  : C:\Program Files\VB\CABLE\pin_in.ico
+{9f61a8f3-b687-44e4-9033-f3919327806c},1   : {65, 0, 0, 0…}
+{840b8171-b0ad-410f-8581-cccc0382cfef},0   : {65, 0, 0, 0…}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},0   : 1
+{24dbb0fc-9311-4b3d-9cf0-18ff155639d4},1   : {11, 0, 0, 0…}
+{6737016f-5360-48ee-af05-e616c8ff27a7},2   : {2, 0, 0, 0…}
+{fd8a7b27-0b18-4025-ab1c-bdd6b32e1604},2   : {65, 0, 0, 0…}
+{908dba32-edff-4c28-8e45-c918561f6748},2   : {65, 0, 0, 0…}
+{913bc9a7-624b-4a30-96ac-5064a9fc6589},2   : {2, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},2   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},3   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},4   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},5   : {65, 0, 0, 0…}
+{a45429a4-aa63-4480-b7f8-3f2552daee93},6   : {65, 0, 0, 0…}
+{4b416b7d-8501-40c1-acfd-97aa9bdc17c8},1   : {{0.0.0.00000000}.{47ff9c21-d40e-4adf-afaf-2e8aff35fe6d}}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},24  : {11, 0, 0, 0…}
+{b3f8fa53-0004-438e-9003-51a46e139bfc},27  : {11, 0, 0, 0…}
+{9a82a7db-3ebb-41b4-83ba-18b7311718fc},1   : 65538
+{233164c8-1b2c-4c7d-bc68-b671687a2567},1   : {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave
+{9dad2fed-2266-4b18-a759-47e7816c60bf},0   : {{2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave/Software_IO/2, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\wave/Software_Fixed/3, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\topology/Software_Fixed/0, {2}.\\?\root#media#0000#{6994ad04-93ef-11d0-a3cc-00a0c9223196}\topology/Physical_External/2}
+{9dad2fed-3c19-4cde-b3c9-1bd56be25698},0   : {VBAudioVACWDM}
+{9dad2fed-1281-408d-8bcf-7fa1db7dc788},1   : 1
+{b3f8fa53-0004-438e-9003-51a46e139bfc},43  : {65, 0, 0, 0…}
+{8943b373-388c-4395-b557-bc6dbaffafdb},2   : {11, 0, 0, 0…}
+{fb1de864-e06d-47f4-82a6-8a0aef44493c},2   : {11, 0, 0, 0…}
+{5a9125b7-f367-4924-ace2-0803a4a3a471},0   : 1610652936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},2   : 1610644936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},3   : 1610613600
+{5a9125b7-f367-4924-ace2-0803a4a3a471},4   : 1610648936
+{5a9125b7-f367-4924-ace2-0803a4a3a471},5   : 2684394760
+{194ef948-7cdb-403e-9f47-19418f7b24fd},1   : {21, 0, 0, 0…}
+{194ef948-7cdb-403e-9f47-19418f7b24fd},2   : {64, 0, 0, 0…}
+{f19f064d-082c-4e27-bc73-6882a1bb8e4c},0   : {65, 0, 0, 0…}
+{24dbb0fc-9311-4b3d-9cf0-18ff155639d4},0   : {0.0.0.00000000}.{47ff9c21-d40e-4adf-afaf-2e8aff35fe6d}
+{a2a3fff4-353f-407c-9d86-1f9dc7d5a606},2   : {65, 0, 0, 0…}
+{74e4357a-7959-47a4-a8b2-feb2ffd48427},2   : {65, 0, 0, 0…}
+{c876062a-a276-4ed6-b15b-3962e69007f8},3   : {65, 0, 0, 0…}
+{9c119480-ddc2-4954-a150-5bd240d454ad},1   : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+{9c119480-ddc2-4954-a150-5bd240d454ad},9   : \\?\SWD#MMDEVAPI#{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}#{e6327cad-dcec-4949-ae8a-991e976a79d2}
+{9c119480-ddc2-4954-a150-5bd240d454ad},2   : SWD\MMDEVAPI\{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+{9c119480-ddc2-4954-a150-5bd240d454ad},10  : SWD\MMDEVAPI\{0.0.0.00000000}.{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+{1e94c58f-3e40-4ddb-b10c-a86d8b870a31},2   : {2, 0, 0, 0…}
+{3d6e1656-2e50-4c4c-8d85-d0acae3c6c68},3   : {65, 0, 0, 0…}
+{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04},0   : {65, 0, 0, 0…}
+{624f56de-fd24-473e-814a-de40aacaed16},3   : {65, 0, 0, 0…}
+{3d6e1656-2e50-4c4c-8d85-d0acae3c6c68},2   : {65, 0, 0, 0…}
+{e4870e26-3cc5-4cd2-ba46-ca0a9a70ed04},1   : {65, 0, 0, 0…}
+PSPath                                     : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}\Properties
+PSParentPath                               : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+PSChildName                                : Properties
+PSDrive                                    : HKLM
+PSProvider                                 : Microsoft.PowerShell.Core\Registry
+
+
+FxProperties: 
+{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},5 : {5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}
+{d3993a3f-99c2-4402-b5ec-a92a0367664b},5 : {{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}}
+PSPath                                   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}\FxProperties
+PSParentPath                             : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{11b156bf-8cb2-46ba-bc4e-f223f05d4cdd}
+PSChildName                              : FxProperties
+PSDrive                                  : HKLM
+PSProvider                               : Microsoft.PowerShell.Core\Registry
+
+
+audiodg pid: 7896
+audiodg modules during stream (non-system32): 
+evenly loaded: False
+all module count: 30
+apodll-like modules: AUDIODG.EXE, AudioSes.dll, audioeng.dll, audiokse.dll
+apo.log:
+1792868577 pid=7560 DllMain attach in C:\Windows\system32\regsvr32.exe
+
+Running
+uninstalled
+
