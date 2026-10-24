@@ -1,0 +1,11 @@
+== pnp
+
+Status Class         FriendlyName                          InstanceId
+------ -----         ------------                          ----------
+OK     AudioEndpoint CABLE Output (VB-Audio Virtual Cable) SWD\MMDEVAPI\{0.0.1.00000000}.{EEF4D931-BD90-4DF1-88F4-A5DF9…
+OK     AudioEndpoint Speakers (VB-Audio Virtual Cable)     SWD\MMDEVAPI\{0.0.0.00000000}.{7FA534C6-D787-4AE6-A0C7-44EB6…
+OK     MEDIA         VB-Audio Virtual Cable                ROOT\MEDIA\0000
+
+
+== render
+{7fa534c6-d787-4ae6-a0c7-44eb6fcb972a} state=1

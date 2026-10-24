@@ -1,0 +1,2 @@
+installed: slot=EFX endpoints={7fa534c6-d787-4ae6-a0c7-44eb6fcb972a}
+Running
