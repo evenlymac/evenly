@@ -1,0 +1,84 @@
+=== slot SFX
+installed: slot=SFX endpoints={d6fe4620-9d7d-458a-b251-9122896760bc}
+Running
+endpoints: {d6fe4620-9d7d-458a-b251-9122896760bc}
+
+{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},5 : {5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}
+{d3993a3f-99c2-4402-b5ec-a92a0367664b},5 : {{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}}
+PSPath                                   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}\FxProperties
+PSParentPath                             : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}
+PSChildName                              : FxProperties
+PSDrive                                  : HKLM
+PSProvider                               : Microsoft.PowerShell.Core\Registry
+
+
+format: tag=0xfffe channels=2 rate=48000 bits=32
+captured_frames=288960 first_nonzero_frame=1441
+sec 0: in_amp=0.05 rms=0.03536
+sec 1: in_amp=0.5 rms=0.35355
+sec 2: in_amp=0.05 rms=0.03536
+sec 3: in_amp=0.5 rms=0.35355
+sec 4: in_amp=0.05 rms=0.03536
+audiodg modules:
+AUDIODG.EXE, ntdll.dll, KERNEL32.DLL, KERNELBASE.dll, msvcp_win.dll, ucrtbase.dll, combase.dll, RPCRT4.dll, shcore.dll, cfgmgr32.dll, MMDevAPI.DLL, kernel.appcore.dll, msvcrt.dll, bcryptPrimitives.dll, sechost.dll, user32.dll, win32u.dll, GDI32.dll, gdi32full.dll, clbcatq.dll, DEVOBJ.dll, AudioSes.dll, audioeng.dll, OLEAUT32.dll, PROPSYS.dll, audiokse.dll, AVRT.dll, wintypes.dll, Windows.Media.Devices.dll, RTWorkQ.DLL
+evenly loaded: False
+apo.log:
+1792867767 pid=1052 DllMain attach in C:\Windows\system32\regsvr32.exe
+Running
+uninstalled
+=== slot MFX
+installed: slot=MFX endpoints={d6fe4620-9d7d-458a-b251-9122896760bc}
+Running
+endpoints: {d6fe4620-9d7d-458a-b251-9122896760bc}
+
+{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},6 : {5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}
+{d3993a3f-99c2-4402-b5ec-a92a0367664b},6 : {{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}}
+PSPath                                   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}\FxProperties
+PSParentPath                             : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}
+PSChildName                              : FxProperties
+PSDrive                                  : HKLM
+PSProvider                               : Microsoft.PowerShell.Core\Registry
+
+
+format: tag=0xfffe channels=2 rate=48000 bits=32
+captured_frames=288960 first_nonzero_frame=1441
+sec 0: in_amp=0.05 rms=0.03536
+sec 1: in_amp=0.5 rms=0.35355
+sec 2: in_amp=0.05 rms=0.03536
+sec 3: in_amp=0.5 rms=0.35355
+sec 4: in_amp=0.05 rms=0.03536
+audiodg modules:
+AUDIODG.EXE, ntdll.dll, KERNEL32.DLL, KERNELBASE.dll, msvcp_win.dll, ucrtbase.dll, combase.dll, RPCRT4.dll, shcore.dll, cfgmgr32.dll, MMDevAPI.DLL, kernel.appcore.dll, msvcrt.dll, bcryptPrimitives.dll, sechost.dll, user32.dll, win32u.dll, GDI32.dll, gdi32full.dll, clbcatq.dll, DEVOBJ.dll, AudioSes.dll, audioeng.dll, OLEAUT32.dll, PROPSYS.dll, audiokse.dll, AVRT.dll, wintypes.dll, Windows.Media.Devices.dll, RTWorkQ.DLL
+evenly loaded: False
+apo.log:
+1792867788 pid=7224 DllMain attach in C:\Windows\system32\regsvr32.exe
+Running
+uninstalled
+=== slot EFX
+installed: slot=EFX endpoints={d6fe4620-9d7d-458a-b251-9122896760bc}
+Running
+endpoints: {d6fe4620-9d7d-458a-b251-9122896760bc}
+
+{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},7 : {5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}
+{d3993a3f-99c2-4402-b5ec-a92a0367664b},7 : {{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}}
+PSPath                                   : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}\FxProperties
+PSParentPath                             : Microsoft.PowerShell.Core\Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\{d6fe4620-9d7d-458a-b251-9122896760bc}
+PSChildName                              : FxProperties
+PSDrive                                  : HKLM
+PSProvider                               : Microsoft.PowerShell.Core\Registry
+
+
+format: tag=0xfffe channels=2 rate=48000 bits=32
+captured_frames=289440 first_nonzero_frame=1441
+sec 0: in_amp=0.05 rms=0.03536
+sec 1: in_amp=0.5 rms=0.35355
+sec 2: in_amp=0.05 rms=0.03536
+sec 3: in_amp=0.5 rms=0.35355
+sec 4: in_amp=0.05 rms=0.03536
+audiodg modules:
+AUDIODG.EXE, ntdll.dll, KERNEL32.DLL, KERNELBASE.dll, msvcp_win.dll, ucrtbase.dll, combase.dll, RPCRT4.dll, shcore.dll, cfgmgr32.dll, MMDevAPI.DLL, kernel.appcore.dll, msvcrt.dll, bcryptPrimitives.dll, sechost.dll, user32.dll, win32u.dll, GDI32.dll, gdi32full.dll, clbcatq.dll, DEVOBJ.dll, AudioSes.dll, audioeng.dll, OLEAUT32.dll, PROPSYS.dll, audiokse.dll, AVRT.dll, wintypes.dll, Windows.Media.Devices.dll, RTWorkQ.DLL
+evenly loaded: False
+apo.log:
+1792867809 pid=7980 DllMain attach in C:\Windows\system32\regsvr32.exe
+Running
+uninstalled
