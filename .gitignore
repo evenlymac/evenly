@@ -8,3 +8,4 @@ build/
 .build/
 core/target/
 windows/apo/target/
+windows/harness/target/

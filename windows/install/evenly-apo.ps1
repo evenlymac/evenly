@@ -80,6 +80,14 @@ if ($Action -eq 'install') {
   Copy-Item $Dll (Join-Path $InstDir 'evenly_apo.dll') -Force
   & regsvr32 /s (Join-Path $InstDir 'evenly_apo.dll'); if ($LASTEXITCODE -ne 0) { throw "regsvr32 failed: $LASTEXITCODE" }
   New-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -Value 1 -PropertyType DWord -Force | Out-Null
+  # crash dumps of audiodg.exe (WER LocalDumps, full dump, 3 newest) for post-mortem of APPCRASH; removed on uninstall
+  $dumps = Join-Path $DataDir 'dumps'; New-Item -ItemType Directory -Force $dumps | Out-Null
+  & icacls $dumps /grant '*S-1-5-19:(OI)(CI)M' | Out-Null
+  $ld = 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\audiodg.exe'
+  New-Item -Path $ld -Force | Out-Null
+  New-ItemProperty -Path $ld -Name DumpFolder -Value $dumps -PropertyType ExpandString -Force | Out-Null
+  New-ItemProperty -Path $ld -Name DumpType -Value 2 -PropertyType DWord -Force | Out-Null
+  New-ItemProperty -Path $ld -Name DumpCount -Value 3 -PropertyType DWord -Force | Out-Null
   foreach ($ep in $Endpoints) {
     $k = Open-Key "$Render\$ep\FxProperties"
     $k.SetValue("$KeyClsid,$($SlotNum[$Slot])", $Clsid, 'String')
@@ -110,6 +118,7 @@ if ($Action -eq 'uninstall') {
   }
   if ($null -eq $state.flag_before) { Remove-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -ErrorAction SilentlyContinue }
   else { New-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -Value $state.flag_before -PropertyType DWord -Force | Out-Null }
+  Remove-Item -Recurse -Force 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\audiodg.exe' -ErrorAction SilentlyContinue
   Restart-Audio
   & regsvr32 /s /u (Join-Path $InstDir 'evenly_apo.dll')
   Remove-Item -Recurse -Force "HKLM:\SOFTWARE\Classes\CLSID\$Clsid", "HKLM:\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects\$Clsid" -ErrorAction SilentlyContinue
