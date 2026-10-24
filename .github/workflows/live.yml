@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
         run: |
           & windows/livetool/target/release/live-tool.exe 8 baseline.f32 2>&1 | Tee-Object logs/live-baseline.txt
-      - name: F try each slot (SFX, MFX, EFX): install, play, inspect audiodg, uninstall
+      - name: F try each slot SFX MFX EFX
         if: always()
         shell: pwsh
         continue-on-error: true
