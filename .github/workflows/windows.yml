@@ -88,14 +88,14 @@ jobs:
             Invoke-WebRequest -Uri 'https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip' -OutFile vb/pack.zip -UseBasicParsing
             Expand-Archive vb/pack.zip vb/x -Force
             L "== vb files"; L (Get-ChildItem vb/x | Format-Table Name, Length | Out-String)
-            $sys = Get-ChildItem vb/x -Filter 'vbaudio_cable64_win10.sys' | Select-Object -First 1
+            $sys = Get-ChildItem vb/x -Filter 'vbaudio_cable64_win7.sys' | Select-Object -First 1
             $sig = Get-AuthenticodeSignature $sys.FullName
             L "== sig: $($sig.Status) $($sig.SignerCertificate.Subject)"
             $cer = 'vb/signer.cer'; Export-Certificate -Cert $sig.SignerCertificate -FilePath $cer | Out-Null
             Import-Certificate -FilePath $cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher | Out-Null
             Push-Location vb/x
             $p = Start-Process -FilePath .\VBCABLE_Setup_x64.exe -ArgumentList '-i','-h' -Wait -PassThru
-            L "== setup exit: $($p.ExitCode)"
+            L "== setup exit: $($p.ExitCode)"; L (Get-Content C:\Windows\INF\setupapi.dev.log -Tail 600 | Select-String -Pattern 'vbMme|VBAudio|VB-Audio|CM_PROB|!  ' | Out-String)
             Pop-Location
           } catch { L "== vb install error: $_" }
           Start-Sleep 5
@@ -103,7 +103,6 @@ jobs:
           Start-Sleep 3
           L "== audio pnp after"; L (Get-PnpDevice -Class MEDIA, AudioEndpoint -ErrorAction SilentlyContinue | Format-Table Status, Class, FriendlyName, InstanceId | Out-String)
           L "== render endpoints"; L (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' -ErrorAction SilentlyContinue | ForEach-Object { "$($_.PSChildName) state=$((Get-ItemProperty $_.PSPath).DeviceState)" } | Out-String)
-          L "== setupapi tail"; L ((Get-Content C:\Windows\INF\setupapi.dev.log -Tail 60 -ErrorAction SilentlyContinue) -join "`n")
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: logs-apo-live, path: logs }
