@@ -1,0 +1,68 @@
+name: live
+on:
+  push:
+    branches: [windows-ci]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  apo-live:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: A download VB-Cable and trust publisher
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          New-Item -ItemType Directory -Force logs | Out-Null
+          Invoke-WebRequest -Uri 'https://download.vb-audio.com/Download_CABLE/VBCABLE_Driver_Pack43.zip' -OutFile vb.zip -UseBasicParsing
+          Expand-Archive vb.zip vbx -Force
+          $sig = Get-AuthenticodeSignature (Resolve-Path vbx/vbaudio_cable64_win7.sys).Path
+          "sig: $($sig.Status) $($sig.SignerCertificate.Subject)" | Tee-Object logs/live-a.txt
+          [IO.File]::WriteAllBytes("$PWD\vb.cer", $sig.SignerCertificate.Export('Cert'))
+          Import-Certificate -FilePath vb.cer -CertStoreLocation Cert:\LocalMachine\TrustedPublisher | Out-String | Tee-Object logs/live-a.txt -Append
+      - name: B install driver
+        if: always()
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          Set-Location vbx
+          $p = Start-Process -FilePath "$PWD\VBCABLE_Setup_x64.exe" -ArgumentList '-i','-h' -PassThru
+          if (-not $p.WaitForExit(150000)) { "setup timeout, killing" | Tee-Object ../logs/live-b.txt -Append; Stop-Process -Id $p.Id -Force } else { "setup exit $($p.ExitCode)" | Tee-Object ../logs/live-b.txt -Append }
+          pnputil /add-driver "$PWD\vbMmeCable64_win7.inf" /install 2>&1 | Tee-Object ../logs/live-b.txt -Append
+      - name: C report devices
+        if: always()
+        shell: pwsh
+        continue-on-error: true
+        run: |
+          Start-Sleep 5
+          Restart-Service audiosrv -Force -ErrorAction SilentlyContinue
+          Start-Sleep 4
+          $o = @()
+          $o += "== pnp"; $o += (Get-PnpDevice -Class MEDIA, AudioEndpoint -ErrorAction SilentlyContinue | Format-Table Status, Class, FriendlyName, InstanceId | Out-String)
+          $o += "== render"; $o += (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' -ErrorAction SilentlyContinue | ForEach-Object { "$($_.PSChildName) state=$((Get-ItemProperty $_.PSPath).DeviceState)" })
+          $o += "== setupapi"; $o += (Select-String -Path C:\Windows\INF\setupapi.dev.log -Pattern 'vbMme|VBAudio|VB-Audio|CABLE' | Select-Object -Last 40 | ForEach-Object { $_.Line })
+          $o | Out-File logs/live-c.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: logs-apo-live, path: logs }
+      - name: push results to ci-results
+        if: always()
+        shell: bash
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          mkdir -p work && cd work
+          git init -q
+          git config user.name ci && git config user.email ci@example.com
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          if git fetch -q origin ci-results; then git checkout -q -B ci-results FETCH_HEAD; else git checkout -q --orphan ci-results; fi
+          d="runs/${SHA:0:7}-live"
+          mkdir -p "$d"
+          cp -r ../logs/. "$d"/ 2>/dev/null || true
+          echo "sha=$SHA" > "$d/summary.txt"
+          git add -A && git commit -q -m "ci live results ${SHA:0:7}"
+          git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }
