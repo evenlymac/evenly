@@ -1,0 +1,1 @@
+/Users/macbookpro/projects/evenly/windows/apo/target/x86_64-pc-windows-msvc/release/evenly_apo.dll: /Users/macbookpro/projects/evenly/core/src/lib.rs /Users/macbookpro/projects/evenly/windows/apo/src/lib.rs
