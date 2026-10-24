@@ -1,0 +1,68 @@
+name: windows
+on:
+  push:
+    branches: [windows-ci]
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  CARGO_TERM_COLOR: never
+jobs:
+  golden:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: gen golden (Swift)
+        run: |
+          mkdir -p out logs
+          swiftc -O Sources/EvenlyDSP/Compressor.swift core/golden/swift/main.swift -o out/gen 2>&1 | tee logs/golden-build.txt
+          cp core/golden/scenarios.json out/
+          ./out/gen core/golden/scenarios.json out 2>&1 | tee logs/golden-gen.txt
+      - uses: actions/upload-artifact@v4
+        with: { name: golden, path: out/*.f32 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: logs-golden, path: logs }
+  core:
+    needs: golden
+    runs-on: windows-latest
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: golden, path: golden-out }
+      - name: cargo test (core vs Swift golden)
+        run: |
+          mkdir -p logs
+          cp core/golden/scenarios.json golden-out/
+          cd core
+          set -o pipefail
+          EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/golden-out" cargo test -- --nocapture 2>&1 | tee ../logs/core-test.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: logs-core, path: logs }
+  report:
+    needs: [golden, core]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { pattern: "logs-*", path: logs, merge-multiple: true }
+        continue-on-error: true
+      - name: push results to ci-results
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          mkdir -p work && cd work
+          git init -q
+          git config user.name ci && git config user.email ci@example.com
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          if git fetch -q origin ci-results; then git checkout -q -B ci-results FETCH_HEAD; else git checkout -q --orphan ci-results; fi
+          d="runs/${SHA:0:7}"
+          mkdir -p "$d"
+          cp -r ../logs/. "$d"/ 2>/dev/null || true
+          printf 'sha=%s\ngolden=%s\ncore=%s\nrun=%s\n' "$SHA" "${{ needs.golden.result }}" "${{ needs.core.result }}" "${{ github.run_id }}" > "$d/summary.txt"
+          git add -A && git commit -q -m "ci results ${SHA:0:7}"
+          git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }

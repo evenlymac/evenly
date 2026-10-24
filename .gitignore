@@ -7,3 +7,4 @@ dist/
 build/
 .build/
 core/target/
+windows/apo/target/
