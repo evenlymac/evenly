@@ -1,0 +1,122 @@
+== services
+
+
+Name                  Status StartType
+----                  ------ ---------
+AudioEndpointBuilder Running Automatic
+audiosrv             Running Automatic
+
+
+
+== audio pnp before
+
+
+
+== vb files
+
+
+Name                      Length
+----                      ------
+pin_in.ico                  7358
+pin_out.ico                 7358
+readme.txt                  3760
+vbaudio_cable_2003.cat      8868
+vbaudio_cable_2003.sys     34024
+vbaudio_cable_vista.cat     8872
+vbaudio_cable_vista.sys    34024
+vbaudio_cable_win7.cat      8868
+vbaudio_cable_win7.sys     34024
+vbaudio_cable_xp.cat        8860
+vbaudio_cable_xp.sys       34024
+vbaudio_cable64_2003.cat    8876
+vbaudio_cable64_2003.sys   41192
+vbaudio_cable64_vista.cat   8880
+vbaudio_cable64_vista.sys  41192
+vbaudio_cable64_win7.cat    8876
+vbaudio_cable64_win7.sys   41192
+VBCABLE_ControlPanel.exe  868024
+VBCABLE_Setup_x64.exe     923184
+VBCABLE_Setup.exe         907824
+vbMmeCable_2003.inf         4586
+vbMmeCable_vista.inf        4142
+vbMmeCable_win7.inf         4138
+vbMmeCable_xp.inf           4576
+vbMmeCable64_2003.inf       4596
+vbMmeCable64_vista.inf      4150
+vbMmeCable64_win7.inf       4146
+
+
+
+== vb install error: Cannot bind argument to parameter 'FilePath' because it is null.
+
+== audio pnp after
+
+
+
+== render endpoints
+
+
+
+== setupapi tail
+
+     dvi:           Device Status: 0x01802400 [0x01 - 0xc0000493]
+     dvi:           Config Flags: 0x00000000
+     dvi:           Parent Device: PCI\VEN_1414&DEV_00BA&SUBSYS_00B91414&REV_00\5&a70fb64&0&0
+     sto:           {Configure Driver Package: C:\Windows\System32\DriverStore\FileRepository\manavf.inf_amd64_6f5bc91789288f81\manavf.inf} 18:02:26.262
+     sto:                Source Filter  = mana_bus\VEN_1414&ROLE_004c
+     inf:                Config Options = IsolationCompat
+     inf:                Class GUID     = {4d36e972-e325-11ce-bfc1-08002be10318}
+     inf:                Class Options  = Configurable
+     inf:                {Configure Driver: Microsoft Azure Network Adapter}
+     inf:                     Section Name = Mana.ndi
+     inf:                     {Add Service: Mana}
+     inf:                          Flags         = 0x2
+     inf:                          Start Type    = 3
+     inf:                          Service Type  = 1
+     inf:                          Error Control = 1
+     inf:                          Image Path    = \SystemRoot\System32\drivers\mana.sys
+     inf:                          Display Name  = Microsoft Azure Network Adapter
+     inf:                          Description   = Microsoft Azure Network Adapter
+     inf:                          Group         = NDIS
+     inf:                          Created new service 'Mana'.
+     inf:                     {Add Service: exit(0x00000000)}
+     inf:                     {Add Event Provider: Microsoft-Azure-Network-Adapter}
+     inf:                          Provider ID    = {ba0ef2bd-57c7-4416-82b2-3b8b631ccaa7}
+     inf:                          Resource File  = %SystemRoot%\System32\drivers\mana.sys
+     inf:                          Message File   = %SystemRoot%\System32\drivers\mana.sys
+     inf:                     {Add Event Provider: exit(0x00000000)}
+     inf:                     {Add Event Provider: mana_048397c3abe9392289d5aa775ded1e89}
+     inf:                          Provider ID    = {048397c3-abe9-3922-89d5-aa775ded1e89}
+     inf:                          Resource File  = %SystemRoot%\System32\drivers\mana.sys
+     inf:                          Message File   = %SystemRoot%\System32\drivers\mana.sys
+     inf:                     {Add Event Provider: exit(0x00000000)}
+     inf:                     Hardware Id  = mana_bus\VEN_1414&ROLE_004c
+     inf:                     {Configure Driver Configuration: Mana.ndi}
+     inf:                          Service Name  = Mana
+     inf:                          Config Flags  = 0x00000000
+     inf:                     {Configure Driver Configuration: exit(0x00000000)}
+     inf:                {Configure Driver: exit(0x00000000)}
+     flq:                {FILE_QUEUE_COMMIT} 18:02:26.410
+     flq:                     Hardlinking 'C:\Windows\System32\DriverStore\FileRepository\manavf.inf_amd64_6f5bc91789288f81\mana.sys' to 'C:\Windows\System32\drivers\mana.sys'.
+     flq:                {FILE_QUEUE_COMMIT - exit(0x00000000)} 18:02:26.440
+     sto:                Driver configuration complete.
+     dvi:                Existing files modified, may need to restart related services.
+     sto:           {Configure Driver Package: exit(0x00000bc3)} 18:02:26.441
+     dvi:           Restart required for any devices using this driver.
+     dvi:           Install Device: Configuring device. 18:02:26.442
+     dvi:                Configuration: oem6.inf:mana_bus\VEN_1414&ROLE_004c,*
+     dvi:           Install Device: Configuring device completed. 18:02:26.448
+     dvi:           Device Status: 0x01802000
+     dvi:           {Restarting Devices} 18:02:26.450
+     dvi:                Start: MANA_BUS\VEN_1414&ROLE_004C\6&13FE4004&0&000D3A9F1038
+!    dvi:                Device 'MANA_BUS\VEN_1414&ROLE_004C\6&13FE4004&0&000D3A9F1038' pending start: Device has problem: 0x38 (CM_PROB_NEED_CLASS_CONFIG), problem status: 0x00000000.
+     dvi:           {Restarting Devices exit} 18:02:26.470
+     dvi:      {Configure Device - exit(0x00000000)} 18:02:26.470
+     dvi: {Core Device Install - exit(0x00000000)} 18:02:26.472
+     dvi: Waiting for device post-install to complete. 18:02:26.474
+     dvi: Device post-install completed. 18:02:26.567
+     dvi: Device Status: 0x0180200a
+<<<  Section end 2026/10/24 18:02:26.575
+<<<  [Exit status: SUCCESS]
+
+
