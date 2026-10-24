@@ -1,0 +1,31 @@
+[package]
+name = "evenly-apo"
+version = "0.2.3"
+edition = "2021"
+description = "Evenly для Windows: APO (системный звуковой эффект). Этап 2: пустышка, пропускает звук и пишет журнал."
+publish = false
+
+[lib]
+name = "evenly_apo"
+crate-type = ["cdylib"]
+
+[dependencies]
+evenly-dsp = { path = "../../core" }
+windows-core = "0.62"
+windows = { version = "0.62", features = [
+  "Win32_Foundation",
+  "Win32_Media_Audio_Apo",
+  "Win32_Media_Audio",
+  "Win32_Security",
+  "Win32_System_Com",
+  "Win32_System_LibraryLoader",
+  "Win32_System_Registry",
+  "Win32_System_SystemServices",
+] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

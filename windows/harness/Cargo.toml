@@ -1,0 +1,18 @@
+[package]
+name = "apo-harness"
+version = "0.2.3"
+edition = "2021"
+description = "Evenly: тестовый клиент APO. Грузит DLL и создаёт объект агрегированно, как audiodg.exe (без звукового стека)."
+publish = false
+
+[dependencies]
+windows-core = "0.62"
+windows = { version = "0.62", features = [
+  "Win32_Foundation",
+  "Win32_Media_Audio_Apo",
+  "Win32_Media_Audio",
+  "Win32_System_Com",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Kernel",
+  "Win32_System_LibraryLoader",
+] }
