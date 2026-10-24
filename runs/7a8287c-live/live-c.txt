@@ -1,0 +1,52 @@
+== pnp
+
+Status Class         FriendlyName                          InstanceId
+------ -----         ------------                          ----------
+OK     AudioEndpoint Speakers (VB-Audio Virtual Cable)     SWD\MMDEVAPI\{0.0.0.00000000}.{03E1E602-FE09-48A1-85EC-AC6F3…
+OK     AudioEndpoint CABLE Output (VB-Audio Virtual Cable) SWD\MMDEVAPI\{0.0.1.00000000}.{DEE56956-69FF-4778-ABC8-4F5FA…
+OK     MEDIA         VB-Audio Virtual Cable                ROOT\MEDIA\0000
+
+
+== render
+{03e1e602-fe09-48a1-85ec-ac6f3775f47e} state=1
+== setupapi
+     inf:                     Driver package 'vbmmecable64_win7.inf' is configurable.
+     flq:                     Copying 'C:\Users\RUNNER~1\AppData\Local\Temp\{45d19b24-af6e-7d41-bfad-5dd66f20761b}\vbaudio_cable64_win7.cat' to 'C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbaudio_cable64_win7.cat'.
+     flq:                     Copying 'C:\Users\RUNNER~1\AppData\Local\Temp\{45d19b24-af6e-7d41-bfad-5dd66f20761b}\vbaudio_cable64_win7.sys' to 'C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbaudio_cable64_win7.sys'.
+     flq:                     Copying 'C:\Users\RUNNER~1\AppData\Local\Temp\{45d19b24-af6e-7d41-bfad-5dd66f20761b}\vbmmecable64_win7.inf' to 'C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbmmecable64_win7.inf'.
+     sig:                          Key      = vbmmecable64_win7.inf
+     sig:                          FilePath = C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbmmecable64_win7.inf
+     sig:                          Catalog  = C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbaudio_cable64_win7.cat
+     sig:                          Key      = vbmmecable64_win7.inf
+     sig:                          FilePath = C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbmmecable64_win7.inf
+     sig:                          Catalog  = C:\Windows\System32\DriverStore\Temp\{383219ff-cd4f-9f4a-8aa1-7b8d4b68c835}\vbaudio_cable64_win7.cat
+     sto:                {Core Driver Package Import: vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c} 19:05:45.780
+     cpy:                          Target Path = C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c
+     idb:                     {Register Driver Package: C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbmmecable64_win7.inf} 19:05:45.788
+     idb:                          Created driver package object 'vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c' in DRIVERS database node.
+     idb:                          Registered driver package 'vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c' with 'oem12.inf'.
+     idb:                     {Publish Driver Package: C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbmmecable64_win7.inf} 19:05:45.792
+     idb:                          Activating driver package 'vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c'.
+     cpy:                          Published 'vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbmmecable64_win7.inf' to 'oem12.inf'.
+     idb:                          Indexed 2 device IDs for 'vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c'.
+     sig:                          Installed catalog 'vbaudio_cable64_win7.cat' as 'oem12.cat'.
+     dvi:           vbaudiovacwdm
+     sto:                     {Configure Driver Package: C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbmmecable64_win7.inf} 19:05:45.932
+     sto:                          Source Filter  = vbaudiovacwdm
+     inf:                          {Configure Driver: VB-Audio Virtual Cable}
+     inf:                               Section Name = VBCableInst.NT
+     inf:                               {Add Service: VBAudioVACMME}
+     inf:                                    Image Path    = \SystemRoot\System32\drivers\vbaudio_cable64_win7.sys
+     inf:                                    Display Name  = VB-Audio Virtual Cable (WDM)
+     inf:                                    Created new service 'VBAudioVACMME'.
+     inf:                               Hardware Id  = VBAudioVACWDM
+     inf:                               {Configure Driver Configuration: VBCableInst.NT}
+     inf:                                    Service Name  = VBAudioVACMME
+     flq:                               Copying 'C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbaudio_cable64_win7.sys' to 'C:\Windows\system32\drivers\vbaudio_cable64_win7.sys'.
+     dvi:                          Configuration: oem12.inf:vbaudiovacwdm,VBCableInst
+>>>  [Driver Install (DrvSetupInstallDriver) - D:\a\evenly\evenly\vbx\vbMmeCable64_win7.inf]
+      cmd: "C:\Windows\system32\pnputil.exe" /add-driver D:\a\evenly\evenly\vbx\vbMmeCable64_win7.inf /install
+     dvs: {Driver Setup Import Driver Package: D:\a\evenly\evenly\vbx\vbMmeCable64_win7.inf} 19:05:47.513
+     dvs:           Driver INF     - vbmmecable64_win7.inf (oem12.inf)
+     utl:                Driver INF     - oem12.inf (C:\Windows\System32\DriverStore\FileRepository\vbmmecable64_win7.inf_amd64_ffa78ae84c13ca8c\vbmmecable64_win7.inf)
+     utl:                Configuration  - VBAudioVACWDM [VBCableInst.NT]

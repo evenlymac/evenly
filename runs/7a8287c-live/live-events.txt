@@ -1,0 +1,262 @@
+=== Microsoft-Windows-CodeIntegrity/Operational
+
+=== Microsoft-Windows-Audio/Operational
+
+TimeCreated  : 10/24/2026 7:09:24 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:09:11 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:09:05 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:08:59 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:08:46 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:08:40 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:08:33 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:08:21 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:08:14 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:08:08 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:07:55 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:07:49 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:07:43 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:07:31 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:07:24 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:07:08 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:05:54 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:05:46 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+
+=== Microsoft-Windows-Audio/PlaybackManager
+
+=== Application
+
+=== System
+
+TimeCreated  : 10/24/2026 7:09:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:09:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:09:05 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:09:05 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:59 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:08:58 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:40 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:08:40 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:33 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:08:33 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:17 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Install Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:14 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:08:14 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:08:08 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:08:08 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:07:49 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:07:49 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:07:43 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:07:43 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:07:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:07:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:06:32 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Setup Manager service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:06:29 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Client License Service (ClipSVC) service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:05:54 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:05:53 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+
