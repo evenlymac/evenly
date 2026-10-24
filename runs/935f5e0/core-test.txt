@@ -1,0 +1,61 @@
+    Updating crates.io index
+     Locking 11 packages to highest compatible versions
+ Downloading crates ...
+  Downloaded itoa v1.0.18
+  Downloaded memchr v2.8.3
+  Downloaded quote v1.0.47
+  Downloaded zmij v1.0.23
+  Downloaded unicode-ident v1.0.27
+  Downloaded proc-macro2 v1.0.107
+  Downloaded serde_derive v1.0.229
+  Downloaded serde_core v1.0.229
+  Downloaded serde v1.0.229
+  Downloaded serde_json v1.0.154
+  Downloaded syn v3.0.9
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling syn v3.0.9
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling serde_derive v1.0.229
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling evenly-dsp v0.2.3 (D:\a\evenly\evenly\core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 31.74s
+     Running unittests src\lib.rs (target\debug\deps\evenly_dsp-2ec484213cd1e27c.exe)
+
+running 7 tests
+test tests::push_zero_is_dry_delayed ... ok
+test tests::loud_signal_limited_near_threshold ... ok
+test tests::sample_rate_scales_rates ... ok
+test tests::silence_stays_silent ... ok
+test tests::step_down_is_released_slowly ... ok
+test tests::universal_is_between_music_and_movie_speed ... ok
+test tests::quiet_signal_is_boosted ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running tests\golden.rs (target\debug\deps\golden-1fa5df5c07372810.exe)
+
+running 1 test
+quiet: max diff 0e0 at 0
+loud: max diff 0e0 at 0
+step: max diff 0e0 at 0
+stereo48: max diff 0e0 at 0
+oddblocks: max diff 0e0 at 0
+toggle: max diff 0e0 at 0
+rate22050: max diff 0e0 at 0
+radio: max diff 0e0 at 0
+test matches_swift_golden_vectors ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+
+   Doc-tests evenly_dsp
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
