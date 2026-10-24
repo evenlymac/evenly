@@ -1,0 +1,51 @@
+== services
+
+
+Name                  Status StartType
+----                  ------ ---------
+AudioEndpointBuilder Running Automatic
+audiosrv             Running Automatic
+
+
+
+== audio pnp before
+
+
+
+== vb files
+
+
+Name                      Length
+----                      ------
+pin_in.ico                  7358
+pin_out.ico                 7358
+readme.txt                  3760
+vbaudio_cable_2003.cat      8868
+vbaudio_cable_2003.sys     34024
+vbaudio_cable_vista.cat     8872
+vbaudio_cable_vista.sys    34024
+vbaudio_cable_win7.cat      8868
+vbaudio_cable_win7.sys     34024
+vbaudio_cable_xp.cat        8860
+vbaudio_cable_xp.sys       34024
+vbaudio_cable64_2003.cat    8876
+vbaudio_cable64_2003.sys   41192
+vbaudio_cable64_vista.cat   8880
+vbaudio_cable64_vista.sys  41192
+vbaudio_cable64_win7.cat    8876
+vbaudio_cable64_win7.sys   41192
+VBCABLE_ControlPanel.exe  868024
+VBCABLE_Setup_x64.exe     923184
+VBCABLE_Setup.exe         907824
+vbMmeCable_2003.inf         4586
+vbMmeCable_vista.inf        4142
+vbMmeCable_win7.inf         4138
+vbMmeCable_xp.inf           4576
+vbMmeCable64_2003.inf       4596
+vbMmeCable64_vista.inf      4150
+vbMmeCable64_win7.inf       4146
+
+
+
+== sig: Valid CN=Vincent Burel, OU=Individual Developer, OU=Digital ID Class 3 - Microsoft Software Validation v2, O=No Organization Affiliation, L=Eymet, S=Dordogne, C=FR
+
