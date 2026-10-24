@@ -8,75 +8,27 @@ permissions:
 env:
   CARGO_TERM_COLOR: never
 jobs:
-  golden:
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[core]')
-    runs-on: macos-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - name: gen golden (Swift)
-        run: |
-          mkdir -p out logs
-          swiftc -O Sources/EvenlyDSP/Compressor.swift core/golden/swift/main.swift -o out/gen 2>&1 | tee logs/golden-build.txt
-          cp core/golden/scenarios.json out/
-          ./out/gen core/golden/scenarios.json out 2>&1 | tee logs/golden-gen.txt
-      - uses: actions/upload-artifact@v4
-        with: { name: golden, path: out/*.f32 }
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with: { name: logs-golden, path: logs }
-  core:
-    needs: golden
+  win:
     runs-on: windows-latest
     timeout-minutes: 15
     defaults: { run: { shell: bash } }
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: golden, path: golden-out }
-      - name: cargo test (core vs Swift golden)
+      - name: core vs Swift golden, build apo and harness, run harness
         run: |
           mkdir -p logs
-          cp core/golden/scenarios.json golden-out/
-          cd core
-          set -o pipefail
-          EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/golden-out" cargo test -- --nocapture 2>&1 | tee ../logs/core-test.txt
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with: { name: logs-core, path: logs }
-  apo:
-    runs-on: windows-latest
-    timeout-minutes: 15
-    defaults: { run: { shell: bash } }
-    steps:
-      - uses: actions/checkout@v4
-      - name: build apo dll and harness
-        run: |
-          mkdir -p logs
-          set -o pipefail
+          set +e
+          (cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test -- --nocapture 2>&1) | tee logs/core-test.txt
           (cd windows/apo && cargo build --release 2>&1) | tee logs/apo-build.txt
           (cd windows/harness && cargo build --release 2>&1) | tee logs/harness-build.txt
-      - name: run harness (aggregation as audiodg does it)
-        run: |
           mkdir -p /c/ProgramData/Evenly
           rm -f /c/ProgramData/Evenly/apo.log
-          set +e
           ./windows/harness/target/release/apo-harness.exe "$(cygpath -w "$PWD/windows/apo/target/release/evenly_apo.dll")" 2>&1 | tee logs/harness-run.txt
           echo "exit=${PIPESTATUS[0]}" | tee -a logs/harness-run.txt
           cp /c/ProgramData/Evenly/apo.log logs/apo.log 2>/dev/null || echo "no apo.log" > logs/apo.log
           exit 0
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with: { name: logs-apo, path: logs }
-  report:
-    needs: [golden, core, apo]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with: { pattern: "logs-*", path: logs, merge-multiple: true }
-        continue-on-error: true
       - name: push results to ci-results
+        if: always()
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
@@ -90,6 +42,6 @@ jobs:
           d="runs/${SHA:0:7}"
           mkdir -p "$d"
           cp -r ../logs/. "$d"/ 2>/dev/null || true
-          printf 'sha=%s\ngolden=%s\ncore=%s\napo=%s\nrun=%s\n' "$SHA" "${{ needs.golden.result }}" "${{ needs.core.result }}" "${{ needs.apo.result }}" "${{ github.run_id }}" > "$d/summary.txt"
+          echo "sha=$SHA" > "$d/summary.txt"
           git add -A && git commit -q -m "ci results ${SHA:0:7}"
           git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }

@@ -7,6 +7,7 @@ param(
   [string]$Dll,
   [ValidateSet('EFX','MFX','SFX')][string]$Slot = 'EFX',
   [string[]]$Endpoints,
+  [string[]]$Modes,
   [switch]$NoRestart
 )
 $ErrorActionPreference = 'Stop'
@@ -22,12 +23,33 @@ $SlotNum   = @{ SFX = 5; MFX = 6; EFX = 7 }
 $KeyClsid  = '{d04e05a6-594b-4fb6-a80d-01af5eed7d1d}'   # PKEY_FX_*EffectClsid
 $KeyModes  = '{d3993a3f-99c2-4402-b5ec-a92a0367664b}'   # supported processing modes
 $DefaultMode = '{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}'
+$RawMode     = '{9E90EA20-B493-4FD1-A1A8-7E1361A956CF}'
+if (-not $Modes) { $Modes = @($DefaultMode) }
+$Modes = @($Modes | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 $Admins = New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')
 $RK = [Microsoft.Win32.Registry]::LocalMachine
 $Rights = [System.Security.AccessControl.RegistryRights]
 
 function Test-Admin { ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole($Admins) }
 if (-not (Test-Admin)) { throw 'run as Administrator' }
+
+# Administrators hold SeTakeOwnership/SeRestore/SeBackup but the token has them disabled; enable them (needed on GitHub runners)
+Add-Type -TypeDefinition @'
+using System; using System.Runtime.InteropServices;
+public class EvenlyPriv {
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool OpenProcessToken(IntPtr h, int acc, out IntPtr tok);
+  [DllImport("advapi32.dll", SetLastError=true, CharSet=CharSet.Unicode)] static extern bool LookupPrivilegeValue(string sys, string name, out long luid);
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool AdjustTokenPrivileges(IntPtr tok, bool dis, ref TP n, int len, IntPtr p, IntPtr r);
+  [StructLayout(LayoutKind.Sequential, Pack=4)] struct TP { public int Count; public long Luid; public int Attr; }
+  public static bool Enable(string name) {
+    IntPtr tok; if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, 0x28, out tok)) return false;
+    TP tp = new TP(); tp.Count = 1; tp.Attr = 2;
+    if (!LookupPrivilegeValue(null, name, out tp.Luid)) return false;
+    return AdjustTokenPrivileges(tok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero) && Marshal.GetLastWin32Error() == 0;
+  }
+}
+'@
+foreach ($pv in 'SeTakeOwnershipPrivilege','SeRestorePrivilege','SeBackupPrivilege') { [void][EvenlyPriv]::Enable($pv) }
 
 function Get-Active { Get-ChildItem "HKLM:\$Render" | Where-Object { (Get-ItemProperty $_.PSPath).DeviceState -eq 1 } | ForEach-Object { $_.PSChildName } }
 
@@ -91,7 +113,7 @@ if ($Action -eq 'install') {
   foreach ($ep in $Endpoints) {
     $k = Open-Key "$Render\$ep\FxProperties"
     $k.SetValue("$KeyClsid,$($SlotNum[$Slot])", $Clsid, 'String')
-    $k.SetValue("$KeyModes,$($SlotNum[$Slot])", [string[]]@($DefaultMode), 'MultiString')
+    $k.SetValue("$KeyModes,$($SlotNum[$Slot])", [string[]]$Modes, 'MultiString')
     $k.Close()
   }
   "installed: slot=$Slot endpoints=$($Endpoints -join ',')"
