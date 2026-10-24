@@ -1,0 +1,10 @@
+format: tag=0xfffe channels=2 rate=48000 bits=32
+captured_frames=432960 first_nonzero_frame=1441
+sec 0: in_amp=0.05 rms=0.03536
+sec 1: in_amp=0.5 rms=0.35355
+sec 2: in_amp=0.05 rms=0.03536
+sec 3: in_amp=0.5 rms=0.35355
+sec 4: in_amp=0.05 rms=0.03536
+sec 5: in_amp=0.5 rms=0.35355
+sec 6: in_amp=0.05 rms=0.03536
+sec 7: in_amp=0.5 rms=0.35355
