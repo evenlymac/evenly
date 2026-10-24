@@ -58,7 +58,7 @@ jobs:
         continue-on-error: true
         run: |
           & windows/livetool/target/release/live-tool.exe 8 baseline.f32 2>&1 | Tee-Object logs/live-baseline.txt
-      - name: F try each slot SFX MFX EFX
+      - name: F try slots, sample audiodg during the stream
         if: always()
         shell: pwsh
         continue-on-error: true
@@ -67,22 +67,34 @@ jobs:
           $dll = (Resolve-Path windows/apo/target/release/evenly_apo.dll).Path
           $ps1 = (Resolve-Path windows/install/evenly-apo.ps1).Path
           $out = "logs/live-slots.txt"
-          foreach ($slot in 'SFX','MFX','EFX') {
-            "=== slot $slot" | Out-File $out -Append
+          function W($m) { $m | Out-File -Encoding utf8 -Append -Width 400 $out }
+          W ("os: " + (Get-CimInstance Win32_OperatingSystem | ForEach-Object { "$($_.Caption) $($_.Version) build $($_.BuildNumber)" }))
+          W ("secure boot/ci: " + ((Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CI\Policy' -ErrorAction SilentlyContinue | Out-String)))
+          foreach ($slot in 'EFX','SFX') {
+            W "=== slot $slot"
             Remove-Item C:\ProgramData\Evenly\apo.log -ErrorAction SilentlyContinue
-            powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action install -Dll $dll -Slot $slot 2>&1 | Out-File $out -Append
+            W (powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action install -Dll $dll -Slot $slot 2>&1 | Out-String)
             Start-Sleep 4
             $ep = (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' | Where-Object { (Get-ItemProperty $_.PSPath).DeviceState -eq 1 }).PSChildName
-            "endpoints: $ep" | Out-File $out -Append
-            foreach ($e in $ep) { (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\$e\FxProperties" | Format-List | Out-String) | Out-File $out -Append -Width 300 }
-            & windows/livetool/target/release/live-tool.exe 5 "$slot.f32" 2>&1 | Out-File $out -Append
-            "audiodg modules:" | Out-File $out -Append
-            $m = Get-Process audiodg -ErrorAction SilentlyContinue | ForEach-Object { $_.Modules | Select-Object -ExpandProperty ModuleName }
-            ($m -join ', ') | Out-File $out -Append -Width 2000
-            "evenly loaded: $(($m -match 'evenly').Count -gt 0)" | Out-File $out -Append
-            "apo.log:" | Out-File $out -Append
-            Get-Content C:\ProgramData\Evenly\apo.log -ErrorAction SilentlyContinue | Select-Object -Last 15 | Out-File $out -Append
-            powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action uninstall 2>&1 | Out-File $out -Append
+            foreach ($e in $ep) {
+              $base = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\$e"
+              W "endpoint $e"
+              W ("Properties: " + ((Get-ItemProperty "$base\Properties" | Format-List | Out-String)))
+              W ("FxProperties: " + ((Get-ItemProperty "$base\FxProperties" | Format-List | Out-String)))
+            }
+            $job = Start-Process -FilePath (Resolve-Path windows/livetool/target/release/live-tool.exe).Path -ArgumentList '14',"$slot.f32" -RedirectStandardOutput "logs/live-$slot-tool.txt" -PassThru -NoNewWindow
+            Start-Sleep 6
+            $ad = Get-Process audiodg -ErrorAction SilentlyContinue
+            W ("audiodg pid: " + (($ad | ForEach-Object Id) -join ','))
+            $m = $ad | ForEach-Object { $_.Modules | ForEach-Object { $_.FileName } }
+            W ("audiodg modules during stream (non-system32): " + (($m | Where-Object { $_ -notmatch '\\Windows\\(System32|SysWOW64|WinSxS)' }) -join '; '))
+            W ("evenly loaded: " + (@($m | Where-Object { $_ -match 'evenly' }).Count -gt 0))
+            W ("all module count: " + @($m).Count)
+            W ("apodll-like modules: " + (($m | Where-Object { $_ -match 'apo|audio|fx|eff' } | ForEach-Object { Split-Path $_ -Leaf }) -join ', '))
+            $job | Wait-Process -Timeout 20 -ErrorAction SilentlyContinue
+            W "apo.log:"
+            W (Get-Content C:\ProgramData\Evenly\apo.log -ErrorAction SilentlyContinue | Select-Object -Last 20 | Out-String)
+            W (powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action uninstall 2>&1 | Out-String)
             Start-Sleep 3
           }
       - name: G collect events
@@ -90,7 +102,10 @@ jobs:
         shell: pwsh
         continue-on-error: true
         run: |
-          Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=(Get-Date).AddMinutes(-20)} -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -match 'Application Error|Windows Error Reporting|Application Hang' } | Select-Object -First 15 TimeCreated, ProviderName, Message | Format-List | Out-File logs/live-events.txt -Width 300
+          foreach ($log in 'Microsoft-Windows-CodeIntegrity/Operational','Microsoft-Windows-Audio/Operational','Microsoft-Windows-Audio/PlaybackManager','Application','System') {
+            "=== $log" | Out-File -Encoding utf8 -Append logs/live-events.txt
+            Get-WinEvent -FilterHashtable @{LogName=$log; StartTime=(Get-Date).AddMinutes(-25)} -ErrorAction SilentlyContinue | Where-Object { $log -notin 'Application','System' -or $_.ProviderName -match 'Application Error|Windows Error Reporting|audio|Audio|evenly|Service Control' } | Select-Object -First 25 TimeCreated, Id, ProviderName, Message | Format-List | Out-String -Width 300 | Out-File -Encoding utf8 -Append logs/live-events.txt
+          }
           "done" | Out-File logs/live-done.txt
       - uses: actions/upload-artifact@v4
         if: always()
