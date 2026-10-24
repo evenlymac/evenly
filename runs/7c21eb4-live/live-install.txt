@@ -1,0 +1,5 @@
+D:\a\evenly\evenly\windows\install\evenly-apo.ps1 : Exception calling "OpenSubKey" with "3" argument(s): "Requested 
+registry access is not allowed."
+    + CategoryInfo          : NotSpecified: (:) [evenly-apo.ps1], MethodInvocationException
+    + FullyQualifiedErrorId : SecurityException,evenly-apo.ps1
+ 
