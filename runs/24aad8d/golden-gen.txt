@@ -1,0 +1,8 @@
+quiet: 264600 samples, 33075 golden
+loud: 88200 samples, 11025 golden
+step: 441000 samples, 55125 golden
+stereo48: 864000 samples, 108000 golden
+oddblocks: 352800 samples, 44100 golden
+toggle: 352800 samples, 44100 golden
+rate22050: 154350 samples, 19294 golden
+radio: 220500 samples, 27563 golden
