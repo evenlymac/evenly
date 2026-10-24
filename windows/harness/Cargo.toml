@@ -6,6 +6,7 @@ description = "Evenly: тестовый клиент APO. Грузит DLL и с
 publish = false
 
 [dependencies]
+evenly-dsp = { path = "../../core" }
 windows-core = "0.62"
 windows = { version = "0.62", features = [
   "Win32_Foundation",
