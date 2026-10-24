@@ -1,0 +1,9 @@
+sig: Valid CN=Vincent Burel, OU=Individual Developer, OU=Digital ID Class 3 - Microsoft Software Validation v2, O=No Organization Affiliation, L=Eymet, S=Dordogne, C=FR
+
+   PSParentPath: Microsoft.PowerShell.Security\Certificate::LocalMachine\TrustedPublisher
+
+Thumbprint                                Subject              EnhancedKeyUsageList
+----------                                -------              --------------------
+00859AAC6A54B8C1B3C139DE67846E64E7B82DB2  CN=Vincent Burel, O… Code Signing
+
+
