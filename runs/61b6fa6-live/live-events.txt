@@ -1,0 +1,274 @@
+=== Microsoft-Windows-CodeIntegrity/Operational
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3116
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Signature information for Code Integrity policy ID {d2bda982-ccf6-4344-ac5b-0b44427b6816}.
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3099
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Refreshed and activated Code Integrity policy {d2bda982-ccf6-4344-ac5b-0b44427b6816} Microsoft Windows Driver Policy. id 10.0.29520.0. Status 0x0
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3116
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Signature information for Code Integrity policy ID {a072029f-588b-4b5e-b7f9-05aad67df687}.
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3099
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Refreshed and activated Code Integrity policy {a072029f-588b-4b5e-b7f9-05aad67df687} Microsoft Windows Virtualization Based Security Policy. id 10.0.29661.0. Status 0x0
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3116
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Signature information for Code Integrity policy ID {784c4414-79f4-4c32-a6a5-f0fb42a51d0d}.
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3099
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Refreshed and activated Code Integrity policy {784c4414-79f4-4c32-a6a5-f0fb42a51d0d} Microsoft Windows Cross Certificates for Code Integrity Exceptions Policy. id 10.29480.0.0. Status 0x0
+
+TimeCreated  : 10/24/2026 6:56:01 PM
+Id           : 3085
+ProviderName : Microsoft-Windows-CodeIntegrity
+Message      : Code Integrity will disable WHQL driver enforcement for this boot session.  Settings 0x0.
+
+
+=== Microsoft-Windows-Audio/Operational
+
+TimeCreated  : 10/24/2026 7:03:19 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:03:01 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:02:54 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:02:48 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:02:31 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:02:24 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:02:07 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 7:00:46 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:38 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:37 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 7:00:37 PM
+Id           : 65
+ProviderName : Microsoft-Windows-Audio
+Message      : MMDevAPI: Audio device state changed
+
+TimeCreated  : 10/24/2026 6:57:05 PM
+Id           : 179
+ProviderName : Microsoft-Windows-Audio
+Message      : Received session display notification
+
+TimeCreated  : 10/24/2026 6:57:05 PM
+Id           : 178
+ProviderName : Microsoft-Windows-Audio
+Message      : Global user presence detected
+
+TimeCreated  : 10/24/2026 6:56:18 PM
+Id           : 180
+ProviderName : Microsoft-Windows-Audio
+Message      : Received Po AudioStandby request
+
+
+=== Microsoft-Windows-Audio/PlaybackManager
+
+=== Application
+
+=== System
+
+TimeCreated  : 10/24/2026 7:03:22 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Microsoft Account Sign-in Assistant service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:03:19 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:03:18 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:03:09 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Install Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:02:54 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:02:54 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:02:48 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:02:48 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:02:38 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Client License Service (ClipSVC) service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:02:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:02:24 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:01:32 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Network Setup Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:01:23 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Setup Manager service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:00:46 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the running state.
+
+TimeCreated  : 10/24/2026 7:00:46 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Windows Audio service entered the stopped state.
+
+TimeCreated  : 10/24/2026 7:00:37 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Setup Manager service entered the running state.
+
+TimeCreated  : 10/24/2026 7:00:37 PM
+Id           : 7045
+ProviderName : Service Control Manager
+Message      : A service was installed in the system.
+               
+               Service Name:  VB-Audio Virtual Cable (WDM)
+               Service File Name:  \SystemRoot\System32\drivers\vbaudio_cable64_win7.sys
+               Service Type:  kernel mode driver
+               Service Start Type:  demand start
+               Service Account:  
+
+TimeCreated  : 10/24/2026 7:00:37 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Install Service service entered the running state.
+
+TimeCreated  : 10/24/2026 7:00:02 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Microsoft Passport service entered the stopped state.
+
+TimeCreated  : 10/24/2026 6:59:42 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Device Install Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 6:59:42 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Portable Device Enumerator Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 6:59:00 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Software Protection service entered the stopped state.
+
+TimeCreated  : 10/24/2026 6:58:40 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Background Intelligent Transfer Service service entered the stopped state.
+
+TimeCreated  : 10/24/2026 6:58:40 PM
+Id           : 7040
+ProviderName : Service Control Manager
+Message      : The start type of the Background Intelligent Transfer Service service was changed from auto start to demand start.
+
+TimeCreated  : 10/24/2026 6:58:35 PM
+Id           : 7036
+ProviderName : Service Control Manager
+Message      : The Clipboard User Service_bc803 service entered the running state.
+
+
