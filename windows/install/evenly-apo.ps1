@@ -7,6 +7,7 @@ param(
   [string]$Dll,
   [ValidateSet('EFX','MFX','SFX')][string]$Slot = 'EFX',
   [string[]]$Endpoints,
+  [string[]]$Modes,
   [switch]$NoRestart
 )
 $ErrorActionPreference = 'Stop'
@@ -22,6 +23,9 @@ $SlotNum   = @{ SFX = 5; MFX = 6; EFX = 7 }
 $KeyClsid  = '{d04e05a6-594b-4fb6-a80d-01af5eed7d1d}'   # PKEY_FX_*EffectClsid
 $KeyModes  = '{d3993a3f-99c2-4402-b5ec-a92a0367664b}'   # supported processing modes
 $DefaultMode = '{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}'
+$RawMode     = '{9E90EA20-B493-4FD1-A1A8-7E1361A956CF}'
+if (-not $Modes) { $Modes = @($DefaultMode) }
+$Modes = @($Modes | ForEach-Object { $_ -split ',' } | Where-Object { $_ })
 $Admins = New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')
 $RK = [Microsoft.Win32.Registry]::LocalMachine
 $Rights = [System.Security.AccessControl.RegistryRights]
@@ -109,7 +113,7 @@ if ($Action -eq 'install') {
   foreach ($ep in $Endpoints) {
     $k = Open-Key "$Render\$ep\FxProperties"
     $k.SetValue("$KeyClsid,$($SlotNum[$Slot])", $Clsid, 'String')
-    $k.SetValue("$KeyModes,$($SlotNum[$Slot])", [string[]]@($DefaultMode), 'MultiString')
+    $k.SetValue("$KeyModes,$($SlotNum[$Slot])", [string[]]$Modes, 'MultiString')
     $k.Close()
   }
   "installed: slot=$Slot endpoints=$($Endpoints -join ',')"
