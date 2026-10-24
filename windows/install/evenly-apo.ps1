@@ -29,6 +29,24 @@ $Rights = [System.Security.AccessControl.RegistryRights]
 function Test-Admin { ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole($Admins) }
 if (-not (Test-Admin)) { throw 'run as Administrator' }
 
+# Administrators hold SeTakeOwnership/SeRestore/SeBackup but the token has them disabled; enable them (needed on GitHub runners)
+Add-Type -TypeDefinition @'
+using System; using System.Runtime.InteropServices;
+public class EvenlyPriv {
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool OpenProcessToken(IntPtr h, int acc, out IntPtr tok);
+  [DllImport("advapi32.dll", SetLastError=true, CharSet=CharSet.Unicode)] static extern bool LookupPrivilegeValue(string sys, string name, out long luid);
+  [DllImport("advapi32.dll", SetLastError=true)] static extern bool AdjustTokenPrivileges(IntPtr tok, bool dis, ref TP n, int len, IntPtr p, IntPtr r);
+  [StructLayout(LayoutKind.Sequential, Pack=4)] struct TP { public int Count; public long Luid; public int Attr; }
+  public static bool Enable(string name) {
+    IntPtr tok; if (!OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, 0x28, out tok)) return false;
+    TP tp = new TP(); tp.Count = 1; tp.Attr = 2;
+    if (!LookupPrivilegeValue(null, name, out tp.Luid)) return false;
+    return AdjustTokenPrivileges(tok, false, ref tp, 0, IntPtr.Zero, IntPtr.Zero) && Marshal.GetLastWin32Error() == 0;
+  }
+}
+'@
+foreach ($pv in 'SeTakeOwnershipPrivilege','SeRestorePrivilege','SeBackupPrivilege') { [void][EvenlyPriv]::Enable($pv) }
+
 function Get-Active { Get-ChildItem "HKLM:\$Render" | Where-Object { (Get-ItemProperty $_.PSPath).DeviceState -eq 1 } | ForEach-Object { $_.PSChildName } }
 
 # take ownership + full control for Administrators on an endpoint FxProperties key
