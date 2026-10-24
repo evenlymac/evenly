@@ -42,6 +42,7 @@ jobs:
           $o = @()
           $o += "== pnp"; $o += (Get-PnpDevice -Class MEDIA, AudioEndpoint -ErrorAction SilentlyContinue | Format-Table Status, Class, FriendlyName, InstanceId | Out-String)
           $o += "== render"; $o += (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' -ErrorAction SilentlyContinue | ForEach-Object { "$($_.PSChildName) state=$((Get-ItemProperty $_.PSPath).DeviceState)" })
+          $o += "== setupapi"; $o += (Select-String -Path C:\Windows\INF\setupapi.dev.log -Pattern 'vbMme|VBAudio|VB-Audio|CABLE' | Select-Object -Last 40 | ForEach-Object { $_.Line })
           $o | Out-File logs/live-c.txt
       - name: D build apo dll and live-tool
         if: always()
@@ -57,26 +58,40 @@ jobs:
         continue-on-error: true
         run: |
           & windows/livetool/target/release/live-tool.exe 8 baseline.f32 2>&1 | Tee-Object logs/live-baseline.txt
-      - name: F install apo on active endpoints
+      - name: F try each slot (SFX, MFX, EFX): install, play, inspect audiodg, uninstall
         if: always()
         shell: pwsh
         continue-on-error: true
         run: |
           New-Item -ItemType Directory -Force C:\ProgramData\Evenly | Out-Null
           $dll = (Resolve-Path windows/apo/target/release/evenly_apo.dll).Path
-          powershell -NoProfile -ExecutionPolicy Bypass -File windows/install/evenly-apo.ps1 -Action install -Dll $dll -Slot EFX 2>&1 | Tee-Object logs/live-install.txt
-          Start-Sleep 5
-      - name: G with APO, then collect evidence
+          $ps1 = (Resolve-Path windows/install/evenly-apo.ps1).Path
+          $out = "logs/live-slots.txt"
+          foreach ($slot in 'SFX','MFX','EFX') {
+            "=== slot $slot" | Out-File $out -Append
+            Remove-Item C:\ProgramData\Evenly\apo.log -ErrorAction SilentlyContinue
+            powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action install -Dll $dll -Slot $slot 2>&1 | Out-File $out -Append
+            Start-Sleep 4
+            $ep = (Get-ChildItem 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render' | Where-Object { (Get-ItemProperty $_.PSPath).DeviceState -eq 1 }).PSChildName
+            "endpoints: $ep" | Out-File $out -Append
+            foreach ($e in $ep) { (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render\$e\FxProperties" | Format-List | Out-String) | Out-File $out -Append -Width 300 }
+            & windows/livetool/target/release/live-tool.exe 5 "$slot.f32" 2>&1 | Out-File $out -Append
+            "audiodg modules:" | Out-File $out -Append
+            $m = Get-Process audiodg -ErrorAction SilentlyContinue | ForEach-Object { $_.Modules | Select-Object -ExpandProperty ModuleName }
+            ($m -join ', ') | Out-File $out -Append -Width 2000
+            "evenly loaded: $(($m -match 'evenly').Count -gt 0)" | Out-File $out -Append
+            "apo.log:" | Out-File $out -Append
+            Get-Content C:\ProgramData\Evenly\apo.log -ErrorAction SilentlyContinue | Select-Object -Last 15 | Out-File $out -Append
+            powershell -NoProfile -ExecutionPolicy Bypass -File $ps1 -Action uninstall 2>&1 | Out-File $out -Append
+            Start-Sleep 3
+          }
+      - name: G collect events
         if: always()
         shell: pwsh
         continue-on-error: true
         run: |
-          & windows/livetool/target/release/live-tool.exe 8 apo.f32 2>&1 | Tee-Object logs/live-apo.txt
-          Copy-Item C:\ProgramData\Evenly\apo.log logs/apo.log -ErrorAction SilentlyContinue
-          Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=(Get-Date).AddMinutes(-15)} -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -match 'Application Error|Windows Error Reporting|Application Hang' } | Select-Object -First 15 TimeCreated, ProviderName, Message | Format-List | Out-File logs/live-events.txt -Width 300
-          Get-ChildItem C:\ProgramData\Evenly\dumps -ErrorAction SilentlyContinue | Format-Table Name, Length | Out-File logs/live-dumps.txt
-          Get-Process audiodg -ErrorAction SilentlyContinue | Format-Table Id, StartTime | Out-File logs/live-audiodg.txt
-          Get-Service audiosrv | Out-File logs/live-audiosrv.txt
+          Get-WinEvent -FilterHashtable @{LogName='Application'; StartTime=(Get-Date).AddMinutes(-20)} -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -match 'Application Error|Windows Error Reporting|Application Hang' } | Select-Object -First 15 TimeCreated, ProviderName, Message | Format-List | Out-File logs/live-events.txt -Width 300
+          "done" | Out-File logs/live-done.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: logs-apo-live, path: logs }
