@@ -1,4 +1,4 @@
-//! Evenly APO, этап 2: пустышка. Пропускает звук без изменений и пишет журнал
+//! Evenly APO: этап 3. Прогоняет звук через ядро Evenly (crate evenly-dsp) и пишет журнал
 //! `C:\ProgramData\Evenly\apo.log` (формат, число вызовов, пик), чтобы убедиться,
 //! что `audiodg.exe` загрузил DLL без подписи и звук идёт через неё.
 #![allow(non_snake_case, clippy::missing_safety_doc)]
@@ -8,6 +8,7 @@ use std::io::Write;
 use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use std::sync::Mutex;
 
+use evenly_dsp::Normalizer;
 use windows::core::{implement, Error, Ref, Result, BOOL, GUID, HRESULT, IUnknown, Interface};
 use windows::Win32::Foundation::{
     CLASS_E_CLASSNOTAVAILABLE, CLASS_E_NOAGGREGATION, E_INVALIDARG, E_NOTIMPL, E_POINTER, HINSTANCE,
@@ -58,11 +59,19 @@ struct EvenlyApo {
     rate: AtomicU32,
     calls: AtomicU64,
     peak_bits: AtomicU32,
+    /// Нормализатор создащтся в LockForProcess и живёт до UnlockForProcess; try_lock в потоке реального времени.
+    norm: Mutex<Option<Normalizer>>,
 }
 
 impl EvenlyApo {
     fn new() -> Self {
-        EvenlyApo { channels: AtomicU32::new(0), rate: AtomicU32::new(0), calls: AtomicU64::new(0), peak_bits: AtomicU32::new(0) }
+        EvenlyApo {
+            channels: AtomicU32::new(0),
+            rate: AtomicU32::new(0),
+            calls: AtomicU64::new(0),
+            peak_bits: AtomicU32::new(0),
+            norm: Mutex::new(None),
+        }
     }
 }
 
@@ -72,8 +81,12 @@ impl IAudioProcessingObject_Impl for EvenlyApo_Impl {
     }
 
     fn GetLatency(&self) -> Result<i64> {
-        log("GetLatency");
-        Ok(0)
+        // опережение ядра: 512 сэмплов потока interleaved (единое состояние на все каналы), в единицах 100 нс
+        let (ch, rate) = (self.channels.load(Ordering::Relaxed), self.rate.load(Ordering::Relaxed));
+        if ch == 0 || rate == 0 {
+            return Ok(0);
+        }
+        Ok((evenly_dsp::ChannelCompressor::LOOKAHEAD as i64 * 10_000_000) / (ch as i64 * rate as i64))
     }
 
     fn GetRegistrationProperties(&self) -> Result<*mut APO_REG_PROPERTIES> {
@@ -154,22 +167,32 @@ impl IAudioProcessingObjectRT_Impl for EvenlyApo_Impl {
             let ch = self.channels.load(Ordering::Relaxed).max(1) as usize;
             let n = inp.u32ValidFrameCount as usize * ch;
             let silent = inp.u32BufferFlags == BUFFER_SILENT;
-            if !silent && inp.pBuffer != 0 {
-                let src = inp.pBuffer as *const f32;
-                if out.pBuffer != inp.pBuffer && out.pBuffer != 0 {
-                    std::ptr::copy_nonoverlapping(src, out.pBuffer as *mut f32, n);
+            let mut flags = inp.u32BufferFlags;
+            if out.pBuffer != 0 && (silent || inp.pBuffer != 0) {
+                let dst = std::slice::from_raw_parts_mut(out.pBuffer as *mut f32, n);
+                if silent {
+                    // тишину тоже пропускаем через ядро: в опережении может быть хвост, а состояние должно идти дальше
+                    dst.fill(0.0);
+                    flags = BUFFER_VALID;
+                } else if out.pBuffer != inp.pBuffer {
+                    std::ptr::copy_nonoverlapping(inp.pBuffer as *const f32, dst.as_mut_ptr(), n);
+                }
+                if let Ok(mut g) = self.norm.try_lock() {
+                    if let Some(norm) = g.as_mut() {
+                        norm.process_interleaved(dst);
+                    }
                 }
                 // пик блока (для журнала)
                 let mut pk = 0.0f32;
-                for i in 0..n {
-                    pk = pk.max((*src.add(i)).abs());
+                for v in dst.iter() {
+                    pk = pk.max(v.abs());
                 }
                 if pk > f32::from_bits(self.peak_bits.load(Ordering::Relaxed)) {
                     self.peak_bits.store(pk.to_bits(), Ordering::Relaxed);
                 }
             }
             out.u32ValidFrameCount = inp.u32ValidFrameCount;
-            out.u32BufferFlags = inp.u32BufferFlags;
+            out.u32BufferFlags = flags;
             let c = self.calls.fetch_add(1, Ordering::Relaxed) + 1;
             if c == 1 || c % 500 == 0 {
                 let pk = f32::from_bits(self.peak_bits.swap(0, Ordering::Relaxed));
@@ -205,6 +228,9 @@ impl IAudioProcessingObjectConfiguration_Impl for EvenlyApo_Impl {
                 fmt.GetUncompressedAudioFormat(&mut f)?;
                 self.channels.store(f.dwSamplesPerFrame, Ordering::Relaxed);
                 self.rate.store(f.fFramesPerSecond as u32, Ordering::Relaxed);
+                if let Ok(mut g) = self.norm.lock() {
+                    *g = Some(Normalizer::new(f.dwSamplesPerFrame.max(1) as usize, f.fFramesPerSecond as f64));
+                }
                 log(&format!(
                     "LockForProcess channels={} rate={} maxframes={}",
                     f.dwSamplesPerFrame, f.fFramesPerSecond, d.u32MaxFrameCount
@@ -216,6 +242,9 @@ impl IAudioProcessingObjectConfiguration_Impl for EvenlyApo_Impl {
 
     fn UnlockForProcess(&self) -> Result<()> {
         log("UnlockForProcess");
+        if let Ok(mut g) = self.norm.lock() {
+            *g = None;
+        }
         Ok(())
     }
 }
