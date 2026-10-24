@@ -1,0 +1,20 @@
+step: LoadLibrary
+step: DllGetClassObject
+step: CreateInstance(outer, IID_IUnknown)
+step: CreateInstance returned
+step: QI inner -> IAudioProcessingObject
+step: GetLatency
+latency=Ok(0)
+step: GetRegistrationProperties
+reg clsid=5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001 ifaces=3
+step: Initialize
+init=Ok(())
+step: QI inner -> IAudioProcessingObjectRT
+calc out=480
+step: QI inner -> IAudioProcessingObjectConfiguration
+step: QI inner -> IAudioSystemEffects
+step: release interfaces
+step: release inner
+step: release outer/factory
+step: OK
+exit=0
