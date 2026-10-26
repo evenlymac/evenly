@@ -1,0 +1,1 @@
+-rw-r--r-- 1 runneradmin 197121 164540 Oct 26 16:17 logs/Evenly-0.2.4-windows.zip
