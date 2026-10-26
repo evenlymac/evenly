@@ -1,0 +1,28 @@
+1793027875 pid=7248 DllMain attach in D:\a\evenly\evenly\windows\harness\target\release\apo-harness.exe
+1793027875 pid=7248 DllGetClassObject clsid=5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001 riid=00000001-0000-0000-C000-000000000046
+1793027875 pid=7248 DllGetClassObject -> HRESULT(0x00000000)
+1793027875 pid=7248 CreateInstance enter outer=0x1b22631d5e0 riid=00000000-0000-0000-C000-000000000046
+1793027875 pid=7248 inner AddRef -> 2
+1793027875 pid=7248 inner QI IUnknown
+1793027875 pid=7248 inner Release -> 1
+1793027875 pid=7248 CreateInstance -> HRESULT(0x00000000)
+1793027875 pid=7248 iface AddRef -> outer 2
+1793027875 pid=7248 inner QI APO
+1793027875 pid=7248 GetRegistrationProperties
+1793027875 pid=7248 Initialize
+1793027875 pid=7248 iface AddRef -> outer 3
+1793027875 pid=7248 inner QI APORT
+1793027875 pid=7248 iface AddRef -> outer 4
+1793027875 pid=7248 inner QI APOConfig
+1793027875 pid=7248 iface AddRef -> outer 5
+1793027875 pid=7248 inner QI SystemEffects
+1793027875 pid=7248 LockForProcess channels=2 rate=48000 maxframes=480
+1793027875 pid=7248 APOProcess #1 frames=480 silent=false in_peak=0.0100 out_peak=0.0094
+1793027875 pid=7248 APOProcess #500 frames=480 silent=false in_peak=0.9000 out_peak=0.8476
+1793027875 pid=7248 UnlockForProcess
+1793027875 pid=7248 iface Release -> outer 4
+1793027875 pid=7248 iface Release -> outer 3
+1793027875 pid=7248 iface Release -> outer 2
+1793027875 pid=7248 iface Release -> outer 1
+1793027875 pid=7248 inner Release -> 0
+1793027875 pid=7248 Agg destroyed
