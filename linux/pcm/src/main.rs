@@ -43,14 +43,7 @@ pub fn run<R: Read, W: Write>(input: R, output: W, rate: f64, channels: usize, o
 }
 
 /// Как `run`, плюс выключатель на лету: пока существует `off_file`, обработка отключена (звук идёт без остановки потока).
-pub fn run_with<R: Read, W: Write>(
-    mut input: R,
-    mut output: W,
-    rate: f64,
-    channels: usize,
-    off: bool,
-    off_file: Option<&std::path::Path>,
-) -> io::Result<()> {
+pub fn run_with<R: Read, W: Write>(mut input: R, mut output: W, rate: f64, channels: usize, off: bool, off_file: Option<&std::path::Path>) -> io::Result<()> {
     let mut n = Normalizer::new(channels, rate);
     n.enabled = !off;
     let frame_bytes = 4 * channels;

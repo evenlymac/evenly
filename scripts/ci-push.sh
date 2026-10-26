@@ -1,0 +1,12 @@
+#!/bin/bash
+# Пуш в main и запуск слежения за регрессией (CI на раннерах GitHub). usage: scripts/ci-push.sh
+# Дальше можно заниматься другим: красный результат превратится в задачу evenly-ci-<sha> и блокировку релиза (scripts/ci-watch.sh).
+set -e
+cd "$(dirname "$0")/.."
+[ "$(git branch --show-current)" = main ] || { echo "ci-push: нужна ветка main" >&2; exit 1; }
+[ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "ci-push: есть незакоммиченные правки, закоммить их" >&2; exit 1; }
+git -c credential.helper= -c credential.helper='!/Users/macbookpro/bin/gh auth git-credential' push -q https://github.com/evenlymac/evenly.git main
+sha=$(git rev-parse HEAD)
+mkdir -p ~/.claude/evenly-ci
+nohup "$PWD/scripts/ci-watch.sh" "$sha" >/dev/null 2>&1 &
+echo "запушено ${sha:0:7}; слежение за CI запущено (журнал ~/.claude/evenly-ci/watch.log)"

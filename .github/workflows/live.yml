@@ -1,8 +1,6 @@
 name: live
 on:
-  push:
-    branches: [windows-ci]
-  workflow_dispatch:
+  workflow_dispatch:   # вручную: живая проверка APO с виртуальным кабелем (не часть регрессии)
 permissions:
   contents: write
 jobs:

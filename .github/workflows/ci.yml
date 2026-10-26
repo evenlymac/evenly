@@ -1,0 +1,251 @@
+name: ci
+# Регрессионные проверки при каждом push в main: гоняем только то, что изменение могло затронуть.
+# Падение = красный прогон; итог собирает job «gate» (по нему блокируется релиз). Сводка: scripts/ci-watch.sh на сервере.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"   # ночной полный прогон
+permissions:
+  contents: read
+env:
+  CARGO_TERM_COLOR: never
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      mac: ${{ steps.f.outputs.mac }}
+      core: ${{ steps.f.outputs.core }}
+      linux: ${{ steps.f.outputs.linux }}
+      win: ${{ steps.f.outputs.win }}
+      installer: ${{ steps.f.outputs.installer }}
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - id: f
+        run: |
+          base="${{ github.event.before }}"
+          if [ "${{ github.event_name }}" != "push" ] || [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$base" 2>/dev/null; then
+            files="ALL"
+          else
+            files="$(git diff --name-only "$base" "${{ github.sha }}")"
+          fi
+          echo "изменено: $files"
+          has() { [ "$files" = "ALL" ] || echo "$files" | grep -Eq "$1"; }
+          mac=false; core=false; linux=false; win=false; installer=false
+          has '^(Sources/|Tests/|Resources/|Package\.swift|scripts/(build-app|package)\.sh|\.github/workflows/ci\.yml)' && mac=true
+          has '^(core/|Sources/EvenlyDSP/|\.github/workflows/ci\.yml)' && core=true
+          has '^(linux/|core/|\.github/workflows/ci\.yml)' && linux=true
+          has '^(windows/|core/|\.github/workflows/ci\.yml)' && win=true
+          has '^(windows/|\.github/workflows/ci\.yml)' && installer=true
+          echo "mac=$mac core=$core linux=$linux win=$win installer=$installer"
+          { echo "mac=$mac"; echo "core=$core"; echo "linux=$linux"; echo "win=$win"; echo "installer=$installer"; } >> "$GITHUB_OUTPUT"
+  core:
+    needs: changes
+    if: needs.changes.outputs.core == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: тесты общего ядра и совпадение с эталоном Swift (golden)
+        run: cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test 2>&1
+  macos:
+    needs: changes
+    if: needs.changes.outputs.mac == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: swift test (DSP и локализация), сборка и упаковка
+        run: |
+          set +e
+          mkdir -p logs
+          swift --version 2>&1 | tee logs/swift.txt
+          swift test 2>&1 | tail -80 | tee logs/swift-test.txt
+          zsh scripts/build-app.sh 2>&1 | tail -40 | tee logs/build-app.txt
+          codesign -dv build/Evenly.app 2>&1 | tee logs/codesign.txt
+          VER=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/Evenly.app/Contents/Info.plist)
+          mkdir -p dist/dmg
+          cp -R build/Evenly.app dist/dmg/ && ln -s /Applications dist/dmg/Applications
+          ditto -c -k --keepParent build/Evenly.app "dist/Evenly-$VER.zip"
+          hdiutil create -volname Evenly -srcfolder dist/dmg -ov -format UDZO "dist/Evenly-$VER.dmg" > /dev/null
+          ls -l dist | tee logs/package.txt
+          lipo -archs build/Evenly.app/Contents/MacOS/Evenly | tee logs/arch.txt
+          fail=0
+          grep -q "with 0 failures" logs/swift-test.txt || { echo "FAIL: swift test"; fail=1; }
+          grep -Eq "with [1-9][0-9]* failure" logs/swift-test.txt && { echo "FAIL: swift test failures"; fail=1; }
+          grep -q "^OK: build/Evenly.app" logs/build-app.txt || { echo "FAIL: build-app"; fail=1; }
+          grep -q "arm64" logs/arch.txt || { echo "FAIL: not arm64"; fail=1; }
+          ls dist/Evenly-*.dmg >/dev/null 2>&1 || { echo "FAIL: dmg"; fail=1; }
+          exit $fail
+      - name: logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-logs
+          path: logs
+          retention-days: 14
+          if-no-files-found: ignore
+  linux:
+    needs: changes
+    if: needs.changes.outputs.linux == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: tools
+        run: |
+          mkdir -p logs
+          sudo apt-get update -qq && sudo apt-get install -y -qq pulseaudio pulseaudio-utils shellcheck > logs/apt.txt 2>&1 || tail -5 logs/apt.txt
+          rustup component add clippy rustfmt 2>&1 | tail -2
+      - name: checks, build, e2e, package
+        run: |
+          set +e  # шаги идут до конца ради логов; итог решает проверка в конце
+          (cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test -- --nocapture 2>&1) | tee logs/core-test.txt
+          (cd linux/pcm && cargo test 2>&1) | tee logs/pcm-test.txt
+          (cd linux/pcm && cargo clippy --all-targets -- -D warnings 2>&1) | tee logs/clippy.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/clippy.txt
+          (cd linux/pcm && cargo fmt -- --check 2>&1) | tee logs/fmt.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/fmt.txt
+          shellcheck linux/evenly-linux.sh linux/e2e.sh 2>&1 | tee logs/shellcheck.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/shellcheck.txt
+          (cd linux/pcm && cargo build --release 2>&1) | tee logs/pcm-build.txt
+          ./linux/e2e.sh "$PWD/linux/pcm/target/release/evenly-pcm" 2>&1 | tee logs/e2e.txt
+          VER=$(grep -m1 '^version' linux/pcm/Cargo.toml | cut -d'"' -f2)
+          P="Evenly-${VER}-linux-x86_64"
+          mkdir -p "dist-linux/$P"
+          cp linux/pcm/target/release/evenly-pcm linux/evenly-linux.sh linux/package/README.txt "dist-linux/$P/"
+          tar -C dist-linux -czf "logs/$P.tar.gz" "$P"
+          ls -l logs/*.tar.gz | tee logs/package.txt
+          (cd "dist-linux/$P" && ./evenly-pcm --rate 5 < /dev/null; echo "bad-arg exit=$?") 2>&1 | tee logs/smoke.txt
+          fail=0
+          for f in clippy fmt shellcheck; do tail -1 logs/$f.txt | grep -q "exit=0" || { echo "FAIL: $f"; fail=1; }; done
+          grep -q "test result: FAILED" logs/core-test.txt logs/pcm-test.txt && { echo "FAIL: cargo test"; fail=1; }
+          grep -q "test result: ok" logs/core-test.txt || { echo "FAIL: core tests did not run"; fail=1; }
+          grep -q "E2E PASS" logs/e2e.txt || { echo "FAIL: e2e"; fail=1; }
+          ls logs/*.tar.gz >/dev/null 2>&1 || { echo "FAIL: package"; fail=1; }
+          exit $fail
+      - name: logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-logs
+          path: logs
+          retention-days: 14
+          if-no-files-found: ignore
+  windows:
+    needs: changes
+    if: needs.changes.outputs.win == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: core vs Swift golden, build apo and harness, run harness
+        run: |
+          mkdir -p logs
+          set +e  # шаги идут до конца ради логов; итог решает проверка в конце
+          (cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test -- --nocapture 2>&1) | tee logs/core-test.txt
+          (cd windows/apo && cargo build --release 2>&1) | tee logs/apo-build.txt
+          (cd windows/harness && cargo build --release 2>&1) | tee logs/harness-build.txt
+          mkdir -p /c/ProgramData/Evenly
+          rm -f /c/ProgramData/Evenly/apo.log
+          ./windows/harness/target/release/apo-harness.exe "$(cygpath -w "$PWD/windows/apo/target/release/evenly_apo.dll")" 2>&1 | tee logs/harness-run.txt
+          echo "exit=${PIPESTATUS[0]}" | tee -a logs/harness-run.txt
+          cp /c/ProgramData/Evenly/apo.log logs/apo.log 2>/dev/null || echo "no apo.log" > logs/apo.log
+          (cd windows/tray && cargo build --release 2>&1) | tee logs/tray-build.txt
+          ./windows/tray/target/release/evenly-tray.exe --selftest > logs/tray-selftest.txt 2>&1
+          echo "exit=$?" | tee -a logs/tray-selftest.txt
+          cat logs/tray-selftest.txt
+          VER=$(grep -m1 '^version' windows/tray/Cargo.toml | cut -d'"' -f2)
+          P="Evenly-${VER}-windows"
+          rm -rf "dist-win/$P" && mkdir -p "dist-win/$P"
+          cp windows/tray/target/release/evenly-tray.exe windows/apo/target/release/evenly_apo.dll windows/install/evenly-apo.ps1 windows/package/README.txt "dist-win/$P/"
+          (cd dist-win && 7z a -tzip "../logs/$P.zip" "$P" > /dev/null) || (cd dist-win && powershell -NoProfile -Command "Compress-Archive -Path '$P' -DestinationPath '../logs/$P.zip' -Force")
+          ls -l logs/*.zip | tee logs/package.txt
+          fail=0
+          grep -q "test result: FAILED" logs/core-test.txt && { echo "FAIL: core test"; fail=1; }
+          grep -q "test result: ok" logs/core-test.txt || { echo "FAIL: core tests did not run"; fail=1; }
+          tail -1 logs/harness-run.txt | grep -q "exit=0" || { echo "FAIL: harness"; fail=1; }
+          tail -1 logs/tray-selftest.txt | grep -q "exit=0" || { echo "FAIL: tray selftest"; fail=1; }
+          ls logs/*.zip >/dev/null 2>&1 || { echo "FAIL: package"; fail=1; }
+          exit $fail
+      - name: logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-logs
+          path: logs
+          retention-days: 14
+          if-no-files-found: ignore
+  installer:
+    needs: changes
+    if: needs.changes.outputs.installer == 'true'
+    runs-on: windows-latest
+    timeout-minutes: 25
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: build package, compile installer, test install and uninstall
+        run: |
+          set +e  # шаги идут до конца ради логов; итог решает проверка в конце
+          export MSYS2_ARG_CONV_EXCL="*"
+          mkdir -p logs
+          (cd windows/apo && cargo build --release 2>&1 | tail -3) | tee logs/apo-build.txt
+          (cd windows/tray && cargo build --release 2>&1 | tail -3) | tee logs/tray-build.txt
+          VER=$(grep -m1 '^version' windows/tray/Cargo.toml | cut -d'"' -f2)
+          P="Evenly-${VER}-windows"
+          mkdir -p "dist-win/$P"
+          cp windows/tray/target/release/evenly-tray.exe windows/apo/target/release/evenly_apo.dll windows/install/evenly-apo.ps1 windows/package/README.txt "dist-win/$P/"
+          ISCC=$(ls "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" 2>/dev/null)
+          if [ -z "$ISCC" ]; then choco install innosetup -y --no-progress > logs/choco.txt 2>&1; ISCC="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"; fi
+          "$ISCC" "/DAppVer=$VER" "/DSrcDir=$(cygpath -w "$PWD/dist-win/$P")" windows/installer/evenly.iss 2>&1 | tail -15 | tee logs/iscc.txt
+          SETUP="dist-win/Evenly-${VER}-windows-setup.exe"
+          ls -l "$SETUP" | tee logs/setup-size.txt
+          cp "$SETUP" logs/
+          APP="/c/Program Files/Evenly"
+          echo "== silent install without effect" | tee logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="$(cygpath -w "$PWD/logs/install1.log")"
+          echo "exit=$?" | tee -a logs/test.txt
+          ls -l "$APP" | tee -a logs/test.txt
+          reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7C1E5D5A-2B8F-4E0A-9C61-3F0E4B1A7D20}_is1" /v DisplayName 2>&1 | tee -a logs/test.txt
+          echo "== uninstall" | tee -a logs/test.txt
+          "$APP/unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+          echo "exit=$?" | tee -a logs/test.txt
+          sleep 3; ls "$APP" 2>&1 | tee -a logs/test.txt
+          echo "== silent install WITH effect" | tee -a logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="C:\\inst2.log"
+          echo "exit=$?" | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action status 2>&1 | head -8 | tee -a logs/test.txt
+          cp /c/inst2.log logs/install2.log 2>&1; grep -i -n "run\|powershell\|exit\|task" logs/install2.log | head -30 | tee -a logs/test.txt
+          echo "== manual ps1 install for diagnosis" | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action install -Dll "$(cygpath -w "$APP/evenly_apo.dll")" 2>&1 | tail -8 | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action uninstall 2>&1 | tail -4 | tee -a logs/test.txt
+          echo "== upgrade over installed effect (update path)" | tee -a logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="$(cygpath -w "$PWD/logs/install3.log")"
+          echo "exit=$?" | tee -a logs/test.txt
+          echo "== uninstall with effect" | tee -a logs/test.txt
+          "$APP/unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+          echo "exit=$?" | tee -a logs/test.txt
+          sleep 3
+          powershell -NoProfile -Command "Test-Path 'C:\ProgramData\Evenly\backup\state.json'; Test-Path 'HKLM:\SOFTWARE\Classes\CLSID\{5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}'; Test-Path 'C:\Program Files\Evenly'" 2>&1 | tee -a logs/test.txt
+          fail=0
+          grep -q "^exit=[1-9]" logs/test.txt && { echo "FAIL: installer step exit code"; grep -n "^exit=" logs/test.txt; fail=1; }
+          ls logs/*-windows-setup.exe >/dev/null 2>&1 || { echo "FAIL: setup not built"; fail=1; }
+          tail -3 logs/test.txt | tr -d "\r" | grep -vq "^False$" && { echo "FAIL: leftovers after uninstall"; tail -3 logs/test.txt; fail=1; }
+          exit $fail
+      - name: logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-logs
+          path: logs
+          retention-days: 14
+          if-no-files-found: ignore
+  gate:
+    # Итог регрессии: красный, если упал любой запущенный job (пропущенные не в счёт). По нему блокируется релиз.
+    if: always()
+    needs: [changes, core, macos, linux, windows, installer]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo '${{ toJSON(needs) }}' | tr -d '\n' | grep -Eq '"result": *"(failure|cancelled)"' && { echo "CI красный"; exit 1; }
+          echo "CI зелёный"
