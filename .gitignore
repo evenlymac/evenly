@@ -11,3 +11,5 @@ windows/apo/target/
 windows/harness/target/
 windows/livetool/target
 windows/tray/target/
+linux/pcm/target/
+windows/dumps/
