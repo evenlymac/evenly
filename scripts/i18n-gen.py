@@ -30,7 +30,7 @@ def validate():
         if not any(e.get(t) for t in ("mac", "win", "inst", "linux", "plist")): errs.append(f"{i}: нет цели")
     return errs + validate_site(ids)
 
-SYS = {"lang", "alt_lang", "alt_href", "alt_name", "ver"}
+SYS = {"lang", "alt_lang", "alt_href", "ver", "en_cls", "ru_cls", "en_href", "ru_href", "en_cur", "ru_cur"}
 def validate_site(str_ids):
     errs, ids = [], set()
     for e in site:
@@ -96,7 +96,9 @@ def render_site(lang):
     alt = "en" if lang == "ru" else "ru"
     strs = {e["id"]: e[lang] for e in data}
     vals = {e["id"]: PH.sub(lambda m: strs[m.group(1)[4:]], e[lang]) for e in site}
-    vals.update(lang=lang, alt_lang=alt, alt_href="en/" if lang == "ru" else "../", alt_name={"ru": "Русский", "en": "English"}[alt],
+    vals.update(lang=lang, alt_lang=alt, alt_href="en/" if lang == "ru" else "../", en_href="en/" if lang == "ru" else "./", ru_href="../" if lang == "en" else "./",
+                en_cls="on" if lang == "en" else "", ru_cls="on" if lang == "ru" else "",
+                en_cur='aria-current="true"' if lang == "en" else "", ru_cur='aria-current="true"' if lang == "ru" else "",
                 ver=(R / "site/VERSION").read_text().strip())
     return PH.sub(lambda m: vals[m.group(1)], TPL)
 

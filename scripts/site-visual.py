@@ -49,6 +49,10 @@ def checks(d, lang, size, theme):
     if "data:image" not in logo: fail(f"{tag}: логотип не отрисован")
     bad = d.execute_script("return [...document.querySelectorAll('svg')].filter(s=>{const r=s.getBoundingClientRect();return r.width<10||r.height<5}).length")
     if bad: fail(f"{tag}: графиков нулевого размера: {bad}")
+    sw = d.execute_script("const a=[...document.querySelectorAll('.langs a')];return JSON.stringify({n:a.length,on:a.filter(x=>x.classList.contains('on')).map(x=>x.lang),other:a.filter(x=>!x.classList.contains('on')).map(x=>x.href)})")
+    sw = json.loads(sw)
+    if sw["n"] != 2 or sw["on"] != [lang] or len(sw["other"]) != 1 or sw["other"][0].rstrip("/").endswith(d.current_url.rstrip("/")) and "/en" not in sw["other"][0] + d.current_url:
+        fail(f"{tag}: переключатель En/Ru: {sw}")
     if d.execute_script("return document.documentElement.lang") != lang: fail(f"{tag}: lang страницы не {lang}")
     # выбор языка по navigator.language: логику встроенного скрипта гоняем с подменой navigator, localStorage и location
     js = """const s=document.querySelector('head script').textContent;const out={};

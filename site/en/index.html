@@ -32,6 +32,9 @@ a{color:inherit}
 .nav-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 24px;font-size:.9375rem}
 .nav-links a{white-space:nowrap;color:#c4c8dc;text-decoration:none;padding:8px 0}
 .nav-links a:hover{color:var(--paper)}
+.nav-links .langs{display:inline-flex;align-items:center;gap:2px;padding:2px;margin:3px 0 3px 8px;border-radius:99px;background:rgba(255,255,255,.1)}
+.nav-links .langs a{padding:3px 11px;border-radius:99px;font-size:.8125rem;font-weight:600;line-height:1.4}
+.nav-links .langs a.on{background:var(--mint);color:#0d2a20}
 a:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
 .pill{margin-top:56px;font-size:.8125rem;font-weight:500;color:#c9f1e1;background:rgba(106,209,168,.14);border-radius:99px;padding:7px 16px}
 h1{margin-top:20px;font-size:clamp(2.25rem,7.2vw,3.875rem);line-height:1.04;font-weight:800;letter-spacing:-.03em;color:var(--paper)}
@@ -73,7 +76,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 <body>
 <div class="hero"><div class="hero-in">
 <nav class="nav" aria-label="Sections"><a class="brand" href="#"><span class="logo logo-s" aria-hidden="true"></span>Evenly</a>
-<div class="nav-links"><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="https://github.com/evenlymac/evenly">Source code</a><a href="../" hreflang="ru" lang="ru" onclick="try{localStorage.setItem('evenly-lang','ru')}catch(e){}">Русский</a></div></nav>
+<div class="nav-links"><a href="#how">How it works</a><a href="#faq">FAQ</a><a href="https://github.com/evenlymac/evenly">Source code</a><span class="langs" role="group" aria-label="Language"><a class="on" href="./" hreflang="en" lang="en" aria-current="true" onclick="try{localStorage.setItem('evenly-lang','en')}catch(e){}">En</a><a class="" href="../" hreflang="ru" lang="ru"  onclick="try{localStorage.setItem('evenly-lang','ru')}catch(e){}">Ru</a></span></div></nav>
 <p class="pill">macOS · Windows 10/11 · Linux</p>
 <div class="logo logo-big" role="img" aria-label="Evenly logo"></div>
 <h1>Stop reaching<span>for the volume button</span></h1>
@@ -100,7 +103,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 <div class="qa"><h3>Why did a coloured dot appear in the menu bar?</h3>
 <p>That is how macOS shows that an app is receiving your Mac's audio. For Evenly this is part of the job: it listens to what is playing on your computer, levels the volume on the fly and immediately passes the sound back to your speakers or headphones. The audio is not recorded to a file, not stored and not sent over the internet: the app has no network code. While Evenly is running the dot stays. Quit Evenly from its menu and it disappears.</p></div></section>
 
-<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.</span><span>The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.</span><span class="sv">Site v1.3.1</span></footer>
+<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.</span><span>The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.</span><span class="sv">Site v1.3.2</span></footer>
 </main>
 </body>
 </html>
