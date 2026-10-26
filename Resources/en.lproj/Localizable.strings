@@ -1,3 +1,4 @@
+/* GENERATED from i18n/strings.json by scripts/i18n-gen.py: do not edit by hand */
 "Launch Evenly at Login" = "Launch Evenly at Login";
 "Quit Evenly" = "Quit Evenly";
 "Launch Evenly at login?" = "Launch Evenly at login?";

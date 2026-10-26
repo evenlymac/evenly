@@ -1,3 +1,4 @@
+/* GENERATED from i18n/strings.json by scripts/i18n-gen.py: do not edit by hand */
 "Launch Evenly at Login" = "Запускать Evenly при входе";
 "Quit Evenly" = "Закрыть Evenly";
 "Launch Evenly at login?" = "Запускать Evenly при входе в систему?";

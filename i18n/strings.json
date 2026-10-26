@@ -1,0 +1,231 @@
+{
+ "_comment": "ЕДИНЫЙ источник переводов Evenly (en/ru) для macOS, Windows-трея, установщика Windows и Linux. Правьте ТОЛЬКО здесь, затем python3 -I scripts/i18n-gen.py. Цели: mac=true (ключ Localizable.strings = en), win=поле Text, inst=сообщение установщика, linux=имя сообщения, plist=ключ InfoPlist.strings. {0} = подстановка. Общая строка (несколько целей) одинакова на платформах по построению.",
+ "strings": [
+  {
+   "id": "login",
+   "en": "Launch Evenly at Login",
+   "ru": "Запускать Evenly при входе",
+   "mac": true,
+   "win": "login"
+  },
+  {
+   "id": "quit",
+   "en": "Quit Evenly",
+   "ru": "Закрыть Evenly",
+   "mac": true,
+   "win": "quit"
+  },
+  {
+   "id": "ask_login_title",
+   "en": "Launch Evenly at login?",
+   "ru": "Запускать Evenly при входе в систему?",
+   "mac": true,
+   "win": "ask_login_title"
+  },
+  {
+   "id": "mac_login_body",
+   "en": "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login.",
+   "ru": "Evenly выравнивает громкость, только пока он запущен. Если он не открывается при входе, после каждой перезагрузки или входа в систему он остаётся выключенным, пока вы не запустите его сами. Изменить это можно в любой момент в меню Evenly или в Настройках → Основные → Объекты входа. Evenly спросит снова при следующем запуске без автозапуска.",
+   "mac": true
+  },
+  {
+   "id": "mac_launch_button",
+   "en": "Launch at Login",
+   "ru": "Запускать при входе",
+   "mac": true
+  },
+  {
+   "id": "not_now",
+   "en": "Not Now",
+   "ru": "Не сейчас",
+   "mac": true
+  },
+  {
+   "id": "no_audio_title",
+   "en": "Evenly can't hear your Mac's audio",
+   "ru": "Evenly не слышит звук вашего Mac",
+   "mac": true
+  },
+  {
+   "id": "no_audio_body",
+   "en": "Access to your Mac's system audio is turned off for Evenly, so it can't level the volume. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly.",
+   "ru": "Доступ к системному звуку Mac для Evenly выключен, поэтому он не может выравнивать громкость. Откройте Системные настройки → Конфиденциальность и безопасность → Запись экрана и системного звука и включите Evenly.",
+   "mac": true
+  },
+  {
+   "id": "open_settings",
+   "en": "Open Settings",
+   "ru": "Открыть настройки",
+   "mac": true
+  },
+  {
+   "id": "allow_audio_access",
+   "en": "Allow Access to System Audio…",
+   "ru": "Разрешить доступ к системному звуку…",
+   "mac": true
+  },
+  {
+   "id": "toggle",
+   "en": "Level Volume",
+   "ru": "Выравнивать громкость",
+   "mac": true,
+   "win": "toggle"
+  },
+  {
+   "id": "install",
+   "en": "Turn On System-Wide Effect…",
+   "ru": "Включить системный эффект…",
+   "win": "install"
+  },
+  {
+   "id": "uninstall",
+   "en": "Remove System-Wide Effect…",
+   "ru": "Убрать системный эффект…",
+   "win": "uninstall"
+  },
+  {
+   "id": "update",
+   "en": "Update System-Wide Effect…",
+   "ru": "Обновить системный эффект…",
+   "win": "update"
+  },
+  {
+   "id": "tip_paused",
+   "en": "Evenly: paused (audio passes unchanged)",
+   "ru": "Evenly: приостановлен (звук идёт без изменений)",
+   "win": "tip_paused"
+  },
+  {
+   "id": "upd_title",
+   "en": "Evenly: update available",
+   "ru": "Evenly: доступно обновление",
+   "win": "upd_title"
+  },
+  {
+   "id": "upd_body",
+   "en": "A newer system audio effect came with this version of Evenly. Open the Evenly menu in the tray and choose “Update System-Wide Effect…”. Playback keeps going; administrator permission is needed once.",
+   "ru": "Вместе с этой версией Evenly пришёл более новый системный звуковой эффект. Откройте меню Evenly в трее и выберите «Обновить системный эффект…». Воспроизведение не прерывается; один раз понадобится разрешение администратора.",
+   "win": "upd_body"
+  },
+  {
+   "id": "hint_title",
+   "en": "Evenly isn't processing this device's audio",
+   "ru": "Evenly не обрабатывает звук этого устройства",
+   "win": "hint_title"
+  },
+  {
+   "id": "hint_body",
+   "en": "The system audio effect is not installed, so Evenly can't level the volume. Open the Evenly menu in the tray and choose “Turn On System-Wide Effect…” (administrator permission is needed once).",
+   "ru": "Системный звуковой эффект не установлен, поэтому Evenly не может выравнивать громкость. Откройте меню Evenly в трее и выберите «Включить системный эффект…» (один раз понадобится разрешение администратора).",
+   "win": "hint_body"
+  },
+  {
+   "id": "win_ask_login_body",
+   "en": "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu. Evenly will ask again the next time it starts without launch at login.",
+   "ru": "Evenly выравнивает громкость только пока запущен. Если он не открывается при входе, то после каждой перезагрузки или входа остаётся выключенным, пока вы не запустите его сами. Это можно изменить в любой момент в меню Evenly. Evenly спросит снова при следующем запуске без автозапуска.",
+   "win": "ask_login_body"
+  },
+  {
+   "id": "tip",
+   "en": "Evenly",
+   "ru": "Evenly",
+   "win": "tip"
+  },
+  {
+   "id": "tip_off",
+   "en": "Evenly: system-wide effect is not installed",
+   "ru": "Evenly: системный эффект не установлен",
+   "win": "tip_off"
+  },
+  {
+   "id": "inst_EffectTask",
+   "en": "Turn on the system-wide effect now (the audio service restarts, sound pauses for a second)",
+   "ru": "Включить системный эффект сейчас (служба звука перезапустится, звук прервётся на секунду)",
+   "inst": "EffectTask"
+  },
+  {
+   "id": "inst_EffectStatus",
+   "en": "Turning on the system-wide effect...",
+   "ru": "Включаю системный эффект...",
+   "inst": "EffectStatus"
+  },
+  {
+   "id": "inst_EffectOffStatus",
+   "en": "Removing the system-wide effect...",
+   "ru": "Убираю системный эффект...",
+   "inst": "EffectOffStatus"
+  },
+  {
+   "id": "inst_EffectFailed",
+   "en": "The program is installed, but the system-wide effect could not be turned on (exit code {0}). You can turn it on later from the Evenly tray menu: \"Turn On System-Wide Effect...\".",
+   "ru": "Программа установлена, но системный эффект включить не удалось (код {0}). Его можно включить позже из меню Evenly в трее: «Включить системный эффект…».",
+   "inst": "EffectFailed"
+  },
+  {
+   "id": "inst_LaunchTray",
+   "en": "Start Evenly",
+   "ru": "Запустить Evenly",
+   "inst": "LaunchTray"
+  },
+  {
+   "id": "linux_no_default_sink",
+   "en": "no default output device",
+   "ru": "нет выхода по умолчанию",
+   "linux": "no_default_sink"
+  },
+  {
+   "id": "linux_already_running",
+   "en": "already running",
+   "ru": "уже запущен",
+   "linux": "already_running"
+  },
+  {
+   "id": "linux_started",
+   "en": "Evenly started: choose the output \"Evenly\" → {0}",
+   "ru": "Evenly запущен: выберите выход «Evenly» → {0}",
+   "linux": "started"
+  },
+  {
+   "id": "linux_stopped",
+   "en": "Evenly stopped",
+   "ru": "Evenly остановлен",
+   "linux": "stopped"
+  },
+  {
+   "id": "linux_off_done",
+   "en": "Evenly: processing is off (audio passes unchanged)",
+   "ru": "Evenly: обработка выключена (звук идёт без изменений)",
+   "linux": "off_done"
+  },
+  {
+   "id": "linux_on_done",
+   "en": "Evenly: processing is on",
+   "ru": "Evenly: обработка включена",
+   "linux": "on_done"
+  },
+  {
+   "id": "linux_status_off",
+   "en": "off",
+   "ru": "выключена",
+   "linux": "status_off"
+  },
+  {
+   "id": "linux_status_on",
+   "en": "on",
+   "ru": "включена",
+   "linux": "status_on"
+  },
+  {
+   "id": "plist_NSAudioCaptureUsageDescription",
+   "en": "Evenly needs access to your Mac's audio output so it can even out quiet and loud sounds. Audio is processed live on your Mac; nothing is saved or sent anywhere.",
+   "ru": "Evenly нужен доступ к звуку вашего Mac, чтобы выравнивать тихое и громкое. Звук обрабатывается на лету на вашем Mac: ничего не сохраняется и никуда не отправляется.",
+   "plist": "NSAudioCaptureUsageDescription"
+  },
+  {
+   "id": "plist_CFBundleName",
+   "en": "Evenly",
+   "ru": "Evenly",
+   "plist": "CFBundleName"
+  }
+ ]
+}

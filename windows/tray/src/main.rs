@@ -45,62 +45,7 @@ fn lang() -> Lang {
     }
 }
 
-struct Text {
-    login: &'static str,
-    install: &'static str,
-    uninstall: &'static str,
-    update: &'static str,
-    toggle: &'static str,
-    tip_paused: &'static str,
-    upd_title: &'static str,
-    upd_body: &'static str,
-    quit: &'static str,
-    hint_title: &'static str,
-    hint_body: &'static str,
-    ask_login_title: &'static str,
-    ask_login_body: &'static str,
-    tip: &'static str,
-    tip_off: &'static str,
-}
-
-fn text(l: Lang) -> Text {
-    match l {
-        Lang::En => Text {
-            login: "Launch Evenly at Login",
-            install: "Turn On System-Wide Effect…",
-            uninstall: "Remove System-Wide Effect…",
-            update: "Update System-Wide Effect…",
-            toggle: "Level Volume",
-            tip_paused: "Evenly: paused (audio passes unchanged)",
-            upd_title: "Evenly: update available",
-            upd_body: "A newer system audio effect came with this version of Evenly. Open the Evenly menu in the tray and choose “Update System-Wide Effect…”. Playback keeps going; administrator permission is needed once.",
-            quit: "Quit Evenly",
-            hint_title: "Evenly isn't processing this device's audio",
-            hint_body: "The system audio effect is not installed, so Evenly can't level the volume. Open the Evenly menu in the tray and choose “Turn On System-Wide Effect…” (administrator permission is needed once).",
-            ask_login_title: "Launch Evenly at login?",
-            ask_login_body: "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu. Evenly will ask again the next time it starts without launch at login.",
-            tip: "Evenly",
-            tip_off: "Evenly: system-wide effect is not installed",
-        },
-        Lang::Ru => Text {
-            login: "Запускать Evenly при входе",
-            install: "Включить системный эффект…",
-            uninstall: "Убрать системный эффект…",
-            update: "Обновить системный эффект…",
-            toggle: "Выравнивать громкость",
-            tip_paused: "Evenly: приостановлен (звук идёт без изменений)",
-            upd_title: "Evenly: доступно обновление",
-            upd_body: "Вместе с этой версией Evenly пришёл более новый системный звуковой эффект. Откройте меню Evenly в трее и выберите «Обновить системный эффект…». Воспроизведение не прерывается; один раз понадобится разрешение администратора.",
-            quit: "Закрыть Evenly",
-            hint_title: "Evenly не обрабатывает звук этого устройства",
-            hint_body: "Системный звуковой эффект не установлен, поэтому Evenly не может выравнивать громкость. Откройте меню Evenly в трее и выберите «Включить системный эффект…» (один раз понадобится разрешение администратора).",
-            ask_login_title: "Запускать Evenly при входе в систему?",
-            ask_login_body: "Evenly выравнивает громкость только пока запущен. Если он не открывается при входе, то после каждой перезагрузки или входа остаётся выключенным, пока вы не запустите его сами. Это можно изменить в любой момент в меню Evenly. Evenly спросит снова при следующем запуске без автозапуска.",
-            tip: "Evenly",
-            tip_off: "Evenly: системный эффект не установлен",
-        },
-    }
-}
+include!("strings.rs"); // Text и text(): сгенерировано из i18n/strings.json
 
 fn wide(s: &str) -> Vec<u16> {
     s.encode_utf16().chain(std::iter::once(0)).collect()

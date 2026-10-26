@@ -1,6 +1,0 @@
-# Общие термины интерфейса: строка macOS (ключ en в Resources/en.lproj) = поле Windows-трея (windows/tray/src/main.rs); en и ru обязаны совпадать.
-# Колонки через TAB: ключ macOS, поле Text в Windows. Новая общая надпись = новая строка. Проверяет scripts/consistency-check.py.
-Level Volume	toggle
-Launch Evenly at Login	login
-Launch Evenly at login?	ask_login_title
-Quit Evenly	quit

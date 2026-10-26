@@ -32,16 +32,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [CustomMessages]
-english.EffectTask=Turn on the system-wide effect now (the audio service restarts, sound pauses for a second)
-russian.EffectTask=Включить системный эффект сейчас (служба звука перезапустится, звук прервётся на секунду)
-english.EffectStatus=Turning on the system-wide effect...
-russian.EffectStatus=Включаю системный эффект...
-english.EffectOffStatus=Removing the system-wide effect...
-russian.EffectOffStatus=Убираю системный эффект...
-english.EffectFailed=The program is installed, but the system-wide effect could not be turned on (exit code %1). You can turn it on later from the Evenly tray menu: "Turn On System-Wide Effect...".
-russian.EffectFailed=Программа установлена, но системный эффект включить не удалось (код %1). Его можно включить позже из меню Evenly в трее: «Включить системный эффект…».
-english.LaunchTray=Start Evenly
-russian.LaunchTray=Запустить Evenly
+#include "messages.iss"
 
 [Tasks]
 Name: "effect"; Description: "{cm:EffectTask}"

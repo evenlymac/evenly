@@ -1,2 +1,3 @@
+/* GENERATED from i18n/strings.json by scripts/i18n-gen.py: do not edit by hand */
 "NSAudioCaptureUsageDescription" = "Evenly нужен доступ к звуку вашего Mac, чтобы выравнивать тихое и громкое. Звук обрабатывается на лету на вашем Mac: ничего не сохраняется и никуда не отправляется.";
 "CFBundleName" = "Evenly";
