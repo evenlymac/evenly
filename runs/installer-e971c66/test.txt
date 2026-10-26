@@ -1,0 +1,20 @@
+== silent install without effect
+exit=127
+ERROR: Invalid syntax.
+Type "REG QUERY /?" for usage.
+== uninstall
+exit=127
+ls: cannot access '/c/Program Files/Evenly': No such file or directory
+== silent install WITH effect
+exit=127
+The argument 'C:\Program Files\Evenly\evenly-apo.ps1' to the -File parameter does not exist. Provide the path to an existing '.ps1' file as an argument to the -File parameter.
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+== upgrade over installed effect (update path)
+exit=127
+== uninstall with effect
+exit=127
+False
+False
+False

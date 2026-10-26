@@ -1,0 +1,3 @@
+
+warning: `evenly-apo` (lib) generated 1 warning
+    Finished `release` profile [optimized] target(s) in 38.65s
