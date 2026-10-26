@@ -8,6 +8,7 @@ final class AppState: ObservableObject {
     @Published var launchAtLogin: Bool
     @Published var error: String?
     @Published var noAccess = false
+    @Published var processing = UserDefaults.standard.object(forKey: "processing") as? Bool ?? true
     private var accessAlertShown = false
 
     init() {
@@ -23,9 +24,10 @@ final class AppState: ObservableObject {
             probe = Probe()
             probe?.run(path: req.path, seconds: req.seconds)
         } else {
-            // Приложение открыто = Evenly работает: выключателя нет.
+            // Приложение открыто = захват идёт; обработку можно приостановить выключателем в меню (звук не прерывается).
             engine.onError = { [weak self] in self?.error = $0 }
             engine.onAccessIssue = { [weak self] in self?.accessIssueChanged($0) }
+            engine.processingEnabled = processing
             engine.enable()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in self?.offerLaunchAtLogin() }
         }
@@ -78,6 +80,12 @@ final class AppState: ObservableObject {
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 
+    func setProcessing(_ on: Bool) {
+        processing = on
+        UserDefaults.standard.set(on, forKey: "processing")
+        engine.processingEnabled = on
+    }
+
     func shutdown() { engine.disable() }
 }
 
@@ -88,6 +96,8 @@ struct MenuView: View {
             Button("Allow Access to System Audio…") { AppState.openAudioSettings() }
             Divider()
         }
+        Toggle("Level Volume", isOn: Binding(get: { state.processing }, set: state.setProcessing))
+        Divider()
         Toggle("Launch Evenly at Login", isOn: Binding(get: { state.launchAtLogin }, set: state.setLaunchAtLogin))
             .onAppear { state.refreshLaunchAtLogin() }
         if let e = state.error { Text(e).font(.caption) }
@@ -146,7 +156,7 @@ struct EvenlyApp: App {
         MenuBarExtra {
             MenuView(state: state)
         } label: {
-            Image(nsImage: MenuBarIcon.image(on: !state.noAccess))
+            Image(nsImage: MenuBarIcon.image(on: !state.noAccess && state.processing))
                 .onReceive(loginCheck) { _ in state.refreshLaunchAtLogin() }
         }
     }

@@ -14,6 +14,8 @@ final class AudioEngine {
     private var aggregateID = AudioObjectID(kAudioObjectUnknown)
     private var procID: AudioDeviceIOProcID?
     private var normalizer: Normalizer?
+    /// Выключатель из меню: обработка отключается без остановки захвата (звук не прерывается), нормализатор плавно уходит в обход.
+    var processingEnabled = true { didSet { normalizer?.enabled = processingEnabled } }
     private var scratchIn: [[Float]] = []
     private var scratchOut: [[Float]] = []
 
@@ -155,6 +157,7 @@ final class AudioEngine {
         let fmt = try Self.tapFormat(tap)
         let channels = max(Int(fmt.mChannelsPerFrame), 1)
         let norm = Normalizer(channelCount: channels, sampleRate: fmt.mSampleRate)
+        norm.enabled = processingEnabled
         normalizer = norm
 
         var proc: AudioDeviceIOProcID?
