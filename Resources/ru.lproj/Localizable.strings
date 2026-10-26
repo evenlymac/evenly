@@ -8,4 +8,3 @@
 "Access to your Mac's system audio is turned off for Evenly, so it can't level the volume. Open System Settings → Privacy & Security → Screen & System Audio Recording and turn on Evenly." = "Доступ к системному звуку Mac для Evenly выключен, поэтому он не может выравнивать громкость. Откройте Системные настройки → Конфиденциальность и безопасность → Запись экрана и системного звука и включите Evenly.";
 "Open Settings" = "Открыть настройки";
 "Allow Access to System Audio…" = "Разрешить доступ к системному звуку…";
-"Level Volume" = "Выравнивать громкость";
