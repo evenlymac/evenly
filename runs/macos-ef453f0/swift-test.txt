@@ -1,0 +1,51 @@
+Building for debugging...
+[0/12] /Users/runner/work/evenly/evenly/.build/arm64-apple-macosx/debug/EvenlyPackageTests.derived/runner.swift
+[1/12] Write sources
+[4/12] Write Evenly-entitlement.plist
+[6/12] Write swift-version-7974D3F7F03D5E95.txt
+[8/14] Emitting module EvenlyDSP
+[9/14] Compiling EvenlyDSP Compressor.swift
+[10/19] Emitting module EvenlyDSPTests
+[11/19] Compiling EvenlyDSPTests CompressorTests.swift
+[12/21] Emitting module Evenly
+[13/21] Compiling Evenly AudioEngine.swift
+[14/21] Compiling Evenly EvenlyApp.swift
+[15/22] Compiling Evenly Probe.swift
+[15/22] Write Objects.LinkFileList
+[17/22] Emitting module EvenlyPackageTests
+[18/22] Compiling EvenlyPackageTests runner.swift
+[18/22] Write Objects.LinkFileList
+[19/22] Linking EvenlyPackageTests
+[20/22] Linking Evenly
+[21/22] Applying Evenly
+Build complete! (12.05s)
+Test Suite 'All tests' started at 2026-10-26 17:14:46.247.
+Test Suite 'EvenlyPackageTests.xctest' started at 2026-10-26 17:14:46.250.
+Test Suite 'CompressorTests' started at 2026-10-26 17:14:46.250.
+Test Case '-[EvenlyDSPTests.CompressorTests testLoudSignalLimitedNearThreshold]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testLoudSignalLimitedNearThreshold]' passed (0.040 seconds).
+Test Case '-[EvenlyDSPTests.CompressorTests testPushZeroIsDryDelayed]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testPushZeroIsDryDelayed]' passed (0.004 seconds).
+Test Case '-[EvenlyDSPTests.CompressorTests testQuietSignalIsBoosted]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testQuietSignalIsBoosted]' passed (0.478 seconds).
+Test Case '-[EvenlyDSPTests.CompressorTests testSampleRateScalesRates]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testSampleRateScalesRates]' passed (0.188 seconds).
+Test Case '-[EvenlyDSPTests.CompressorTests testSilenceStaysSilent]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testSilenceStaysSilent]' passed (0.018 seconds).
+Test Case '-[EvenlyDSPTests.CompressorTests testStepDownIsReleasedSlowly]' started.
+Test Case '-[EvenlyDSPTests.CompressorTests testStepDownIsReleasedSlowly]' passed (0.114 seconds).
+Test Suite 'CompressorTests' passed at 2026-10-26 17:14:47.094.
+	 Executed 6 tests, with 0 failures (0 unexpected) in 0.843 (0.844) seconds
+Test Suite 'UniversalModeTests' started at 2026-10-26 17:14:47.094.
+Test Case '-[EvenlyDSPTests.UniversalModeTests testUniversalIsBetweenMusicAndMovieSpeed]' started.
+Test Case '-[EvenlyDSPTests.UniversalModeTests testUniversalIsBetweenMusicAndMovieSpeed]' passed (0.000 seconds).
+Test Suite 'UniversalModeTests' passed at 2026-10-26 17:14:47.094.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'EvenlyPackageTests.xctest' passed at 2026-10-26 17:14:47.094.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.843 (0.844) seconds
+Test Suite 'All tests' passed at 2026-10-26 17:14:47.095.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.843 (0.847) seconds
+◇ Test run started.
+↳ Testing Library Version: 1902
+↳ Target Platform: arm64e-apple-macos14.0
+✔ Test run with 0 tests in 0 suites passed after 0.001 seconds.

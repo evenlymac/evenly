@@ -1,0 +1,4 @@
+total 528
+drwxr-xr-x  4 runner  staff     128 Oct 26 17:15 dmg
+-rw-r--r--@ 1 runner  staff  144321 Oct 26 17:15 Evenly-0.2.3.dmg
+-rw-r--r--  1 runner  staff  120104 Oct 26 17:15 Evenly-0.2.3.zip

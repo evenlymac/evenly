@@ -1,0 +1,11 @@
+Building for production...
+[0/5] Write sources
+[2/5] Write swift-version-7974D3F7F03D5E95.txt
+[4/6] Compiling EvenlyDSP Compressor.swift
+[5/7] Compiling Evenly AudioEngine.swift
+[5/7] Write Objects.LinkFileList
+[6/7] Linking Evenly
+Build complete! (7.14s)
+Сертификат 'Evenly Dev' не найден, подпись ad-hoc (разрешение может слетать)
+build/Evenly.app: replacing existing signature
+OK: build/Evenly.app
