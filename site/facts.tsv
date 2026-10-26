@@ -1,9 +1,10 @@
 # Привязка сайта к коду. Колонки через TAB. Проверяет scripts/docs-check.sh на каждом push (job docs в ci.yml).
+# Колонки: вид, glob, regex в коде, regex на сайте ru, regex на сайте en.
 # must: если код (glob, regex) содержит функцию, сайт обязан её упоминать (regex без учёта регистра)
 # never: если сайт утверждает (regex), код (glob) не должен содержать запрещённое (regex)
 # Новая заметная функция или новое обещание на сайте = новая строка здесь.
-must	Sources/Evenly/*.swift	Toggle\("Level Volume"	Выравнивать громкость
-must	Sources/Evenly/*.swift	SMAppService	автозапуск
-must	windows/tray/src/main.rs	ask_login_body	автозапуск
-never	Sources/Evenly/*.swift	URLSession|NWConnection|NWListener|CFSocket|Network\.framework|import Network	нет сетевого кода
-never	Sources/Evenly/*.swift	AVAudioFile|AVAssetWriter|FileHandle\(forWritingAtPath	не записывается в файл
+must	Sources/Evenly/*.swift	Toggle\("Level Volume"	Выравнивать громкость	Level Volume
+must	Sources/Evenly/*.swift	SMAppService	автозапуск	launch at login
+must	windows/tray/src/main.rs	ask_login_body	автозапуск	launch at login
+never	Sources/Evenly/*.swift	URLSession|NWConnection|NWListener|CFSocket|Network\.framework|import Network	нет сетевого кода	no network code
+never	Sources/Evenly/*.swift	AVAudioFile|AVAssetWriter|FileHandle\(forWritingAtPath	не записывается в файл	not recorded to a file

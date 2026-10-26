@@ -1,0 +1,225 @@
+{
+ "_comment": "Тексты сайта Evenly (ru/en). Правьте здесь и в i18n/strings.json, затем python3 -I scripts/i18n-gen.py: он пишет site/index.html (ru) и site/en/index.html (en) из site/index.tpl.html. {{str:id}} в тексте = строка программы из i18n/strings.json на языке страницы (названия пунктов меню и кнопок не повторяем руками).",
+ "site": [
+  {
+   "id": "meta_desc",
+   "en": "Evenly levels the volume of all sound on your computer: quiet parts are audible, loud parts don't hurt your ears.",
+   "ru": "Evenly выравнивает громкость всего звука на компьютере: тихое слышно, громкое не бьёт по ушам."
+  },
+  {
+   "id": "nav_label",
+   "en": "Sections",
+   "ru": "Разделы"
+  },
+  {
+   "id": "how_h",
+   "en": "How it works",
+   "ru": "Как это работает"
+  },
+  {
+   "id": "nav_faq",
+   "en": "FAQ",
+   "ru": "Вопросы"
+  },
+  {
+   "id": "nav_src",
+   "en": "Source code",
+   "ru": "Исходный код"
+  },
+  {
+   "id": "logo_alt",
+   "en": "Evenly logo",
+   "ru": "Логотип Evenly"
+  },
+  {
+   "id": "h1_a",
+   "en": "Stop reaching",
+   "ru": "Больше не тянуться"
+  },
+  {
+   "id": "h1_b",
+   "en": "for the volume button",
+   "ru": "к кнопке громкости"
+  },
+  {
+   "id": "lead",
+   "en": "Evenly levels the sound on your whole computer: quiet parts are audible, loud parts don't hurt your ears. It lives in the menu bar or the tray.",
+   "ru": "Evenly выравнивает звук на всём компьютере: тихое слышно, громкое не бьёт по ушам. Живёт в строке меню или в трее."
+  },
+  {
+   "id": "dl_mac",
+   "en": "Download for macOS",
+   "ru": "Скачать для macOS"
+  },
+  {
+   "id": "dl_win",
+   "en": "Download for Windows",
+   "ru": "Скачать для Windows"
+  },
+  {
+   "id": "dl_linux",
+   "en": "Download for Linux",
+   "ru": "Скачать для Linux "
+  },
+  {
+   "id": "experimental",
+   "en": "experimental",
+   "ru": "экспериментально"
+  },
+  {
+   "id": "fine",
+   "en": "macOS (.dmg, Apple silicon, macOS 14.2 or later) · Windows (.exe installer; the app is not signed, SmartScreen will ask you to confirm) · Linux (.tar.gz, PulseAudio or PipeWire)",
+   "ru": "macOS (.dmg, Apple silicon, macOS 14.2 и новее) · Windows (установщик .exe; приложение не подписано, SmartScreen спросит подтверждение) · Linux (.tar.gz, PulseAudio или PipeWire)"
+  },
+  {
+   "id": "wave_alt",
+   "en": "Volume bars: uneven on the left, all the same height on the right",
+   "ru": "Столбики громкости: слева разной высоты, справа одной высоты"
+  },
+  {
+   "id": "wave_cap",
+   "en": "Before: a whisper, then a blast. After: even.",
+   "ru": "Было: то шёпот, то взрыв. Стало: ровно."
+  },
+  {
+   "id": "scenes_h",
+   "en": "Where it helps",
+   "ru": "Где это нужно"
+  },
+  {
+   "id": "s1_h",
+   "en": "A late-night movie",
+   "ru": "Фильм поздно вечером"
+  },
+  {
+   "id": "s1_p",
+   "en": "Dialogue gets lost, then the chase scene throws you out of your seat. With Evenly you hear every line and the explosions don't wake the neighbours.",
+   "ru": "Диалоги тонут, а потом погоня выбивает из кресла. С Evenly реплики слышно, а взрывы не будят соседей."
+  },
+  {
+   "id": "s1_alt",
+   "en": "Movie volume",
+   "ru": "Громкость фильма"
+  },
+  {
+   "id": "without",
+   "en": "Without Evenly",
+   "ru": "Без Evenly"
+  },
+  {
+   "id": "with",
+   "en": "With Evenly",
+   "ru": "С Evenly"
+  },
+  {
+   "id": "s2_h",
+   "en": "An ad louder than the video",
+   "ru": "Реклама громче ролика"
+  },
+  {
+   "id": "s2_p",
+   "en": "You're watching at a comfortable volume and suddenly the ad is twice as loud. Evenly lifts the video and holds the ad back.",
+   "ru": "Вы смотрите на комфортной громкости, и вдруг реклама кричит вдвое громче. Evenly подтягивает ролик и сдерживает рекламу."
+  },
+  {
+   "id": "s2_alt",
+   "en": "Volume of a video and an ad",
+   "ru": "Громкость ролика и рекламы"
+  },
+  {
+   "id": "s3_h",
+   "en": "A call with a quiet colleague",
+   "ru": "Созвон с тихим коллегой"
+  },
+  {
+   "id": "s3_p",
+   "en": "One person is barely audible, another in a headset is shouting. Evenly brings them closer and you stop asking people to repeat themselves.",
+   "ru": "Один говорит еле слышно, другой в гарнитуре кричит. Evenly сближает их, и вы перестаёте переспрашивать."
+  },
+  {
+   "id": "s3_alt",
+   "en": "Volume of voices on a call",
+   "ru": "Громкость голосов в созвоне"
+  },
+  {
+   "id": "s4_h",
+   "en": "A playlist from different decades",
+   "ru": "Плейлист из разных лет"
+  },
+  {
+   "id": "s4_p",
+   "en": "A 1975 recording is quiet, a fresh track blasts. With Evenly the whole evening plays at one volume.",
+   "ru": "Запись 1975 года тихая, свежий трек оглушает. С Evenly весь вечер звучит на одной громкости."
+  },
+  {
+   "id": "s4_alt",
+   "en": "Volume of playlist tracks",
+   "ru": "Громкость треков плейлиста"
+  },
+  {
+   "id": "how1_h",
+   "en": "A menu bar icon",
+   "ru": "Значок в строке меню"
+  },
+  {
+   "id": "how1_p",
+   "en": "While the app is open, your sound is leveled. “{{str:toggle}}” pauses leveling without quitting the app. Quit it and everything is back as it was.",
+   "ru": "Приложение открыто — звук выровнен. Пункт «{{str:toggle}}» ставит выравнивание на паузу, не закрывая приложение. Закрыли — всё как было."
+  },
+  {
+   "id": "how2_h",
+   "en": "Starts at login",
+   "ru": "Запускается при входе"
+  },
+  {
+   "id": "how2_p",
+   "en": "The first time you run Evenly it offers to launch at login, and there is nothing left to set up.",
+   "ru": "При первом запуске Evenly предложит включить автозапуск, дальше настраивать нечего."
+  },
+  {
+   "id": "how3_h",
+   "en": "For all sound",
+   "ru": "Для всего звука"
+  },
+  {
+   "id": "how3_p",
+   "en": "Browser, players, games, calls: any app.",
+   "ru": "Браузер, плееры, игры, созвоны: любое приложение."
+  },
+  {
+   "id": "measure",
+   "en": "In our measurement on live music, the gap between the quietest and loudest parts shrank by half.",
+   "ru": "В нашем замере на живой музыке разница между самыми тихими и самыми громкими местами сократилась вдвое."
+  },
+  {
+   "id": "faq_h",
+   "en": "Questions and answers",
+   "ru": "Вопросы и ответы"
+  },
+  {
+   "id": "faq1_q",
+   "en": "Why did a coloured dot appear in the menu bar?",
+   "ru": "Почему в строке меню появилась цветная точка?"
+  },
+  {
+   "id": "faq1_a",
+   "en": "That is how macOS shows that an app is receiving your Mac's audio. For Evenly this is part of the job: it listens to what is playing on your computer, levels the volume on the fly and immediately passes the sound back to your speakers or headphones. The audio is not recorded to a file, not stored and not sent over the internet: the app has no network code. While Evenly is running the dot stays. Quit Evenly from its menu and it disappears.",
+   "ru": "Так macOS показывает, что приложение получает звук вашего Mac. Для Evenly это часть работы: он слушает то, что играет на компьютере, выравнивает громкость на лету и сразу отдаёт звук обратно в колонки или наушники. Звук не записывается в файл, не сохраняется и не отправляется в интернет: в приложении нет сетевого кода. Пока Evenly запущен, точка будет на месте. Закройте Evenly через меню, и она исчезнет."
+  },
+  {
+   "id": "foot1",
+   "en": "Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.",
+   "ru": "Evenly 0.2. macOS (Apple silicon, 14.2 и новее), Windows 10/11, Linux. Открытый исходный код."
+  },
+  {
+   "id": "foot2",
+   "en": "The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.",
+   "ru": "Схемы на странице иллюстративные. Видео с защитой DRM пока не проверяли."
+  },
+  {
+   "id": "site_word",
+   "en": "Site",
+   "ru": "Сайт"
+  }
+ ]
+}

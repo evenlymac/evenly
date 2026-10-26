@@ -1,5 +1,5 @@
 #!/bin/sh
-# Повышает версию сайта: site/VERSION, номер в подвале site/index.html, запись в site/CHANGELOG.md.
+# Повышает версию сайта: site/VERSION, номер в подвале обеих страниц (генератор scripts/i18n-gen.py), запись в site/CHANGELOG.md.
 # usage: scripts/site-release.sh patch|minor|major "что изменилось"
 set -eu
 cd "$(dirname "$0")/.."
@@ -16,7 +16,7 @@ case "$1" in
 esac
 new="$a.$b.$c"
 echo "$new" > site/VERSION
-sed -i.bak "s|<span class=\"sv\">[^<]*</span>|<span class=\"sv\">Сайт v$new</span>|" site/index.html && rm -f site/index.html.bak
+python3 -I scripts/i18n-gen.py >/dev/null   # подставляет версию в обе страницы из site/VERSION
 tmp=$(mktemp)
 { sed -n 1,4p site/CHANGELOG.md; printf '\n## %s — %s\n- %s\n' "$new" "$(date +%F)" "$2"; sed -n '5,$p' site/CHANGELOG.md; } > "$tmp"
 mv "$tmp" site/CHANGELOG.md
