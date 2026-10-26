@@ -1,4 +1,4 @@
-//! Evenly APO: этап 3. Прогоняет звук через ядро Evenly (crate evenly-dsp) и пишет журнал
+//! Evenly APO, этап 2: пустышка. Пропускает звук без изменений и пишет журнал
 //! `C:\ProgramData\Evenly\apo.log` (формат, число вызовов, пик), чтобы убедиться,
 //! что `audiodg.exe` загрузил DLL без подписи и звук идёт через неё.
 #![allow(non_snake_case, clippy::missing_safety_doc)]
@@ -9,9 +9,10 @@ use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
 use std::sync::Mutex;
 
 use evenly_dsp::Normalizer;
-use windows::core::{implement, Error, Ref, Result, BOOL, GUID, HRESULT, IUnknown, Interface};
+
+use windows::core::{implement, Error, Ref, Result, BOOL, GUID, HRESULT, IUnknown, IUnknown_Vtbl, Interface};
 use windows::Win32::Foundation::{
-    CLASS_E_CLASSNOTAVAILABLE, CLASS_E_NOAGGREGATION, E_INVALIDARG, E_NOTIMPL, E_POINTER, HINSTANCE,
+    CLASS_E_CLASSNOTAVAILABLE, CLASS_E_NOAGGREGATION, E_INVALIDARG, E_NOINTERFACE, E_NOTIMPL, E_POINTER, HINSTANCE,
     S_FALSE, S_OK,
 };
 use windows::Win32::Media::Audio::Apo::*;
@@ -59,7 +60,7 @@ struct EvenlyApo {
     rate: AtomicU32,
     calls: AtomicU64,
     peak_bits: AtomicU32,
-    /// Нормализатор создащтся в LockForProcess и живёт до UnlockForProcess; try_lock в потоке реального времени.
+    /// Нормализатор создаётся в LockForProcess и живёт до UnlockForProcess; try_lock в потоке реального времени.
     norm: Mutex<Option<Normalizer>>,
 }
 
@@ -254,71 +255,272 @@ impl IAudioSystemEffects_Impl for EvenlyApo_Impl {}
 #[implement(IClassFactory)]
 struct Factory;
 
-/// audiodg.exe создаёт APO агрегированно (внешний IUnknown не null, riid = IID_IUnknown):
-/// возвращаем внутренний «неделегирующий» IUnknown, который отдаёт интерфейсы объекта.
+/// audiodg.exe создаёт APO агрегированно (внешний IUnknown не null, riid = IID_IUnknown).
+/// Классическая агрегация COM (как ATL CComAggObject): внутренний «неделегирующий» IUnknown со своим счётчиком;
+/// все интерфейсы объекта делегируют QueryInterface/AddRef/Release внешнему IUnknown (если он есть).
+/// Логика остаётся в `EvenlyApo` (windows-rs), а здесь ручные таблицы методов, которые пересылают вызовы ему.
 #[repr(C)]
-struct AggVtbl {
-    query_interface: unsafe extern "system" fn(*mut c_void, *const GUID, *mut *mut c_void) -> HRESULT,
-    add_ref: unsafe extern "system" fn(*mut c_void) -> u32,
-    release: unsafe extern "system" fn(*mut c_void) -> u32,
-}
-
-#[repr(C)]
-struct Aggregate {
-    vtbl: *const AggVtbl,
+struct Agg {
+    unk: *const IUnknown_Vtbl,
+    apo: *const IAudioProcessingObject_Vtbl,
+    rt: *const IAudioProcessingObjectRT_Vtbl,
+    cfg: *const IAudioProcessingObjectConfiguration_Vtbl,
+    fx: *const IAudioSystemEffects_Vtbl,
     refs: AtomicU32,
-    obj: IUnknown,
+    outer: *mut c_void,
+    o_apo: IAudioProcessingObject,
+    o_rt: IAudioProcessingObjectRT,
+    o_cfg: IAudioProcessingObjectConfiguration,
+    _keep: IUnknown,
 }
 
-unsafe extern "system" fn agg_qi(this: *mut c_void, riid: *const GUID, ppv: *mut *mut c_void) -> HRESULT {
+const PTR: usize = std::mem::size_of::<usize>();
+const OFF_UNK: usize = 0;
+const OFF_APO: usize = PTR;
+const OFF_RT: usize = 2 * PTR;
+const OFF_CFG: usize = 3 * PTR;
+const OFF_FX: usize = 4 * PTR;
+
+unsafe fn agg_of<'a>(this: *mut c_void, off: usize) -> &'a Agg {
+    &*((this as *mut u8).sub(off) as *const Agg)
+}
+
+unsafe fn sub_ptr(a: &Agg, off: usize) -> *mut c_void {
+    (a as *const Agg as *mut u8).add(off) as *mut c_void
+}
+
+unsafe fn outer_vtbl(outer: *mut c_void) -> &'static IUnknown_Vtbl {
+    &**(outer as *mut *const IUnknown_Vtbl)
+}
+
+// --- неделегирующий (внутренний) IUnknown ---
+unsafe extern "system" fn inner_qi(this: *mut c_void, riid: *const GUID, ppv: *mut *mut c_void) -> HRESULT {
     if riid.is_null() || ppv.is_null() {
         return E_POINTER;
     }
-    let agg = &*(this as *const Aggregate);
-    if *riid == IUnknown::IID {
-        agg.refs.fetch_add(1, Ordering::AcqRel);
-        *ppv = this;
-        log("agg QI IUnknown");
-        return S_OK;
+    let a = agg_of(this, OFF_UNK);
+    let r = *riid;
+    let (p, name) = if r == IUnknown::IID {
+        (sub_ptr(a, OFF_UNK), "IUnknown")
+    } else if r == IAudioProcessingObject::IID {
+        (sub_ptr(a, OFF_APO), "APO")
+    } else if r == IAudioProcessingObjectRT::IID {
+        (sub_ptr(a, OFF_RT), "APORT")
+    } else if r == IAudioProcessingObjectConfiguration::IID {
+        (sub_ptr(a, OFF_CFG), "APOConfig")
+    } else if r == IAudioSystemEffects::IID {
+        (sub_ptr(a, OFF_FX), "SystemEffects")
+    } else {
+        *ppv = std::ptr::null_mut();
+        log(&format!("inner QI {r:?} -> E_NOINTERFACE"));
+        return E_NOINTERFACE;
+    };
+    // как ATL: AddRef берём через возвращаемый указатель (интерфейсы делегируют внешнему IUnknown)
+    if name == "IUnknown" {
+        inner_add_ref(p);
+    } else {
+        iface_add_ref(p, a);
     }
-    let hr = agg.obj.query(riid, ppv);
-    log(&format!("agg QI {:?} -> {:?}", *riid, hr));
-    hr
+    *ppv = p;
+    log(&format!("inner QI {name}"));
+    S_OK
 }
 
-unsafe extern "system" fn agg_add_ref(this: *mut c_void) -> u32 {
-    log("agg AddRef");
-    (*(this as *const Aggregate)).refs.fetch_add(1, Ordering::AcqRel) + 1
+unsafe extern "system" fn inner_add_ref(this: *mut c_void) -> u32 {
+    let n = agg_of(this, OFF_UNK).refs.fetch_add(1, Ordering::AcqRel) + 1;
+    log(&format!("inner AddRef -> {n}"));
+    n
 }
 
-unsafe extern "system" fn agg_release(this: *mut c_void) -> u32 {
-    log("agg Release");
-    let n = (*(this as *const Aggregate)).refs.fetch_sub(1, Ordering::AcqRel) - 1;
+unsafe extern "system" fn inner_release(this: *mut c_void) -> u32 {
+    let a = agg_of(this, OFF_UNK);
+    let n = a.refs.fetch_sub(1, Ordering::AcqRel) - 1;
+    log(&format!("inner Release -> {n}"));
     if n == 0 {
-        drop(Box::from_raw(this as *mut Aggregate));
+        log("Agg destroyed");
+        drop(Box::from_raw(a as *const Agg as *mut Agg));
     }
     n
 }
 
-static AGG_VTBL: AggVtbl = AggVtbl { query_interface: agg_qi, add_ref: agg_add_ref, release: agg_release };
+static UNK_VTBL: IUnknown_Vtbl = IUnknown_Vtbl { QueryInterface: inner_qi, AddRef: inner_add_ref, Release: inner_release };
+
+// --- IUnknown интерфейсов объекта: делегируем внешнему, если он есть ---
+unsafe fn iface_qi(this: *mut c_void, off: usize, riid: *const GUID, ppv: *mut *mut c_void) -> HRESULT {
+    let a = agg_of(this, off);
+    if a.outer.is_null() {
+        inner_qi(sub_ptr(a, OFF_UNK), riid, ppv)
+    } else {
+        log("iface QI -> outer");
+        (outer_vtbl(a.outer).QueryInterface)(a.outer, riid, ppv)
+    }
+}
+
+unsafe fn iface_add_ref(this: *mut c_void, a: &Agg) -> u32 {
+    let _ = this;
+    if a.outer.is_null() {
+        inner_add_ref(sub_ptr(a, OFF_UNK))
+    } else {
+        let n = (outer_vtbl(a.outer).AddRef)(a.outer);
+        log(&format!("iface AddRef -> outer {n}"));
+        n
+    }
+}
+
+unsafe fn iface_release(a: &Agg) -> u32 {
+    if a.outer.is_null() {
+        inner_release(sub_ptr(a, OFF_UNK))
+    } else {
+        let n = (outer_vtbl(a.outer).Release)(a.outer);
+        log(&format!("iface Release -> outer {n}"));
+        n
+    }
+}
+
+macro_rules! unknown_thunks {
+    ($qi:ident, $ar:ident, $rl:ident, $off:expr) => {
+        unsafe extern "system" fn $qi(this: *mut c_void, riid: *const GUID, ppv: *mut *mut c_void) -> HRESULT {
+            iface_qi(this, $off, riid, ppv)
+        }
+        unsafe extern "system" fn $ar(this: *mut c_void) -> u32 {
+            iface_add_ref(this, agg_of(this, $off))
+        }
+        unsafe extern "system" fn $rl(this: *mut c_void) -> u32 {
+            iface_release(agg_of(this, $off))
+        }
+    };
+}
+unknown_thunks!(apo_qi, apo_ar, apo_rl, OFF_APO);
+unknown_thunks!(rt_qi, rt_ar, rt_rl, OFF_RT);
+unknown_thunks!(cfg_qi, cfg_ar, cfg_rl, OFF_CFG);
+unknown_thunks!(fx_qi, fx_ar, fx_rl, OFF_FX);
+
+// --- IAudioProcessingObject: пересылка в объект windows-rs ---
+unsafe fn o_apo(this: *mut c_void) -> (*mut c_void, &'static IAudioProcessingObject_Vtbl) {
+    let a = agg_of(this, OFF_APO);
+    (a.o_apo.as_raw(), Interface::vtable(&a.o_apo))
+}
+unsafe extern "system" fn apo_reset(this: *mut c_void) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.Reset)(o)
+}
+unsafe extern "system" fn apo_get_latency(this: *mut c_void, p: *mut i64) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.GetLatency)(o, p)
+}
+unsafe extern "system" fn apo_get_reg(this: *mut c_void, p: *mut *mut APO_REG_PROPERTIES) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.GetRegistrationProperties)(o, p)
+}
+unsafe extern "system" fn apo_init(this: *mut c_void, n: u32, d: *const u8) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.Initialize)(o, n, d)
+}
+unsafe extern "system" fn apo_in_fmt(this: *mut c_void, a: *mut c_void, b: *mut c_void, c: *mut *mut c_void) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.IsInputFormatSupported)(o, a, b, c)
+}
+unsafe extern "system" fn apo_out_fmt(this: *mut c_void, a: *mut c_void, b: *mut c_void, c: *mut *mut c_void) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.IsOutputFormatSupported)(o, a, b, c)
+}
+unsafe extern "system" fn apo_in_ch(this: *mut c_void, p: *mut u32) -> HRESULT {
+    let (o, v) = o_apo(this);
+    (v.GetInputChannelCount)(o, p)
+}
+
+// --- IAudioProcessingObjectRT ---
+unsafe fn o_rt(this: *mut c_void) -> (*mut c_void, &'static IAudioProcessingObjectRT_Vtbl) {
+    let a = agg_of(this, OFF_RT);
+    (a.o_rt.as_raw(), Interface::vtable(&a.o_rt))
+}
+unsafe extern "system" fn rt_process(this: *mut c_void, ni: u32, i: *const *const APO_CONNECTION_PROPERTY, no: u32, o: *mut *mut APO_CONNECTION_PROPERTY) {
+    let (p, v) = o_rt(this);
+    (v.APOProcess)(p, ni, i, no, o)
+}
+unsafe extern "system" fn rt_calc_in(this: *mut c_void, n: u32) -> u32 {
+    let (p, v) = o_rt(this);
+    (v.CalcInputFrames)(p, n)
+}
+unsafe extern "system" fn rt_calc_out(this: *mut c_void, n: u32) -> u32 {
+    let (p, v) = o_rt(this);
+    (v.CalcOutputFrames)(p, n)
+}
+
+// --- IAudioProcessingObjectConfiguration ---
+unsafe fn o_cfg(this: *mut c_void) -> (*mut c_void, &'static IAudioProcessingObjectConfiguration_Vtbl) {
+    let a = agg_of(this, OFF_CFG);
+    (a.o_cfg.as_raw(), Interface::vtable(&a.o_cfg))
+}
+unsafe extern "system" fn cfg_lock(this: *mut c_void, ni: u32, i: *const *const APO_CONNECTION_DESCRIPTOR, no: u32, o: *const *const APO_CONNECTION_DESCRIPTOR) -> HRESULT {
+    let (p, v) = o_cfg(this);
+    (v.LockForProcess)(p, ni, i, no, o)
+}
+unsafe extern "system" fn cfg_unlock(this: *mut c_void) -> HRESULT {
+    let (p, v) = o_cfg(this);
+    (v.UnlockForProcess)(p)
+}
+
+static APO_VTBL: IAudioProcessingObject_Vtbl = IAudioProcessingObject_Vtbl {
+    base__: IUnknown_Vtbl { QueryInterface: apo_qi, AddRef: apo_ar, Release: apo_rl },
+    Reset: apo_reset,
+    GetLatency: apo_get_latency,
+    GetRegistrationProperties: apo_get_reg,
+    Initialize: apo_init,
+    IsInputFormatSupported: apo_in_fmt,
+    IsOutputFormatSupported: apo_out_fmt,
+    GetInputChannelCount: apo_in_ch,
+};
+static RT_VTBL: IAudioProcessingObjectRT_Vtbl = IAudioProcessingObjectRT_Vtbl {
+    base__: IUnknown_Vtbl { QueryInterface: rt_qi, AddRef: rt_ar, Release: rt_rl },
+    APOProcess: rt_process,
+    CalcInputFrames: rt_calc_in,
+    CalcOutputFrames: rt_calc_out,
+};
+static CFG_VTBL: IAudioProcessingObjectConfiguration_Vtbl = IAudioProcessingObjectConfiguration_Vtbl {
+    base__: IUnknown_Vtbl { QueryInterface: cfg_qi, AddRef: cfg_ar, Release: cfg_rl },
+    LockForProcess: cfg_lock,
+    UnlockForProcess: cfg_unlock,
+};
+static FX_VTBL: IAudioSystemEffects_Vtbl = IAudioSystemEffects_Vtbl { base__: IUnknown_Vtbl { QueryInterface: fx_qi, AddRef: fx_ar, Release: fx_rl } };
+
+unsafe fn new_agg(outer: *mut c_void) -> Result<*mut Agg> {
+    let unk: IUnknown = EvenlyApo::new().into();
+    let o_apo: IAudioProcessingObject = unk.cast()?;
+    let o_rt: IAudioProcessingObjectRT = unk.cast()?;
+    let o_cfg: IAudioProcessingObjectConfiguration = unk.cast()?;
+    Ok(Box::into_raw(Box::new(Agg {
+        unk: &UNK_VTBL,
+        apo: &APO_VTBL,
+        rt: &RT_VTBL,
+        cfg: &CFG_VTBL,
+        fx: &FX_VTBL,
+        refs: AtomicU32::new(1),
+        outer,
+        o_apo,
+        o_rt,
+        o_cfg,
+        _keep: unk,
+    })))
+}
 
 impl IClassFactory_Impl for Factory_Impl {
     fn CreateInstance(&self, outer: Ref<'_, IUnknown>, riid: *const GUID, ppv: *mut *mut c_void) -> Result<()> {
-        let has_outer = outer.as_ref().is_some();
-        log(&format!("CreateInstance enter has_outer={has_outer} riid={:?}", unsafe { *riid }));
-        let unk: IUnknown = EvenlyApo::new().into();
-        if has_outer {
-            if unsafe { *riid } != IUnknown::IID {
-                return Err(Error::from(CLASS_E_NOAGGREGATION));
-            }
-            let agg = Box::new(Aggregate { vtbl: &AGG_VTBL, refs: AtomicU32::new(1), obj: unk });
-            unsafe { *ppv = Box::into_raw(agg) as *mut c_void };
-            log("CreateInstance -> aggregated");
-            return Ok(());
+        let outer_raw = outer.as_ref().map(|o| o.as_raw()).unwrap_or(std::ptr::null_mut());
+        let r = unsafe { *riid };
+        log(&format!("CreateInstance enter outer={:?} riid={r:?}", outer_raw));
+        if !outer_raw.is_null() && r != IUnknown::IID {
+            return Err(Error::from(CLASS_E_NOAGGREGATION));
         }
-        let hr = unsafe { unk.query(riid, ppv) };
-        log(&format!("CreateInstance -> {:?}", hr));
-        hr.ok()
+        unsafe {
+            let a = new_agg(outer_raw)?;
+            // результат: внутренний IUnknown (при агрегации) либо запрошенный интерфейс; счётчик 1 остаётся у вызывающего
+            let hr = inner_qi(sub_ptr(&*a, OFF_UNK), riid, ppv);
+            // убираем стартовую ссылку: у вызывающего осталась ссылка из QI
+            inner_release(sub_ptr(&*a, OFF_UNK));
+            log(&format!("CreateInstance -> {hr:?}"));
+            hr.ok()
+        }
     }
 
     fn LockServer(&self, _lock: BOOL) -> Result<()> {
