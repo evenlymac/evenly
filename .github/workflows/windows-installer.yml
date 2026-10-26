@@ -42,9 +42,13 @@ jobs:
           echo "exit=$?" | tee -a logs/test.txt
           sleep 3; ls "$APP" 2>&1 | tee -a logs/test.txt
           echo "== silent install WITH effect" | tee -a logs/test.txt
-          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="$(cygpath -w "$PWD/logs/install2.log")"
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="C:\\inst2.log"
           echo "exit=$?" | tee -a logs/test.txt
           powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action status 2>&1 | head -8 | tee -a logs/test.txt
+          cp /c/inst2.log logs/install2.log 2>&1; grep -i -n "run\|powershell\|exit\|task" logs/install2.log | head -30 | tee -a logs/test.txt
+          echo "== manual ps1 install for diagnosis" | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action install -Dll "$(cygpath -w "$APP/evenly_apo.dll")" 2>&1 | tail -8 | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action uninstall 2>&1 | tail -4 | tee -a logs/test.txt
           echo "== upgrade over installed effect (update path)" | tee -a logs/test.txt
           "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="$(cygpath -w "$PWD/logs/install3.log")"
           echo "exit=$?" | tee -a logs/test.txt
