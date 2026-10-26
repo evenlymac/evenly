@@ -240,10 +240,22 @@ jobs:
           path: logs
           retention-days: 14
           if-no-files-found: ignore
+  docs:
+    # сайт не расходится с программой: ссылки и версии, функции и обещания (site/facts.tsv), правило «Site:» в коммите
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: сайт соответствует коду
+        run: scripts/docs-check.sh
+      - name: изменено поведение, значит сайт сверен
+        if: github.event_name == 'push'
+        run: scripts/docs-sync.sh "${{ github.event.before }}" "${{ github.sha }}"
   gate:
     # Итог регрессии: красный, если упал любой запущенный job (пропущенные не в счёт). По нему блокируется релиз.
     if: always()
-    needs: [changes, core, macos, linux, windows, installer]
+    needs: [changes, core, macos, linux, windows, installer, docs]
     runs-on: ubuntu-latest
     steps:
       - run: |
