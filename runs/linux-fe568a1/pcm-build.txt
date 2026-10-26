@@ -1,0 +1,3 @@
+   Compiling evenly-dsp v0.2.3 (/home/runner/work/evenly/evenly/core)
+   Compiling evenly-pcm v0.2.4 (/home/runner/work/evenly/evenly/linux/pcm)
+    Finished `release` profile [optimized] target(s) in 2.49s
