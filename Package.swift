@@ -9,5 +9,6 @@ let package = Package(
         .target(name: "EvenlyDSP"),
         .executableTarget(name: "Evenly", dependencies: ["EvenlyDSP"]),
         .testTarget(name: "EvenlyDSPTests", dependencies: ["EvenlyDSP"]),
+        .testTarget(name: "EvenlyL10nTests"),
     ]
 )
