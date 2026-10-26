@@ -202,6 +202,7 @@ impl IAudioProcessingObjectRT_Impl for EvenlyApo_Impl {
                 if pk > f32::from_bits(self.peak_bits.load(Ordering::Relaxed)) {
                     self.peak_bits.store(pk.to_bits(), Ordering::Relaxed);
                 }
+                evenly_dsp::clip_output(dst);
             }
             out.u32ValidFrameCount = inp.u32ValidFrameCount;
             out.u32BufferFlags = flags;

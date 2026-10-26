@@ -141,6 +141,14 @@ struct Params {
     target_push: f32,
 }
 
+/// Страховочный жёсткий срез выхода в [-1, 1] (как `min(max(x, -1), 1)` в `AudioEngine.swift`).
+/// Не входит в `Normalizer`: golden-векторы сняты с DSP без среза; вызывается платформенной обёрткой.
+pub fn clip_output(buf: &mut [f32]) {
+    for v in buf.iter_mut() {
+        *v = v.max(-1.0).min(1.0);
+    }
+}
+
 /// Обёртка как `Normalizer` в Swift: ОДНО состояние на все каналы, блок обрабатывается как поток
 /// interleaved-сэмплов (поэтому скорости растут пропорционально числу каналов; поведение macOS-версии).
 pub struct Normalizer {

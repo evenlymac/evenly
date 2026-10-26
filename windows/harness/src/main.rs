@@ -174,6 +174,7 @@ unsafe fn process_test(cfg: &IAudioProcessingObjectConfiguration, rt: &IAudioPro
             expect[i] = v;
         }
         reference.process_interleaved(&mut expect);
+        evenly_dsp::clip_output(&mut expect);
         inp.u32BufferFlags = if silent { BUFFER_SILENT } else { BUFFER_VALID };
         out.u32BufferFlags = BUFFER_INVALID;
         let pi = [&inp as *const APO_CONNECTION_PROPERTY];
