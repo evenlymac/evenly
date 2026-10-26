@@ -23,14 +23,14 @@ p{margin:0;max-width:62ch}
 a{color:inherit}
 .hero{background:var(--navy);color:var(--paper);padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
 .hero-in{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center}
-.nav{width:100%;display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.nav{width:100%;display:flex;flex-wrap:wrap;gap:0 16px;align-items:center;justify-content:space-between;padding:20px 0}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--paper);text-decoration:none}
 .logo{display:block;background:var(--logo) center/contain no-repeat}
 .logo-s{width:32px;height:32px}
 .logo-big{position:relative;width:clamp(128px,24vw,192px);aspect-ratio:1;margin-top:28px}
 .logo-big::after{content:"";position:absolute;inset:9.8%;border-radius:18.1%;border:1.5px solid rgba(241,242,247,.34);box-shadow:0 8px 28px rgba(0,0,0,.35)}
-.nav-links{display:flex;gap:24px;font-size:.9375rem}
-.nav-links a{color:#c4c8dc;text-decoration:none;padding:8px 0}
+.nav-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 24px;font-size:.9375rem}
+.nav-links a{white-space:nowrap;color:#c4c8dc;text-decoration:none;padding:8px 0}
 .nav-links a:hover{color:var(--paper)}
 a:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
 .pill{margin-top:56px;font-size:.8125rem;font-weight:500;color:#c9f1e1;background:rgba(106,209,168,.14);border-radius:99px;padding:7px 16px}
@@ -67,7 +67,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 .qa{display:flex;flex-direction:column;gap:6px}
 .qa p{font-size:.9375rem}
 .foot{border-top:1px solid var(--line);padding-top:18px;font-size:.8125rem;display:flex;flex-direction:column;gap:4px}
-@media (max-width:600px){.scene{grid-template-columns:1fr;gap:14px}.how{grid-template-columns:1fr}.nav-links{gap:16px}.pill{margin-top:36px}.wave{margin-top:36px}}
+@media (max-width:600px){.scene{grid-template-columns:1fr;gap:14px}.how{grid-template-columns:1fr}.nav-links{column-gap:16px}.pill{margin-top:36px}.wave{margin-top:36px}}
 </style>
 </head>
 <body>
@@ -100,7 +100,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 <div class="qa"><h3>Why did a coloured dot appear in the menu bar?</h3>
 <p>That is how macOS shows that an app is receiving your Mac's audio. For Evenly this is part of the job: it listens to what is playing on your computer, levels the volume on the fly and immediately passes the sound back to your speakers or headphones. The audio is not recorded to a file, not stored and not sent over the internet: the app has no network code. While Evenly is running the dot stays. Quit Evenly from its menu and it disappears.</p></div></section>
 
-<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.</span><span>The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.</span><span class="sv">Site v1.3.0</span></footer>
+<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.</span><span>The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.</span><span class="sv">Site v1.3.1</span></footer>
 </main>
 </body>
 </html>

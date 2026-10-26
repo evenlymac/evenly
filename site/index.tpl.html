@@ -23,14 +23,14 @@ p{margin:0;max-width:62ch}
 a{color:inherit}
 .hero{background:var(--navy);color:var(--paper);padding:0 max(16px,env(safe-area-inset-right)) 0 max(16px,env(safe-area-inset-left))}
 .hero-in{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center}
-.nav{width:100%;display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+.nav{width:100%;display:flex;flex-wrap:wrap;gap:0 16px;align-items:center;justify-content:space-between;padding:20px 0}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--paper);text-decoration:none}
 .logo{display:block;background:var(--logo) center/contain no-repeat}
 .logo-s{width:32px;height:32px}
 .logo-big{position:relative;width:clamp(128px,24vw,192px);aspect-ratio:1;margin-top:28px}
 .logo-big::after{content:"";position:absolute;inset:9.8%;border-radius:18.1%;border:1.5px solid rgba(241,242,247,.34);box-shadow:0 8px 28px rgba(0,0,0,.35)}
-.nav-links{display:flex;gap:24px;font-size:.9375rem}
-.nav-links a{color:#c4c8dc;text-decoration:none;padding:8px 0}
+.nav-links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:0 24px;font-size:.9375rem}
+.nav-links a{white-space:nowrap;color:#c4c8dc;text-decoration:none;padding:8px 0}
 .nav-links a:hover{color:var(--paper)}
 a:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:6px}
 .pill{margin-top:56px;font-size:.8125rem;font-weight:500;color:#c9f1e1;background:rgba(106,209,168,.14);border-radius:99px;padding:7px 16px}
@@ -67,7 +67,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 .qa{display:flex;flex-direction:column;gap:6px}
 .qa p{font-size:.9375rem}
 .foot{border-top:1px solid var(--line);padding-top:18px;font-size:.8125rem;display:flex;flex-direction:column;gap:4px}
-@media (max-width:600px){.scene{grid-template-columns:1fr;gap:14px}.how{grid-template-columns:1fr}.nav-links{gap:16px}.pill{margin-top:36px}.wave{margin-top:36px}}
+@media (max-width:600px){.scene{grid-template-columns:1fr;gap:14px}.how{grid-template-columns:1fr}.nav-links{column-gap:16px}.pill{margin-top:36px}.wave{margin-top:36px}}
 </style>
 </head>
 <body>
