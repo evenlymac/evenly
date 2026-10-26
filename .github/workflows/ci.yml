@@ -20,6 +20,7 @@ jobs:
       linux: ${{ steps.f.outputs.linux }}
       win: ${{ steps.f.outputs.win }}
       installer: ${{ steps.f.outputs.installer }}
+      site: ${{ steps.f.outputs.site }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -33,14 +34,15 @@ jobs:
           fi
           echo "изменено: $files"
           has() { [ "$files" = "ALL" ] || echo "$files" | grep -Eq "$1"; }
-          mac=false; core=false; linux=false; win=false; installer=false
+          mac=false; core=false; linux=false; win=false; installer=false; site=false
           has '^(i18n/|scripts/i18n-gen\.py|Sources/|Tests/|Resources/|Package\.swift|scripts/(build-app|package)\.sh|\.github/workflows/ci\.yml)' && mac=true
           has '^(core/|Sources/EvenlyDSP/|\.github/workflows/ci\.yml)' && core=true
           has '^(i18n/|scripts/i18n-gen\.py|linux/|core/|\.github/workflows/ci\.yml)' && linux=true
           has '^(i18n/|scripts/i18n-gen\.py|windows/|core/|\.github/workflows/ci\.yml)' && win=true
           has '^(windows/|\.github/workflows/ci\.yml)' && installer=true
-          echo "mac=$mac core=$core linux=$linux win=$win installer=$installer"
-          { echo "mac=$mac"; echo "core=$core"; echo "linux=$linux"; echo "win=$win"; echo "installer=$installer"; } >> "$GITHUB_OUTPUT"
+          has '^(site/|i18n/|scripts/(i18n-gen\.py|site-visual\.py)|\.github/workflows/ci\.yml)' && site=true
+          echo "mac=$mac core=$core linux=$linux win=$win installer=$installer site=$site"
+          { echo "mac=$mac"; echo "core=$core"; echo "linux=$linux"; echo "win=$win"; echo "installer=$installer"; echo "site=$site"; } >> "$GITHUB_OUTPUT"
   core:
     needs: changes
     if: needs.changes.outputs.core == 'true'
@@ -252,6 +254,28 @@ jobs:
       - name: изменено поведение, значит сайт сверен
         if: github.event_name == 'push'
         run: scripts/docs-sync.sh "${{ github.event.before }}" "${{ github.sha }}"
+  site-visual:
+    # сайт выглядит как эталон: Safari (safaridriver) на macOS-раннере, ru/en x телефон/десктоп x светлая/тёмная тема + автопроверки (scripts/site-visual.py)
+    needs: changes
+    if: needs.changes.outputs.site == 'true'
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: включить safaridriver
+        run: sudo safaridriver --enable
+      - name: зависимости
+        run: python3 -m venv .venv && .venv/bin/pip install -q selenium pillow
+      - name: снимки и проверки
+        run: .venv/bin/python scripts/site-visual.py out
+      - name: снимки как артефакт
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-visual
+          path: out
+          retention-days: 14
+          if-no-files-found: ignore
   consistency:
     # платформы согласованы: версии, переводы en/ru (Windows-трей, установщик, Linux, InfoPlist), общие термины (site/glossary.tsv)
     runs-on: ubuntu-latest
@@ -262,7 +286,7 @@ jobs:
   gate:
     # Итог регрессии: красный, если упал любой запущенный job (пропущенные не в счёт). По нему блокируется релиз.
     if: always()
-    needs: [changes, core, macos, linux, windows, installer, docs, consistency]
+    needs: [changes, core, macos, linux, windows, installer, docs, consistency, site-visual]
     runs-on: ubuntu-latest
     steps:
       - run: |
