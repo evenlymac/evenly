@@ -31,6 +31,12 @@ if [ "$concl" = success ]; then
   exit 0
 fi
 log "КРАСНЫЙ ($concl): $url"
+# красный устарел: на HEAD main уже есть зелёный прогон (починили следующим коммитом): ни блокировки, ни задачи
+head=$($GH api repos/$R/commits/main --jq .sha 2>/dev/null)
+if [ -n "$head" ] && [ "$head" != "$sha" ]; then
+  hc=$($GH run list -R $R --workflow ci.yml --commit "$head" -L 1 --json conclusion --jq '.[0].conclusion // empty' 2>/dev/null)
+  [ "$hc" = success ] && { log "красный устарел: HEAD main ${head:0:7} уже зелёный, задачу не создаю"; exit 0; }
+fi
 echo "{\"sha\":\"$sha\",\"result\":\"red\",\"url\":\"$url\"}" > "$D/status.json"
 echo "$sha $url" > "$D/release.blocked"
 name="evenly-ci-$s7"; f="$T/$name.md"
@@ -71,6 +77,7 @@ fi
 [ -x "$TM" ] || exit 0
 msg="Автозадача: возьми задачу ~/.claude/pending-tasks/$name.md. Если расход лимитов 90% и выше (~/.claude/usage.json), поставь новый разовый запуск через час и остановись. Иначе прочитай задачу, выполни и обнови файл. Закончил: status: review и коротко отчитайся здесь, последней строкой «Улучшено в системе: …». Канал связи не трогай. При блокере: строка «От вас:» в файле, status: waiting."
 for _ in $(seq 1 40); do
+  [ -e "$D/release.blocked" ] || { log "блокировка уже снята (HEAD зелёный): задачу в сессию не ввожу"; exit 0; }
   $TM has-session -t claude 2>/dev/null || { log "нет tmux-сессии claude: задача ждёт в pending-tasks"; exit 0; }
   act=$($TM display-message -p -t claude '#{window_activity}' 2>/dev/null); now=$(date +%s)
   if [ -n "$act" ] && [ $((now - act)) -gt 60 ]; then
