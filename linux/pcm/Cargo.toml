@@ -1,6 +1,6 @@
 [package]
 name = "evenly-pcm"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 description = "Evenly для Linux: фильтр потока f32le (stdin -> stdout) на ядре evenly-dsp; работает в связке parec | evenly-pcm | pacat (PulseAudio и PipeWire)"
 publish = false
