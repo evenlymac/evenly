@@ -17,6 +17,7 @@ jobs:
       - name: build package, compile installer, test install and uninstall
         run: |
           set +e
+          export MSYS2_ARG_CONV_EXCL="*"
           mkdir -p logs
           (cd windows/apo && cargo build --release 2>&1 | tail -3) | tee logs/apo-build.txt
           (cd windows/tray && cargo build --release 2>&1 | tail -3) | tee logs/tray-build.txt
