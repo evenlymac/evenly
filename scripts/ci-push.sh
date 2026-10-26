@@ -1,6 +1,6 @@
 #!/bin/bash
 # Пуш в main и запуск слежения за регрессией (CI на раннерах GitHub). usage: scripts/ci-push.sh
-# Дальше можно заниматься другим: красный результат превратится в задачу evenly-ci-<sha> и блокировку релиза (scripts/ci-watch.sh).
+# Дальше можно заниматься другим: красный результат превратится в блокировку релиза и разбор ~/.claude/evenly-ci/failure-<sha>.md, который сессия claude чинит сама (scripts/ci-watch.sh).
 set -e
 cd "$(dirname "$0")/.."
 [ "$(git branch --show-current)" = main ] || { echo "ci-push: нужна ветка main" >&2; exit 1; }
