@@ -1,14 +1,16 @@
 # Evenly APO: install / uninstall (run as Administrator). ASCII only: PowerShell 5 reads UTF-8 without BOM as ANSI.
 #   evenly-apo.ps1 -Action install   [-Dll path\evenly_apo.dll] [-Slot EFX|MFX|SFX] [-Endpoints guid,guid] [-NoRestart]
+#   evenly-apo.ps1 -Action update    [-Dll path\evenly_apo.dll] [-NoRestart] [-Hard]   (replace the dll of an installed APO; backup untouched)
 #   evenly-apo.ps1 -Action uninstall [-NoRestart]
 # Install backs up everything it touches into C:\ProgramData\Evenly\backup; uninstall restores from there.
 param(
-  [Parameter(Mandatory)][ValidateSet('install','uninstall','status')][string]$Action,
+  [Parameter(Mandatory)][ValidateSet('install','uninstall','update','status')][string]$Action,
   [string]$Dll,
   [ValidateSet('EFX','MFX','SFX')][string]$Slot = 'EFX',
   [string[]]$Endpoints,
   [string[]]$Modes,
-  [switch]$NoRestart
+  [switch]$NoRestart,
+  [switch]$Hard   # update only: restart the whole audiosrv instead of just audiodg
 )
 $ErrorActionPreference = 'Stop'
 if (-not $Dll) { $Dll = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'evenly_apo.dll' }
@@ -65,6 +67,7 @@ function Open-Key([string]$sub) {
   $RK.OpenSubKey($sub, $true)
 }
 
+# install/uninstall change endpoint FX registry values, which audiosrv only re-reads on restart (all players lose the device).
 function Restart-Audio { if (-not $NoRestart) { Restart-Service -Name audiosrv -Force; Start-Sleep 2; (Get-Service audiosrv).Status } }
 
 if ($Action -eq 'status') {
@@ -121,6 +124,28 @@ if ($Action -eq 'install') {
   exit 0
 }
 
+if ($Action -eq 'update') {
+  if (-not (Test-Path $Dll)) { throw "dll not found: $Dll" }
+  if (-not (Test-Path $StateFile)) { throw 'not installed (no state.json): run install' }
+  $target = Join-Path $InstDir 'evenly_apo.dll'
+  # A loaded dll cannot be overwritten but can be renamed: move the old one aside, put the new one, then restart audiodg only
+  # (audiosrv respawns it with the new dll; players such as mpv keep their stream). -Hard restarts the whole service instead.
+  New-Item -ItemType Directory -Force $InstDir | Out-Null
+  Get-ChildItem $InstDir -Filter 'evenly_apo.dll.old*' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
+  if (Test-Path $target) { Move-Item $target ($target + '.old' + (Get-Date -Format HHmmss)) -Force }
+  Copy-Item $Dll $target -Force
+  # regsvr32 is a GUI-subsystem exe: '&' does not wait for it and leaves $LASTEXITCODE unset
+  $rc = (Start-Process regsvr32 -ArgumentList '/s', ('"' + $target + '"') -Wait -PassThru).ExitCode
+  if ($rc -ne 0) { throw "regsvr32 failed: $rc" }
+  if (-not $NoRestart) {
+    if ($Hard) { Restart-Service -Name audiosrv -Force; Start-Sleep 2 }
+    else { Get-Process audiodg -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep 2 }
+  }
+  (Get-Service audiosrv).Status
+  'updated'
+  exit 0
+}
+
 if ($Action -eq 'uninstall') {
   if (-not (Test-Path $StateFile)) { throw 'nothing to uninstall (no state.json)' }
   $state = Get-Content $StateFile -Raw | ConvertFrom-Json
@@ -145,6 +170,6 @@ if ($Action -eq 'uninstall') {
   & regsvr32 /s /u (Join-Path $InstDir 'evenly_apo.dll')
   Remove-Item -Recurse -Force "HKLM:\SOFTWARE\Classes\CLSID\$Clsid", "HKLM:\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects\$Clsid" -ErrorAction SilentlyContinue
   Move-Item $StateFile (Join-Path $BackupDir ("state-uninstalled-" + (Get-Date -Format yyyyMMdd-HHmmss) + ".json")) -Force
-  Remove-Item (Join-Path $InstDir 'evenly_apo.dll') -Force -ErrorAction SilentlyContinue
+  Remove-Item (Join-Path $InstDir 'evenly_apo.dll*') -Force -ErrorAction SilentlyContinue   # incl. evenly_apo.dll.old* left by update
   'uninstalled'
 }

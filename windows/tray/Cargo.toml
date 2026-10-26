@@ -1,6 +1,6 @@
 [package]
 name = "evenly-tray"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 description = "Evenly для Windows: приложение в трее (значок E, автозапуск, одна копия, en/ru, установка APO)."
 publish = false

@@ -25,6 +25,7 @@ const ID_LOGIN: usize = 1;
 const ID_INSTALL: usize = 2;
 const ID_UNINSTALL: usize = 3;
 const ID_QUIT: usize = 4;
+const ID_UPDATE: usize = 5;
 const TIMER_REFRESH: usize = 1;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -46,6 +47,9 @@ struct Text {
     login: &'static str,
     install: &'static str,
     uninstall: &'static str,
+    update: &'static str,
+    upd_title: &'static str,
+    upd_body: &'static str,
     quit: &'static str,
     hint_title: &'static str,
     hint_body: &'static str,
@@ -61,6 +65,9 @@ fn text(l: Lang) -> Text {
             login: "Launch Evenly at Login",
             install: "Turn On System-Wide Effect…",
             uninstall: "Remove System-Wide Effect…",
+            update: "Update System-Wide Effect…",
+            upd_title: "Evenly: update available",
+            upd_body: "A newer system audio effect came with this version of Evenly. Open the Evenly menu in the tray and choose “Update System-Wide Effect…”. Playback keeps going; administrator permission is needed once.",
             quit: "Quit Evenly",
             hint_title: "Evenly isn't processing this device's audio",
             hint_body: "The system audio effect is not installed, so Evenly can't level the volume. Open the Evenly menu in the tray and choose “Turn On System-Wide Effect…” (administrator permission is needed once).",
@@ -73,6 +80,9 @@ fn text(l: Lang) -> Text {
             login: "Запускать Evenly при входе",
             install: "Включить системный эффект…",
             uninstall: "Убрать системный эффект…",
+            update: "Обновить системный эффект…",
+            upd_title: "Evenly: доступно обновление",
+            upd_body: "Вместе с этой версией Evenly пришёл более новый системный звуковой эффект. Откройте меню Evenly в трее и выберите «Обновить системный эффект…». Воспроизведение не прерывается; один раз понадобится разрешение администратора.",
             quit: "Выйти из Evenly",
             hint_title: "Evenly не обрабатывает звук этого устройства",
             hint_body: "Системный звуковой эффект не установлен, поэтому Evenly не может выравнивать громкость. Откройте меню Evenly в трее и выберите «Включить системный эффект…» (один раз понадобится разрешение администратора).",
@@ -126,13 +136,28 @@ fn apo_installed() -> bool {
     std::path::Path::new(STATE_FILE).exists()
 }
 
+/// Где установщик держит копию dll (см. InstDir в evenly-apo.ps1).
+fn installed_dll() -> PathBuf {
+    let pf = std::env::var("ProgramFiles").unwrap_or_else(|_| r"C:\Program Files".to_string());
+    PathBuf::from(pf).join("Evenly").join("apo").join("evenly_apo.dll")
+}
+
+/// dll рядом с треем (из пакета) отличается от установленной: пора обновить.
+fn update_available() -> bool {
+    let src = exe_path().parent().map(|p| p.join("evenly_apo.dll")).unwrap_or_default();
+    match (std::fs::read(&src), std::fs::read(installed_dll())) {
+        (Ok(a), Ok(b)) => a != b,
+        _ => false,
+    }
+}
+
 /// Запускает установщик с правами администратора (UAC один раз).
 fn run_installer(action: &str) {
     let dir = exe_path().parent().map(|p| p.to_path_buf()).unwrap_or_default();
     let script = dir.join("evenly-apo.ps1");
     let dll = dir.join("evenly_apo.dll");
     let mut args = format!("-NoProfile -ExecutionPolicy Bypass -File \"{}\" -Action {}", script.display(), action);
-    if action == "install" {
+    if action == "install" || action == "update" {
         args += &format!(" -Dll \"{}\"", dll.display());
     }
     let verb = wide("runas");
@@ -226,6 +251,7 @@ fn make_icon(on: bool) -> HICON {
 struct App {
     lang: Lang,
     installed: bool,
+    outdated: bool,
     icon_on: HICON,
     icon_off: HICON,
 }
@@ -285,6 +311,18 @@ fn show_hint(hwnd: HWND) {
     }
 }
 
+fn show_update_hint(hwnd: HWND) {
+    let t = text(app().lang);
+    let mut d = nid(hwnd);
+    d.uFlags = NIF_INFO;
+    d.dwInfoFlags = NIIF_INFO;
+    copy_wide(&mut d.szInfoTitle, t.upd_title);
+    copy_wide(&mut d.szInfo, t.upd_body);
+    unsafe {
+        let _ = Shell_NotifyIconW(NIM_MODIFY, &d);
+    }
+}
+
 fn show_menu(hwnd: HWND) {
     let a = app();
     let t = text(a.lang);
@@ -295,6 +333,10 @@ fn show_menu(hwnd: HWND) {
         let _ = AppendMenuW(menu, flags, ID_LOGIN, PCWSTR(login.as_ptr()));
         let sys = wide(if a.installed { t.uninstall } else { t.install });
         let _ = AppendMenuW(menu, MF_STRING, if a.installed { ID_UNINSTALL } else { ID_INSTALL }, PCWSTR(sys.as_ptr()));
+        if a.installed && a.outdated {
+            let upd = wide(t.update);
+            let _ = AppendMenuW(menu, MF_STRING, ID_UPDATE, PCWSTR(upd.as_ptr()));
+        }
         let _ = AppendMenuW(menu, MF_SEPARATOR, 0, PCWSTR::null());
         let quit = wide(t.quit);
         let _ = AppendMenuW(menu, MF_STRING, ID_QUIT, PCWSTR(quit.as_ptr()));
@@ -323,6 +365,7 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
                 }
                 ID_INSTALL => run_installer("install"),
                 ID_UNINSTALL => run_installer("uninstall"),
+                ID_UPDATE => run_installer("update"),
                 ID_QUIT => {
                     let _ = DestroyWindow(hwnd);
                 }
@@ -337,6 +380,13 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
             if now != a.installed {
                 a.installed = now;
                 tray_update(hwnd, false);
+            }
+            let old = now && update_available();
+            if old != a.outdated {
+                a.outdated = old;
+                if old {
+                    show_update_hint(hwnd);
+                }
             }
             LRESULT(0)
         }
@@ -381,6 +431,8 @@ fn selftest() -> i32 {
     check("одна копия: первая проходит", single_instance());
     check("одна копия: вторая отклоняется", !single_instance());
     println!("apo_installed={}", apo_installed());
+    println!("update_available={}", update_available());
+    check("text update en/ru не пустые", !text(Lang::En).upd_body.is_empty() && !text(Lang::Ru).upd_body.is_empty());
     if fails == 0 { 0 } else { 1 }
 }
 
@@ -409,6 +461,7 @@ fn main() {
         APP = Some(App {
             lang: lang(),
             installed: apo_installed(),
+            outdated: false,
             icon_on: make_icon(true),
             icon_off: make_icon(false),
         });
