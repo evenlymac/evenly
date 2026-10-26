@@ -6,3 +6,8 @@ build/
 dist/
 build/
 .build/
+core/target/
+windows/apo/target/
+windows/harness/target/
+windows/livetool/target
+windows/tray/target/

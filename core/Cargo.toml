@@ -1,0 +1,10 @@
+[package]
+name = "evenly-dsp"
+version = "0.2.3"
+edition = "2021"
+description = "Evenly: ядро нормализации громкости (порт Sources/EvenlyDSP/Compressor.swift)"
+publish = false
+
+[dev-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
