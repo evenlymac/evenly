@@ -1,0 +1,15 @@
+
+lang=En
+ok   text en/ru не пустые
+ok   автозапуск: включить
+ok   автозапуск: выключить
+icon lit pixels = 388
+ok   значок: нарисованы планки
+ok   значок: создаётся HICON
+ok   одна копия: первая проходит
+ok   одна копия: вторая отклоняется
+apo_installed=false
+update_available=false
+processing_on=true
+ok   text update en/ru не пустые
+exit=0
