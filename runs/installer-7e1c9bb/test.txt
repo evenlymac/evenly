@@ -1,0 +1,47 @@
+== silent install without effect
+exit=0
+total 4684
+-rw-r--r-- 1 runneradmin 197121    1221 Oct 26 19:13 README.txt
+-rw-r--r-- 1 runneradmin 197121   11600 Oct 26 19:13 evenly-apo.ps1
+-rwxr-xr-x 1 runneradmin 197121  155136 Oct 26 19:13 evenly-tray.exe
+-rwxr-xr-x 1 runneradmin 197121  160256 Oct 26 19:13 evenly_apo.dll
+-rw-r--r-- 1 runneradmin 197121    4961 Oct 26 19:13 unins000.dat
+-rwxr-xr-x 1 runneradmin 197121 4451074 Oct 26 19:13 unins000.exe
+
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{7C1E5D5A-2B8F-4E0A-9C61-3F0E4B1A7D20}_is1
+    DisplayName    REG_SZ    Evenly
+
+== uninstall
+exit=0
+ls: cannot access '/c/Program Files/Evenly': No such file or directory
+== silent install WITH effect
+exit=0
+dll:        False
+com:        False
+flag:       
+state file: False
+4:2026-10-26 19:13:19.498   Setup command line: /SL5="$6012E,1006677,893952,D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows-setup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG=C:\inst2.log
+13:2026-10-26 19:13:19.506   Created protected temporary directory: C:\Users\RUNNER~1\AppData\Local\Temp\is-LH4JFAF6SA.tmp
+55:2026-10-26 19:13:19.743   -- Run entry --
+56:2026-10-26 19:13:19.743   Run as: Current user
+58:2026-10-26 19:13:19.743   Filename: powershell.exe
+60:2026-10-26 19:13:20.352   Process exit code: 1
+== manual ps1 install for diagnosis
+no active render endpoints
+At C:\Program Files\Evenly\evenly-apo.ps1:92 char:26
++   if (-not $Endpoints) { throw 'no active render endpoints' }
++                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (no active render endpoints:String) [], RuntimeException
+    + FullyQualifiedErrorId : no active render endpoints
+ 
++                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (nothing to uninstall (no state.json):String) [], RuntimeException
+    + FullyQualifiedErrorId : nothing to uninstall (no state.json)
+ 
+== upgrade over installed effect (update path)
+exit=0
+== uninstall with effect
+exit=0
+False
+False
+False
