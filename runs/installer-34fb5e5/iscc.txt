@@ -1,0 +1,15 @@
+Compiling [Code] section
+Creating setup files
+   Verification successful
+   Updating icons (Setup.exe)
+   Compressing: D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows\evenly-tray.exe
+   Compressing: D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows\evenly_apo.dll
+   Compressing: D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows\evenly-apo.ps1
+   Compressing: D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows\README.txt
+   Compressing Setup program executable
+   Updating version info (Setup.exe)
+   Updating manifest (Setup.exe)
+
+
+Successful compile (1.328 sec). Resulting Setup program filename is:
+D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows-setup.exe

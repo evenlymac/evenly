@@ -1,0 +1,1 @@
+-rwxr-xr-x 1 runneradmin 197121 2214532 Oct 26 19:15 dist-win/Evenly-0.2.4-windows-setup.exe

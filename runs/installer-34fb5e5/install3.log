@@ -1,0 +1,71 @@
+﻿2026-10-26 19:15:56.353   Log opened. (Time zone: UTC+00:00)
+2026-10-26 19:15:56.353   Setup version: Inno Setup version 6.7.1
+2026-10-26 19:15:56.353   Original Setup EXE: D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows-setup.exe
+2026-10-26 19:15:56.353   Setup command line: /SL5="$6005E,1006683,893952,D:\a\evenly\evenly\dist-win\Evenly-0.2.4-windows-setup.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG=D:\a\evenly\evenly\logs\install3.log
+2026-10-26 19:15:56.353   Windows version: 10.0.26100
+2026-10-26 19:15:56.353   Windows architecture: x64 (64-bit)
+2026-10-26 19:15:56.353   Machine types supported by system: x86 x64
+2026-10-26 19:15:56.353   User privileges: Administrative
+2026-10-26 19:15:56.357   Administrative install mode: Yes
+2026-10-26 19:15:56.357   Install mode root key: HKEY_LOCAL_MACHINE
+2026-10-26 19:15:56.357   64-bit install mode: Yes
+2026-10-26 19:15:56.357   RedirectionGuard status for current process: Enabled in enforcing mode
+2026-10-26 19:15:56.359   Created protected temporary directory: C:\Users\RUNNER~1\AppData\Local\Temp\is-SZCQ58XFEK.tmp
+2026-10-26 19:15:56.508   Starting the installation process.
+2026-10-26 19:15:56.508   Directory for uninstall files: C:\Program Files\Evenly
+2026-10-26 19:15:56.508   Will append to existing uninstall log: C:\Program Files\Evenly\unins000.dat
+2026-10-26 19:15:56.510   -- File entry --
+2026-10-26 19:15:56.510   Dest filename: C:\Program Files\Evenly\unins000.exe
+2026-10-26 19:15:56.510   Non-default bitness: 32-bit
+2026-10-26 19:15:56.512   Time stamp of our file: 2026-10-26 19:15:56.297
+2026-10-26 19:15:56.512   Dest file exists.
+2026-10-26 19:15:56.512   Time stamp of existing file: 2026-10-26 19:15:52.506
+2026-10-26 19:15:56.512   Version of our file: 51.1054.0.0
+2026-10-26 19:15:56.514   Version of existing file: 51.1054.0.0
+2026-10-26 19:15:56.514   Installing the file.
+2026-10-26 19:15:56.523   Leaving temporary file in place for now.
+2026-10-26 19:15:56.523   -- File entry --
+2026-10-26 19:15:56.523   Dest filename: C:\Program Files\Evenly\evenly-tray.exe
+2026-10-26 19:15:56.523   Time stamp of our file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.523   Dest file exists.
+2026-10-26 19:15:56.523   Time stamp of existing file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.523   Installing the file.
+2026-10-26 19:15:56.531   Successfully installed the file.
+2026-10-26 19:15:56.531   -- File entry --
+2026-10-26 19:15:56.531   Dest filename: C:\Program Files\Evenly\evenly_apo.dll
+2026-10-26 19:15:56.531   Time stamp of our file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.531   Dest file exists.
+2026-10-26 19:15:56.531   Time stamp of existing file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.531   Installing the file.
+2026-10-26 19:15:56.537   Successfully installed the file.
+2026-10-26 19:15:56.537   -- File entry --
+2026-10-26 19:15:56.537   Dest filename: C:\Program Files\Evenly\evenly-apo.ps1
+2026-10-26 19:15:56.537   Time stamp of our file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.537   Dest file exists.
+2026-10-26 19:15:56.537   Time stamp of existing file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.537   Installing the file.
+2026-10-26 19:15:56.539   Successfully installed the file.
+2026-10-26 19:15:56.539   -- File entry --
+2026-10-26 19:15:56.539   Dest filename: C:\Program Files\Evenly\README.txt
+2026-10-26 19:15:56.539   Time stamp of our file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.539   Dest file exists.
+2026-10-26 19:15:56.539   Time stamp of existing file: 2026-10-26 19:15:40.000
+2026-10-26 19:15:56.539   Installing the file.
+2026-10-26 19:15:56.539   Successfully installed the file.
+2026-10-26 19:15:56.539   -- Icon entry --
+2026-10-26 19:15:56.539   Dest filename: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Evenly\Evenly.lnk
+2026-10-26 19:15:56.541   Creating the icon.
+2026-10-26 19:15:56.577   Successfully created the icon.
+2026-10-26 19:15:56.587   Saving uninstall information.
+2026-10-26 19:15:56.587   Renaming uninstaller.
+2026-10-26 19:15:56.589   Deleting uninstall key left over from previous administrative 64-bit install.
+2026-10-26 19:15:56.589   Creating new uninstall key: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{7C1E5D5A-2B8F-4E0A-9C61-3F0E4B1A7D20}_is1
+2026-10-26 19:15:56.589   Writing uninstall key values.
+2026-10-26 19:15:56.589   Detected previous non administrative install? No
+2026-10-26 19:15:56.589   Detected previous administrative 32-bit install? No
+2026-10-26 19:15:56.621   Installation process succeeded.
+2026-10-26 19:15:57.254   Defaulting to OK for suppressed message box (OK):
+                          The program is installed, but the system-wide effect could not be turned on (exit code 1). You can turn it on later from the Evenly tray menu: "Turn On System-Wide Effect...".
+2026-10-26 19:15:57.256   Need to restart Windows? No
+2026-10-26 19:15:57.258   Deinitializing Setup.
+2026-10-26 19:15:57.260   Log closed.
