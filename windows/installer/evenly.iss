@@ -38,6 +38,8 @@ english.EffectStatus=Turning on the system-wide effect...
 russian.EffectStatus=Включаю системный эффект...
 english.EffectOffStatus=Removing the system-wide effect...
 russian.EffectOffStatus=Убираю системный эффект...
+english.EffectFailed=The program is installed, but the system-wide effect could not be turned on (exit code %1). You can turn it on later from the Evenly tray menu: "Turn On System-Wide Effect...".
+russian.EffectFailed=Программа установлена, но системный эффект включить не удалось (код %1). Его можно включить позже из меню Evenly в трее: «Включить системный эффект…».
 english.LaunchTray=Start Evenly
 russian.LaunchTray=Запустить Evenly
 
@@ -54,8 +56,6 @@ Source: "{#SrcDir}\README.txt"; DestDir: "{app}"; Flags: ignoreversion
 Name: "{group}\Evenly"; Filename: "{app}\evenly-tray.exe"
 
 [Run]
-Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\evenly-apo.ps1"" -Action install -Dll ""{app}\evenly_apo.dll"""; Tasks: effect; Check: not EffectInstalled; Flags: runhidden waituntilterminated; StatusMsg: "{cm:EffectStatus}"
-Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -File ""{app}\evenly-apo.ps1"" -Action update -Dll ""{app}\evenly_apo.dll"""; Check: EffectInstalled; Flags: runhidden waituntilterminated; StatusMsg: "{cm:EffectStatus}"
 Filename: "{app}\evenly-tray.exe"; Description: "{cm:LaunchTray}"; Flags: nowait postinstall skipifsilent runasoriginaluser
 
 [UninstallRun]
@@ -72,7 +72,20 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   rc: Integer;
+  action: String;
 begin
   if CurStep = ssInstall then
     Exec('taskkill.exe', '/F /IM evenly-tray.exe', '', SW_HIDE, ewWaitUntilTerminated, rc);
+  if (CurStep = ssPostInstall) and (WizardIsTaskSelected('effect') or EffectInstalled) then
+  begin
+    if EffectInstalled then action := 'update' else action := 'install';
+    WizardForm.StatusLabel.Caption := CustomMessage('EffectStatus');
+    if not Exec('powershell.exe',
+         '-NoProfile -ExecutionPolicy Bypass -File "' + ExpandConstant('{app}\evenly-apo.ps1') + '" -Action ' + action +
+         ' -Dll "' + ExpandConstant('{app}\evenly_apo.dll') + '"',
+         '', SW_HIDE, ewWaitUntilTerminated, rc) then
+      rc := -1;
+    if rc <> 0 then
+      SuppressibleMsgBox(FmtMessage(CustomMessage('EffectFailed'), [IntToStr(rc)]), mbInformation, MB_OK, IDOK);
+  end;
 end;
