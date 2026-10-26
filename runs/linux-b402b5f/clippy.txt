@@ -1,0 +1,4 @@
+    Checking evenly-dsp v0.2.3 (/home/runner/work/evenly/evenly/core)
+    Checking evenly-pcm v0.2.3 (/home/runner/work/evenly/evenly/linux/pcm)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.25s
+exit=0
