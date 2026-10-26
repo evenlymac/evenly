@@ -252,10 +252,17 @@ jobs:
       - name: изменено поведение, значит сайт сверен
         if: github.event_name == 'push'
         run: scripts/docs-sync.sh "${{ github.event.before }}" "${{ github.sha }}"
+  consistency:
+    # платформы согласованы: версии, переводы en/ru (Windows-трей, установщик, Linux, InfoPlist), общие термины (site/glossary.tsv)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -I scripts/consistency-check.py
   gate:
     # Итог регрессии: красный, если упал любой запущенный job (пропущенные не в счёт). По нему блокируется релиз.
     if: always()
-    needs: [changes, core, macos, linux, windows, installer, docs]
+    needs: [changes, core, macos, linux, windows, installer, docs, consistency]
     runs-on: ubuntu-latest
     steps:
       - run: |
