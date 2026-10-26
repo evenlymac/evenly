@@ -20,12 +20,14 @@ use windows::Win32::UI::WindowsAndMessaging::*;
 const RUN_KEY: PCWSTR = w!(r"Software\Microsoft\Windows\CurrentVersion\Run");
 const RUN_NAME: PCWSTR = w!("Evenly");
 const STATE_FILE: &str = r"C:\ProgramData\Evenly\backup\state.json";
+const CTL_OFF: &str = r"C:\ProgramData\Evenly\ctl\off";
 const WM_TRAY: u32 = WM_APP + 1;
 const ID_LOGIN: usize = 1;
 const ID_INSTALL: usize = 2;
 const ID_UNINSTALL: usize = 3;
 const ID_QUIT: usize = 4;
 const ID_UPDATE: usize = 5;
+const ID_TOGGLE: usize = 6;
 const TIMER_REFRESH: usize = 1;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
@@ -48,6 +50,8 @@ struct Text {
     install: &'static str,
     uninstall: &'static str,
     update: &'static str,
+    toggle: &'static str,
+    tip_paused: &'static str,
     upd_title: &'static str,
     upd_body: &'static str,
     quit: &'static str,
@@ -66,6 +70,8 @@ fn text(l: Lang) -> Text {
             install: "Turn On System-Wide Effect…",
             uninstall: "Remove System-Wide Effect…",
             update: "Update System-Wide Effect…",
+            toggle: "Level Volume",
+            tip_paused: "Evenly: paused (audio passes unchanged)",
             upd_title: "Evenly: update available",
             upd_body: "A newer system audio effect came with this version of Evenly. Open the Evenly menu in the tray and choose “Update System-Wide Effect…”. Playback keeps going; administrator permission is needed once.",
             quit: "Quit Evenly",
@@ -81,6 +87,8 @@ fn text(l: Lang) -> Text {
             install: "Включить системный эффект…",
             uninstall: "Убрать системный эффект…",
             update: "Обновить системный эффект…",
+            toggle: "Выравнивать громкость",
+            tip_paused: "Evenly: приостановлен (звук идёт без изменений)",
             upd_title: "Evenly: доступно обновление",
             upd_body: "Вместе с этой версией Evenly пришёл более новый системный звуковой эффект. Откройте меню Evenly в трее и выберите «Обновить системный эффект…». Воспроизведение не прерывается; один раз понадобится разрешение администратора.",
             quit: "Выйти из Evenly",
@@ -134,6 +142,23 @@ fn set_login(on: bool) -> bool {
 
 fn apo_installed() -> bool {
     std::path::Path::new(STATE_FILE).exists()
+}
+
+/// Обработка включена, если нет файла-выключателя (его читает APO; службу звука при этом не трогаем).
+fn processing_on() -> bool {
+    !std::path::Path::new(CTL_OFF).exists()
+}
+
+/// Переключает обработку. false: нет прав на папку ctl (установщик создаёт её при install/update).
+fn set_processing(on: bool) -> bool {
+    if on {
+        match std::fs::remove_file(CTL_OFF) {
+            Ok(()) => true,
+            Err(e) => e.kind() == std::io::ErrorKind::NotFound,
+        }
+    } else {
+        std::fs::File::create(CTL_OFF).is_ok()
+    }
 }
 
 /// Где установщик держит копию dll (см. InstDir в evenly-apo.ps1).
@@ -252,6 +277,7 @@ struct App {
     lang: Lang,
     installed: bool,
     outdated: bool,
+    enabled: bool,
     icon_on: HICON,
     icon_off: HICON,
 }
@@ -286,8 +312,9 @@ fn tray_update(hwnd: HWND, add: bool) {
     let mut d = nid(hwnd);
     d.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
     d.uCallbackMessage = WM_TRAY;
-    d.hIcon = if a.installed { a.icon_on } else { a.icon_off };
-    copy_wide(&mut d.szTip, if a.installed { t.tip } else { t.tip_off });
+    let active = a.installed && a.enabled;
+    d.hIcon = if active { a.icon_on } else { a.icon_off };
+    copy_wide(&mut d.szTip, if !a.installed { t.tip_off } else if a.enabled { t.tip } else { t.tip_paused });
     unsafe {
         if add {
             let _ = Shell_NotifyIconW(NIM_ADD, &d);
@@ -328,6 +355,12 @@ fn show_menu(hwnd: HWND) {
     let t = text(a.lang);
     unsafe {
         let Ok(menu) = CreatePopupMenu() else { return };
+        if a.installed {
+            let tg = wide(t.toggle);
+            let f = MF_STRING | if a.enabled { MF_CHECKED } else { MF_UNCHECKED };
+            let _ = AppendMenuW(menu, f, ID_TOGGLE, PCWSTR(tg.as_ptr()));
+            let _ = AppendMenuW(menu, MF_SEPARATOR, 0, PCWSTR::null());
+        }
         let login = wide(t.login);
         let flags = MF_STRING | if login_enabled() { MF_CHECKED } else { MF_UNCHECKED };
         let _ = AppendMenuW(menu, flags, ID_LOGIN, PCWSTR(login.as_ptr()));
@@ -366,6 +399,16 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
                 ID_INSTALL => run_installer("install"),
                 ID_UNINSTALL => run_installer("uninstall"),
                 ID_UPDATE => run_installer("update"),
+                ID_TOGGLE => {
+                    let a = app();
+                    if set_processing(!a.enabled) {
+                        a.enabled = processing_on();
+                        tray_update(hwnd, false);
+                    } else {
+                        // нет прав на папку ctl: update (с UAC) создаёт её с доступом для пользователей
+                        run_installer("update");
+                    }
+                }
                 ID_QUIT => {
                     let _ = DestroyWindow(hwnd);
                 }
@@ -379,6 +422,11 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
             let a = app();
             if now != a.installed {
                 a.installed = now;
+                tray_update(hwnd, false);
+            }
+            let en = processing_on();
+            if en != a.enabled {
+                a.enabled = en;
                 tray_update(hwnd, false);
             }
             let old = now && update_available();
@@ -432,6 +480,7 @@ fn selftest() -> i32 {
     check("одна копия: вторая отклоняется", !single_instance());
     println!("apo_installed={}", apo_installed());
     println!("update_available={}", update_available());
+    println!("processing_on={}", processing_on());
     check("text update en/ru не пустые", !text(Lang::En).upd_body.is_empty() && !text(Lang::Ru).upd_body.is_empty());
     if fails == 0 { 0 } else { 1 }
 }
@@ -462,6 +511,7 @@ fn main() {
             lang: lang(),
             installed: apo_installed(),
             outdated: false,
+            enabled: processing_on(),
             icon_on: make_icon(true),
             icon_off: make_icon(false),
         });

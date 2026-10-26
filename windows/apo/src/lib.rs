@@ -5,7 +5,7 @@
 
 use std::ffi::c_void;
 use std::io::Write;
-use std::sync::atomic::{AtomicU32, AtomicU64, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU32, AtomicU64, Ordering};
 use std::sync::Mutex;
 
 use evenly_dsp::Normalizer;
@@ -38,6 +38,13 @@ fn log(msg: &str) {
     }
 }
 
+/// Файл-выключатель: есть C:\ProgramData\Evenly\ctl\off, значит обработка выключена из меню трея.
+/// APO остаётся установленным и звук идёт через него без изменений (служба звука не перезапускается).
+fn ctl_off_exists() -> bool {
+    use windows::Win32::Storage::FileSystem::{GetFileAttributesW, INVALID_FILE_ATTRIBUTES};
+    unsafe { GetFileAttributesW(windows::core::w!(r"C:\ProgramData\Evenly\ctl\off")) != INVALID_FILE_ATTRIBUTES }
+}
+
 fn apo_flags() -> APO_FLAG {
     APO_FLAG(APO_FLAG_INPLACE.0 | APO_FLAG_FRAMESPERSECOND_MUST_MATCH.0 | APO_FLAG_BITSPERSAMPLE_MUST_MATCH.0 | APO_FLAG_SAMPLESPERFRAME_MUST_MATCH.0)
 }
@@ -61,6 +68,8 @@ struct EvenlyApo {
     calls: AtomicU64,
     peak_bits: AtomicU32,
     in_peak_bits: AtomicU32,
+    /// Обработка включена (нет файла-выключателя); перечитывается в APOProcess раз в 25 блоков.
+    enabled: AtomicBool,
     /// Нормализатор создаётся в LockForProcess и живёт до UnlockForProcess; try_lock в потоке реального времени.
     norm: Mutex<Option<Normalizer>>,
 }
@@ -73,6 +82,7 @@ impl EvenlyApo {
             calls: AtomicU64::new(0),
             peak_bits: AtomicU32::new(0),
             in_peak_bits: AtomicU32::new(0),
+            enabled: AtomicBool::new(true),
             norm: Mutex::new(None),
         }
     }
@@ -189,8 +199,15 @@ impl IAudioProcessingObjectRT_Impl for EvenlyApo_Impl {
                         self.in_peak_bits.store(ip.to_bits(), Ordering::Relaxed);
                     }
                 }
+                if self.calls.load(Ordering::Relaxed) % 25 == 0 {
+                    let on = !ctl_off_exists();
+                    if self.enabled.swap(on, Ordering::Relaxed) != on {
+                        log(if on { "processing ON (ctl\\off removed)" } else { "processing OFF (ctl\\off present)" });
+                    }
+                }
                 if let Ok(mut g) = self.norm.try_lock() {
                     if let Some(norm) = g.as_mut() {
+                        norm.enabled = self.enabled.load(Ordering::Relaxed);
                         norm.process_interleaved(dst);
                     }
                 }

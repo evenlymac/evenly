@@ -19,6 +19,7 @@ $InstDir   = Join-Path $env:ProgramFiles 'Evenly\apo'   # not the tray's own fol
 $DataDir   = Join-Path $env:ProgramData 'Evenly'
 $BackupDir = Join-Path $DataDir 'backup'
 $StateFile = Join-Path $BackupDir 'state.json'
+$CtlDir    = Join-Path $DataDir 'ctl'   # switch file 'off' (tray writes it, APO reads it); writable by normal users
 $Render    = 'SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\Render'
 $AudioKey  = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Audio'
 $SlotNum   = @{ SFX = 5; MFX = 6; EFX = 7 }
@@ -68,6 +69,11 @@ function Open-Key([string]$sub) {
 }
 
 # install/uninstall change endpoint FX registry values, which audiosrv only re-reads on restart (all players lose the device).
+function Ensure-Ctl {
+  New-Item -ItemType Directory -Force $CtlDir | Out-Null
+  & icacls $CtlDir /grant '*S-1-5-32-545:(OI)(CI)M' | Out-Null   # BUILTIN\Users
+}
+
 function Restart-Audio { if (-not $NoRestart) { Restart-Service -Name audiosrv -Force; Start-Sleep 2; (Get-Service audiosrv).Status } }
 
 if ($Action -eq 'status') {
@@ -86,6 +92,7 @@ if ($Action -eq 'install') {
   if (-not $Endpoints) { throw 'no active render endpoints' }
   New-Item -ItemType Directory -Force $InstDir, $DataDir, $BackupDir | Out-Null
   & icacls $DataDir /grant '*S-1-5-19:(OI)(CI)M' | Out-Null   # LOCAL SERVICE (audiodg) writes the log
+  Ensure-Ctl
   # backup
   $prevFlag = (Get-ItemProperty "HKLM:\$AudioKey" -ErrorAction SilentlyContinue).DisableProtectedAudioDG
   $state = @{ slot = $Slot; flag_before = $prevFlag; endpoints = @() }
@@ -130,6 +137,7 @@ if ($Action -eq 'update') {
   $target = Join-Path $InstDir 'evenly_apo.dll'
   # A loaded dll cannot be overwritten but can be renamed: move the old one aside, put the new one, then restart audiodg only
   # (audiosrv respawns it with the new dll; players such as mpv keep their stream). -Hard restarts the whole service instead.
+  Ensure-Ctl
   New-Item -ItemType Directory -Force $InstDir | Out-Null
   Get-ChildItem $InstDir -Filter 'evenly_apo.dll.old*' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
   if (Test-Path $target) { Move-Item $target ($target + '.old' + (Get-Date -Format HHmmss)) -Force }
@@ -166,6 +174,7 @@ if ($Action -eq 'uninstall') {
   if ($null -eq $state.flag_before) { Remove-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -ErrorAction SilentlyContinue }
   else { New-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -Value $state.flag_before -PropertyType DWord -Force | Out-Null }
   Remove-Item -Recurse -Force 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\audiodg.exe' -ErrorAction SilentlyContinue
+  Remove-Item (Join-Path $CtlDir 'off') -Force -ErrorAction SilentlyContinue
   Restart-Audio
   & regsvr32 /s /u (Join-Path $InstDir 'evenly_apo.dll')
   Remove-Item -Recurse -Force "HKLM:\SOFTWARE\Classes\CLSID\$Clsid", "HKLM:\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects\$Clsid" -ErrorAction SilentlyContinue

@@ -1,6 +1,6 @@
 [package]
 name = "evenly-apo"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 description = "Evenly для Windows: APO (системный звуковой эффект). Этап 2: пустышка, пропускает звук и пишет журнал."
 publish = false
@@ -17,6 +17,7 @@ windows = { version = "0.62", features = [
   "Win32_Media_Audio_Apo",
   "Win32_Media_Audio",
   "Win32_Security",
+  "Win32_Storage_FileSystem",
   "Win32_System_Com",
   "Win32_System_LibraryLoader",
   "Win32_System_Registry",
