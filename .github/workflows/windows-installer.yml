@@ -1,0 +1,73 @@
+name: windows-installer
+on:
+  push:
+    branches: [installer-ci]
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  CARGO_TERM_COLOR: never
+jobs:
+  installer:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    defaults: { run: { shell: bash } }
+    steps:
+      - uses: actions/checkout@v4
+      - name: build package, compile installer, test install and uninstall
+        run: |
+          set +e
+          mkdir -p logs
+          (cd windows/apo && cargo build --release 2>&1 | tail -3) | tee logs/apo-build.txt
+          (cd windows/tray && cargo build --release 2>&1 | tail -3) | tee logs/tray-build.txt
+          VER=$(grep -m1 '^version' windows/tray/Cargo.toml | cut -d'"' -f2)
+          P="Evenly-${VER}-windows"
+          mkdir -p "dist-win/$P"
+          cp windows/tray/target/release/evenly-tray.exe windows/apo/target/release/evenly_apo.dll windows/install/evenly-apo.ps1 windows/package/README.txt "dist-win/$P/"
+          ISCC=$(ls "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" 2>/dev/null)
+          if [ -z "$ISCC" ]; then choco install innosetup -y --no-progress > logs/choco.txt 2>&1; ISCC="/c/Program Files (x86)/Inno Setup 6/ISCC.exe"; fi
+          "$ISCC" "/DAppVer=$VER" "/DSrcDir=$(cygpath -w "$PWD/dist-win/$P")" windows/installer/evenly.iss 2>&1 | tail -15 | tee logs/iscc.txt
+          SETUP="dist-win/Evenly-${VER}-windows-setup.exe"
+          ls -l "$SETUP" | tee logs/setup-size.txt
+          cp "$SETUP" logs/
+          APP="/c/Program Files/Evenly"
+          echo "== silent install without effect" | tee logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="$(cygpath -w "$PWD/logs/install1.log")"
+          echo "exit=$?" | tee -a logs/test.txt
+          ls -l "$APP" | tee -a logs/test.txt
+          reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{7C1E5D5A-2B8F-4E0A-9C61-3F0E4B1A7D20}_is1" /v DisplayName 2>&1 | tee -a logs/test.txt
+          echo "== uninstall" | tee -a logs/test.txt
+          "$APP/unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+          echo "exit=$?" | tee -a logs/test.txt
+          sleep 3; ls "$APP" 2>&1 | tee -a logs/test.txt
+          echo "== silent install WITH effect" | tee -a logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="$(cygpath -w "$PWD/logs/install2.log")"
+          echo "exit=$?" | tee -a logs/test.txt
+          powershell -NoProfile -ExecutionPolicy Bypass -File "$(cygpath -w "$APP/evenly-apo.ps1")" -Action status 2>&1 | head -8 | tee -a logs/test.txt
+          echo "== upgrade over installed effect (update path)" | tee -a logs/test.txt
+          "$SETUP" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /TASKS=effect /LOG="$(cygpath -w "$PWD/logs/install3.log")"
+          echo "exit=$?" | tee -a logs/test.txt
+          echo "== uninstall with effect" | tee -a logs/test.txt
+          "$APP/unins000.exe" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+          echo "exit=$?" | tee -a logs/test.txt
+          sleep 3
+          powershell -NoProfile -Command "Test-Path 'C:\ProgramData\Evenly\backup\state.json'; Test-Path 'HKLM:\SOFTWARE\Classes\CLSID\{5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}'; Test-Path 'C:\Program Files\Evenly'" 2>&1 | tee -a logs/test.txt
+          exit 0
+      - name: push results to ci-results
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          mkdir -p work && cd work
+          git init -q
+          git config user.name ci && git config user.email ci@example.com
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          if git fetch -q origin ci-results; then git checkout -q -B ci-results FETCH_HEAD; else git checkout -q --orphan ci-results; fi
+          d="runs/installer-${SHA:0:7}"
+          mkdir -p "$d"
+          cp -r ../logs/. "$d"/ 2>/dev/null || true
+          echo "sha=$SHA" > "$d/summary.txt"
+          git add -A && git commit -q -m "ci results installer ${SHA:0:7}"
+          git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }
