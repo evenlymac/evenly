@@ -1,0 +1,2 @@
+evenly-pcm: --rate: 8000..384000
+bad-arg exit=2
