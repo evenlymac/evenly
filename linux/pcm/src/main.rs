@@ -1,3 +1,4 @@
+#![allow(clippy::chunks_exact_to_as_chunks)]
 //! evenly-pcm: читает interleaved f32 little-endian из stdin, выравнивает громкость ядром evenly-dsp,
 //! пишет в stdout. Параметры: --rate N (по умолчанию 48000), --channels N (2), --off (без обработки, только задержка).
 

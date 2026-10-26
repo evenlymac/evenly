@@ -24,7 +24,7 @@ jobs:
           (cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test -- --nocapture 2>&1) | tee logs/core-test.txt
           (cd linux/pcm && cargo test 2>&1) | tee logs/pcm-test.txt
           (cd linux/pcm && cargo clippy --all-targets -- -D warnings 2>&1) | tee logs/clippy.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/clippy.txt
-          (cd linux/pcm && cargo fmt --check 2>&1) | tee logs/fmt.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/fmt.txt
+          (cd linux/pcm && cargo fmt -- --check 2>&1) | tee logs/fmt.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/fmt.txt
           shellcheck linux/evenly-linux.sh linux/e2e.sh 2>&1 | tee logs/shellcheck.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/shellcheck.txt
           (cd linux/pcm && cargo build --release 2>&1) | tee logs/pcm-build.txt
           ./linux/e2e.sh "$PWD/linux/pcm/target/release/evenly-pcm" 2>&1 | tee logs/e2e.txt
