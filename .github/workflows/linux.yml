@@ -1,0 +1,56 @@
+name: linux
+on:
+  push:
+    branches: [linux-ci]
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  CARGO_TERM_COLOR: never
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: tools
+        run: |
+          mkdir -p logs
+          sudo apt-get update -qq && sudo apt-get install -y -qq pulseaudio pulseaudio-utils shellcheck > logs/apt.txt 2>&1 || tail -5 logs/apt.txt
+          rustup component add clippy rustfmt 2>&1 | tail -2
+      - name: checks, build, e2e, package
+        run: |
+          set +e
+          (cd core && EVENLY_GOLDEN_DIR="$GITHUB_WORKSPACE/core/golden" cargo test -- --nocapture 2>&1) | tee logs/core-test.txt
+          (cd linux/pcm && cargo test 2>&1) | tee logs/pcm-test.txt
+          (cd linux/pcm && cargo clippy --all-targets -- -D warnings 2>&1) | tee logs/clippy.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/clippy.txt
+          (cd linux/pcm && cargo fmt --check 2>&1) | tee logs/fmt.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/fmt.txt
+          shellcheck linux/evenly-linux.sh linux/e2e.sh 2>&1 | tee logs/shellcheck.txt; echo "exit=${PIPESTATUS[0]}" | tee -a logs/shellcheck.txt
+          (cd linux/pcm && cargo build --release 2>&1) | tee logs/pcm-build.txt
+          ./linux/e2e.sh "$PWD/linux/pcm/target/release/evenly-pcm" 2>&1 | tee logs/e2e.txt
+          VER=$(grep -m1 '^version' linux/pcm/Cargo.toml | cut -d'"' -f2)
+          P="Evenly-${VER}-linux-x86_64"
+          mkdir -p "dist-linux/$P"
+          cp linux/pcm/target/release/evenly-pcm linux/evenly-linux.sh linux/package/README.txt "dist-linux/$P/"
+          tar -C dist-linux -czf "logs/$P.tar.gz" "$P"
+          ls -l logs/*.tar.gz | tee logs/package.txt
+          (cd "dist-linux/$P" && ./evenly-pcm --rate 5 < /dev/null; echo "bad-arg exit=$?") 2>&1 | tee logs/smoke.txt
+          exit 0
+      - name: push results to ci-results
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          mkdir -p work && cd work
+          git init -q
+          git config user.name ci && git config user.email ci@example.com
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          if git fetch -q origin ci-results; then git checkout -q -B ci-results FETCH_HEAD; else git checkout -q --orphan ci-results; fi
+          d="runs/linux-${SHA:0:7}"
+          mkdir -p "$d"
+          cp -r ../logs/. "$d"/ 2>/dev/null || true
+          echo "sha=$SHA" > "$d/summary.txt"
+          git add -A && git commit -q -m "ci results linux ${SHA:0:7}"
+          git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }
