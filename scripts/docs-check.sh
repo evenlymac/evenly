@@ -12,12 +12,13 @@ for p in "macOS:dmg" "Windows:windows-setup.exe" "Linux:linux-x86_64.tar.gz"; do
   [ -n "$link" ] || { bad "на сайте нет ссылки на $os (${kind})"; continue; }
   tag=$(echo "$link" | sed -E 's#.*/v([0-9.]+)/.*#\1#'); file=$(echo "$link" | sed -E 's#.*/Evenly-([0-9.]+)[-.].*#\1#')
   [ "$tag" = "$file" ] || bad "$os: тег v$tag и файл $file в ссылке разные"
-  echo "$txt" | grep -Eq "$os $tag" || bad "$os: в тексте нет «${os} ${tag}» (версия в ссылке)"
   if [ "${1:-}" != "--offline" ]; then
     code=$(curl -sIL -o /dev/null -w '%{http_code}' "https://github.com/evenlymac/evenly/$link")
     [ "$code" = 200 ] || bad "$os: ссылка не открывается (HTTP $code): $link"
   fi
 done
+# 1а. в видимом тексте нет номеров версий (они устаревают; версия живёт в ссылках и подвале «Сайт vX»)
+echo "$txt" | sed 's/Сайт v[0-9.]*//' | grep -Eo '(^|[^0-9.])[0-9]+\.[0-9]+\.[0-9]+' | head -3 | grep -q . && bad "в тексте сайта номер версии вида X.Y.Z (по решению пользователя версии в тексте не пишем)"
 # 2. минимальная macOS
 min=$(grep -o '\.macOS("[0-9.]*")' Package.swift | grep -o '[0-9][0-9.]*')
 [ -n "$min" ] && { echo "$txt" | grep -q "macOS $min" || echo "$txt" | grep -q "$min и новее" || bad "минимальная macOS по Package.swift $min, на сайте иначе"; }
