@@ -13,7 +13,7 @@ param(
 $ErrorActionPreference = 'Stop'
 if (-not $Dll) { $Dll = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'evenly_apo.dll' }
 $Clsid     = '{5B1A5C4E-3B0E-4F4F-9A3E-EE1E0A9D0001}'
-$InstDir   = Join-Path $env:ProgramFiles 'Evenly'
+$InstDir   = Join-Path $env:ProgramFiles 'Evenly\apo'   # not the tray's own folder: uninstall deletes the dll copy
 $DataDir   = Join-Path $env:ProgramData 'Evenly'
 $BackupDir = Join-Path $DataDir 'backup'
 $StateFile = Join-Path $BackupDir 'state.json'
