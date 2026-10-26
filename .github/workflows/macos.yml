@@ -1,0 +1,47 @@
+name: macos
+on:
+  push:
+    branches: [macos-ci]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: build, test, package
+        run: |
+          set +e
+          mkdir -p logs
+          swift --version 2>&1 | tee logs/swift.txt
+          swift test 2>&1 | tail -60 | tee logs/swift-test.txt
+          zsh scripts/build-app.sh 2>&1 | tail -40 | tee logs/build-app.txt
+          codesign -dv build/Evenly.app 2>&1 | tee logs/codesign.txt
+          VER=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" build/Evenly.app/Contents/Info.plist)
+          mkdir -p dist/dmg
+          cp -R build/Evenly.app dist/dmg/ && ln -s /Applications dist/dmg/Applications
+          ditto -c -k --keepParent build/Evenly.app "dist/Evenly-$VER.zip"
+          hdiutil create -volname Evenly -srcfolder dist/dmg -ov -format UDZO "dist/Evenly-$VER.dmg" > /dev/null
+          ls -l dist | tee logs/package.txt
+          lipo -archs build/Evenly.app/Contents/MacOS/Evenly | tee logs/arch.txt
+          exit 0
+      - name: push results to ci-results
+        if: always()
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          mkdir -p work && cd work
+          git init -q
+          git config user.name ci && git config user.email ci@example.com
+          git remote add origin "https://x-access-token:${TOKEN}@github.com/${REPO}.git"
+          if git fetch -q origin ci-results; then git checkout -q -B ci-results FETCH_HEAD; else git checkout -q --orphan ci-results; fi
+          d="runs/macos-${SHA:0:7}"
+          mkdir -p "$d"
+          cp -r ../logs/. "$d"/ 2>/dev/null || true
+          echo "sha=$SHA" > "$d/summary.txt"
+          git add -A && git commit -q -m "ci results macos ${SHA:0:7}"
+          git push -q origin ci-results || { git pull -q --rebase origin ci-results && git push -q origin ci-results; }
