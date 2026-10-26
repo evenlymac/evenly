@@ -82,6 +82,8 @@ def main():
         set_theme(theme == "dark")
         d = webdriver.Safari(options=Options())
         try:
+            d.get(f"http://127.0.0.1:{PORT}/en/index.html")   # en-страница у англоязычного раннера не перенаправляет: запоминаем выбор, чтобы ru-страница не ушла на /en/
+            d.execute_script("localStorage.setItem('evenly-lang','test')")
             for size, (w, h) in SIZES.items():
                 for lang, path in PAGES.items():
                     d.set_window_size(w, h + 120)
