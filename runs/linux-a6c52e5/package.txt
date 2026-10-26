@@ -1,0 +1,1 @@
+-rw-r--r-- 1 runner runner 212372 Oct 26 16:49 logs/Evenly-0.2.4-linux-x86_64.tar.gz
