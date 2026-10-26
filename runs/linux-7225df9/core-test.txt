@@ -1,0 +1,60 @@
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded itoa v1.0.18
+  Downloaded quote v1.0.47
+  Downloaded proc-macro2 v1.0.107
+  Downloaded unicode-ident v1.0.27
+  Downloaded memchr v2.8.3
+  Downloaded serde_derive v1.0.229
+  Downloaded zmij v1.0.23
+  Downloaded serde_core v1.0.229
+  Downloaded serde v1.0.229
+  Downloaded serde_json v1.0.154
+  Downloaded syn v3.0.9
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.27
+   Compiling quote v1.0.47
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling syn v3.0.9
+   Compiling serde v1.0.229
+   Compiling serde_json v1.0.154
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling serde_derive v1.0.229
+   Compiling evenly-dsp v0.2.3 (/home/runner/work/evenly/evenly/core)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 13.83s
+     Running unittests src/lib.rs (target/debug/deps/evenly_dsp-6155d0a7432b635b)
+
+running 7 tests
+test tests::push_zero_is_dry_delayed ... ok
+test tests::loud_signal_limited_near_threshold ... ok
+test tests::sample_rate_scales_rates ... ok
+test tests::silence_stays_silent ... ok
+test tests::step_down_is_released_slowly ... ok
+test tests::universal_is_between_music_and_movie_speed ... ok
+test tests::quiet_signal_is_boosted ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/golden.rs (target/debug/deps/golden-9b55740f18c4ddae)
+
+running 1 test
+quiet: max diff 0e0 at 0
+loud: max diff 0e0 at 0
+step: max diff 0e0 at 0
+stereo48: max diff 0e0 at 0
+oddblocks: max diff 0e0 at 0
+toggle: max diff 0e0 at 0
+rate22050: max diff 0e0 at 0
+radio: max diff 0e0 at 0
+test matches_swift_golden_vectors ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+   Doc-tests evenly_dsp
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

@@ -1,0 +1,7 @@
+Evenly запущен: выберите выход «Evenly» → real
+1	real	module-null-sink.c	float32le 2ch 48000Hz	RUNNING
+2	evenly	module-null-sink.c	float32le 2ch 48000Hz	IDLE
+Evenly остановлен
+1	real	module-null-sink.c	float32le 2ch 48000Hz	RUNNING
+recorded samples: 2596006 tail peak: 0.4543074667453766 (input peak 0.01)
+E2E PASS
