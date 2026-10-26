@@ -60,6 +60,7 @@ struct EvenlyApo {
     rate: AtomicU32,
     calls: AtomicU64,
     peak_bits: AtomicU32,
+    in_peak_bits: AtomicU32,
     /// Нормализатор создаётся в LockForProcess и живёт до UnlockForProcess; try_lock в потоке реального времени.
     norm: Mutex<Option<Normalizer>>,
 }
@@ -71,6 +72,7 @@ impl EvenlyApo {
             rate: AtomicU32::new(0),
             calls: AtomicU64::new(0),
             peak_bits: AtomicU32::new(0),
+            in_peak_bits: AtomicU32::new(0),
             norm: Mutex::new(None),
         }
     }
@@ -178,6 +180,15 @@ impl IAudioProcessingObjectRT_Impl for EvenlyApo_Impl {
                 } else if out.pBuffer != inp.pBuffer {
                     std::ptr::copy_nonoverlapping(inp.pBuffer as *const f32, dst.as_mut_ptr(), n);
                 }
+                if !silent {
+                    let mut ip = 0.0f32;
+                    for v in dst.iter() {
+                        ip = ip.max(v.abs());
+                    }
+                    if ip > f32::from_bits(self.in_peak_bits.load(Ordering::Relaxed)) {
+                        self.in_peak_bits.store(ip.to_bits(), Ordering::Relaxed);
+                    }
+                }
                 if let Ok(mut g) = self.norm.try_lock() {
                     if let Some(norm) = g.as_mut() {
                         norm.process_interleaved(dst);
@@ -197,7 +208,8 @@ impl IAudioProcessingObjectRT_Impl for EvenlyApo_Impl {
             let c = self.calls.fetch_add(1, Ordering::Relaxed) + 1;
             if c == 1 || c % 500 == 0 {
                 let pk = f32::from_bits(self.peak_bits.swap(0, Ordering::Relaxed));
-                log(&format!("APOProcess #{c} frames={} silent={silent} peak={pk:.4}", inp.u32ValidFrameCount));
+                let ip = f32::from_bits(self.in_peak_bits.swap(0, Ordering::Relaxed));
+                log(&format!("APOProcess #{c} frames={} silent={silent} in_peak={ip:.4} out_peak={pk:.4}", inp.u32ValidFrameCount));
             }
         }
     }
