@@ -24,7 +24,8 @@ a{color:inherit}
 .brand{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--paper);text-decoration:none}
 .logo{display:block;background:var(--logo) center/contain no-repeat}
 .logo-s{width:32px;height:32px}
-.logo-big{width:clamp(112px,22vw,168px);aspect-ratio:1;margin-top:28px}
+.logo-big{position:relative;width:clamp(128px,24vw,192px);aspect-ratio:1;margin-top:28px}
+.logo-big::after{content:"";position:absolute;inset:9.8%;border-radius:18.1%;border:1.5px solid rgba(241,242,247,.34);box-shadow:0 8px 28px rgba(0,0,0,.35)}
 .nav-links{display:flex;gap:24px;font-size:.9375rem}
 .nav-links a{color:#c4c8dc;text-decoration:none;padding:8px 0}
 .nav-links a:hover{color:var(--paper)}
@@ -96,7 +97,7 @@ rect.raw{fill:var(--quiet)} rect.raw.hot{fill:var(--loud)} rect.even{fill:var(--
 <div class="qa"><h3>Почему в строке меню появилась цветная точка?</h3>
 <p>Так macOS показывает, что приложение получает звук вашего Mac. Для Evenly это часть работы: он слушает то, что играет на компьютере, выравнивает громкость на лету и сразу отдаёт звук обратно в колонки или наушники. Звук не записывается в файл, не сохраняется и не отправляется в интернет: в приложении нет сетевого кода. Пока Evenly запущен, точка будет на месте. Закройте Evenly через меню, и она исчезнет.</p></div></section>
 
-<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 и новее), Windows 10/11, Linux. Открытый исходный код.</span><span>Схемы на странице иллюстративные. Видео с защитой DRM пока не проверяли.</span><span class="sv">Сайт v1.2.0</span></footer>
+<footer class="foot"><span>Evenly 0.2. macOS (Apple silicon, 14.2 и новее), Windows 10/11, Linux. Открытый исходный код.</span><span>Схемы на странице иллюстративные. Видео с защитой DRM пока не проверяли.</span><span class="sv">Сайт v1.2.1</span></footer>
 </main>
 </body>
 </html>
