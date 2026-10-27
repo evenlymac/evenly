@@ -72,18 +72,6 @@
    "win": "toggle"
   },
   {
-   "id": "install",
-   "en": "Turn On System-Wide Effect…",
-   "ru": "Включить системный эффект…",
-   "win": "install"
-  },
-  {
-   "id": "uninstall",
-   "en": "Remove System-Wide Effect…",
-   "ru": "Убрать системный эффект…",
-   "win": "uninstall"
-  },
-  {
    "id": "update",
    "en": "Update System-Wide Effect…",
    "ru": "Обновить системный эффект…",
@@ -115,8 +103,8 @@
   },
   {
    "id": "hint_body",
-   "en": "The system audio effect is not installed, so Evenly can't level the volume. Open the Evenly menu in the tray and choose “Turn On System-Wide Effect…” (administrator permission is needed once).",
-   "ru": "Системный звуковой эффект не установлен, поэтому Evenly не может выравнивать громкость. Откройте меню Evenly в трее и выберите «Включить системный эффект…» (один раз понадобится разрешение администратора).",
+   "en": "The system audio effect is not installed, so Evenly can't level the volume. Run the Evenly installer again (administrator permission is needed once).",
+   "ru": "Системный звуковой эффект не установлен, поэтому Evenly не может выравнивать громкость. Запустите установщик Evenly ещё раз (один раз понадобится разрешение администратора).",
    "win": "hint_body"
   },
   {
@@ -138,15 +126,9 @@
    "win": "tip_off"
   },
   {
-   "id": "inst_EffectTask",
-   "en": "Turn on the system-wide effect now (the audio service restarts, sound pauses for a second)",
-   "ru": "Включить системный эффект сейчас (служба звука перезапустится, звук прервётся на секунду)",
-   "inst": "EffectTask"
-  },
-  {
    "id": "inst_EffectStatus",
-   "en": "Turning on the system-wide effect...",
-   "ru": "Включаю системный эффект...",
+   "en": "Installing the system-wide effect (the audio service restarts, sound pauses for a second)...",
+   "ru": "Устанавливаю системный эффект (служба звука перезапустится, звук прервётся на секунду)...",
    "inst": "EffectStatus"
   },
   {
@@ -157,8 +139,8 @@
   },
   {
    "id": "inst_EffectFailed",
-   "en": "The program is installed, but the system-wide effect could not be turned on (exit code {0}). You can turn it on later from the Evenly tray menu: \"Turn On System-Wide Effect...\".",
-   "ru": "Программа установлена, но системный эффект включить не удалось (код {0}). Его можно включить позже из меню Evenly в трее: «Включить системный эффект…».",
+   "en": "The program is installed, but the system-wide effect could not be installed (exit code {0}). Run the installer again.",
+   "ru": "Программа установлена, но системный эффект установить не удалось (код {0}). Запустите установщик ещё раз.",
    "inst": "EffectFailed"
   },
   {

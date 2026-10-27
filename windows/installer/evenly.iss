@@ -34,9 +34,6 @@ Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 [CustomMessages]
 #include "messages.iss"
 
-[Tasks]
-Name: "effect"; Description: "{cm:EffectTask}"
-
 [Files]
 Source: "{#SrcDir}\evenly-tray.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SrcDir}\evenly_apo.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -67,7 +64,7 @@ var
 begin
   if CurStep = ssInstall then
     Exec('taskkill.exe', '/F /IM evenly-tray.exe', '', SW_HIDE, ewWaitUntilTerminated, rc);
-  if (CurStep = ssPostInstall) and (WizardIsTaskSelected('effect') or EffectInstalled) then
+  if CurStep = ssPostInstall then
   begin
     if EffectInstalled then action := 'update' else action := 'install';
     WizardForm.StatusLabel.Caption := CustomMessage('EffectStatus');

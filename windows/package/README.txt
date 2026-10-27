@@ -7,8 +7,8 @@ Install / Установка
 1. Unpack this folder somewhere permanent (e.g. C:\Program Files\Evenly) / Распакуйте папку в постоянное место.
 2. Run evenly-tray.exe. SmartScreen may warn (the app is not signed yet): "More info" -> "Run anyway".
    Запустите evenly-tray.exe. SmartScreen может предупредить (подписи пока нет): «Подробнее» -> «Выполнить в любом случае».
-3. In the tray menu choose "Turn On System-Wide Effect..." (administrator permission, once).
-   В меню в трее выберите «Включить системный эффект…» (один раз нужен администратор).
+3. The system-wide effect is installed by the Evenly installer (Evenly-<version>-windows-setup.exe, administrator permission once). Use the installer rather than this folder.
+   Системный эффект ставит установщик Evenly (Evenly-<версия>-windows-setup.exe, один раз нужен администратор). Пользуйтесь установщиком, а не этой папкой.
 
-Remove / Удаление: tray menu -> "Remove System-Wide Effect...", then delete the folder.
-Меню в трее -> «Убрать системный эффект…», затем удалите папку.
+Remove / Удаление: Settings -> Apps -> Evenly -> Uninstall (the effect is removed too).
+Параметры -> Приложения -> Evenly -> Удалить (эффект снимается вместе с приложением).

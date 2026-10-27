@@ -2,7 +2,7 @@
 //! Поведение как у macOS-версии: «приложение открыто = Evenly работает», выключателя нет;
 //! значок E из трёх планок, одна копия, автозапуск (HKCU Run), en/ru по языку системы,
 //! мягкая подсказка, если системный эффект (APO) не установлен.
-//! Сам звук обрабатывает APO (evenly_apo.dll в audiodg.exe), приложение его устанавливает и снимает.
+//! Сам звук обрабатывает APO (evenly_apo.dll в audiodg.exe), его ставит и снимает установщик (в трее отдельного управления эффектом нет).
 #![windows_subsystem = "windows"]
 
 use std::os::windows::ffi::OsStrExt;
@@ -23,8 +23,6 @@ const STATE_FILE: &str = r"C:\ProgramData\Evenly\backup\state.json";
 const CTL_OFF: &str = r"C:\ProgramData\Evenly\ctl\off";
 const WM_TRAY: u32 = WM_APP + 1;
 const ID_LOGIN: usize = 1;
-const ID_INSTALL: usize = 2;
-const ID_UNINSTALL: usize = 3;
 const ID_QUIT: usize = 4;
 const ID_UPDATE: usize = 5;
 const ID_TOGGLE: usize = 6;
@@ -309,8 +307,6 @@ fn show_menu(hwnd: HWND) {
         let login = wide(t.login);
         let flags = MF_STRING | if login_enabled() { MF_CHECKED } else { MF_UNCHECKED };
         let _ = AppendMenuW(menu, flags, ID_LOGIN, PCWSTR(login.as_ptr()));
-        let sys = wide(if a.installed { t.uninstall } else { t.install });
-        let _ = AppendMenuW(menu, MF_STRING, if a.installed { ID_UNINSTALL } else { ID_INSTALL }, PCWSTR(sys.as_ptr()));
         if a.installed && a.outdated {
             let upd = wide(t.update);
             let _ = AppendMenuW(menu, MF_STRING, ID_UPDATE, PCWSTR(upd.as_ptr()));
@@ -341,8 +337,6 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
                 ID_LOGIN => {
                     let _ = set_login(!login_enabled());
                 }
-                ID_INSTALL => run_installer("install"),
-                ID_UNINSTALL => run_installer("uninstall"),
                 ID_UPDATE => run_installer("update"),
                 ID_TOGGLE => {
                     let a = app();
