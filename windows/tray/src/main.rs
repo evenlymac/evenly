@@ -119,15 +119,13 @@ fn update_available() -> bool {
     }
 }
 
-/// Запускает установщик с правами администратора (UAC один раз).
-fn run_installer(action: &str) {
+/// Обновляет установленный эффект dll из пакета с правами администратора (UAC один раз).
+/// Установку и снятие эффекта делает установщик Evenly, не трей.
+fn run_update() {
     let dir = exe_path().parent().map(|p| p.to_path_buf()).unwrap_or_default();
     let script = dir.join("evenly-apo.ps1");
     let dll = dir.join("evenly_apo.dll");
-    let mut args = format!("-NoProfile -ExecutionPolicy Bypass -File \"{}\" -Action {}", script.display(), action);
-    if action == "install" || action == "update" {
-        args += &format!(" -Dll \"{}\"", dll.display());
-    }
+    let args = format!("-NoProfile -ExecutionPolicy Bypass -File \"{}\" -Action update -Dll \"{}\"", script.display(), dll.display());
     let verb = wide("runas");
     let file = wide("powershell.exe");
     let params = wide(&args);
@@ -337,7 +335,7 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
                 ID_LOGIN => {
                     let _ = set_login(!login_enabled());
                 }
-                ID_UPDATE => run_installer("update"),
+                ID_UPDATE => run_update(),
                 ID_TOGGLE => {
                     let a = app();
                     if set_processing(!a.enabled) {
@@ -345,7 +343,7 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
                         tray_update(hwnd, false);
                     } else {
                         // нет прав на папку ctl: update (с UAC) создаёт её с доступом для пользователей
-                        run_installer("update");
+                        run_update();
                     }
                 }
                 ID_QUIT => {

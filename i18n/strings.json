@@ -127,8 +127,8 @@
   },
   {
    "id": "inst_EffectStatus",
-   "en": "Installing the system-wide effect (the audio service restarts, sound pauses for a second)...",
-   "ru": "Устанавливаю системный эффект (служба звука перезапустится, звук прервётся на секунду)...",
+   "en": "Installing the system-wide effect (sound may pause for a second)...",
+   "ru": "Устанавливаю системный эффект (звук может прерваться на секунду)...",
    "inst": "EffectStatus"
   },
   {
