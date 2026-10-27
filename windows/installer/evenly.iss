@@ -1,4 +1,4 @@
-﻿; Evenly for Windows: installer (Inno Setup 6). Build: iscc /DAppVer=0.2.4 /DSrcDir=<folder with the 4 package files> evenly.iss
+﻿; Evenly for Windows: installer (Inno Setup 6). Build: iscc /DAppVer=0.2.5 /DSrcDir=<folder with the 4 package files> evenly.iss
 #ifndef AppVer
   #define AppVer "0.0.0"
 #endif
