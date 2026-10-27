@@ -26,6 +26,7 @@ pub const CLSID_EVENLY_APO: GUID = GUID::from_u128(0x5b1a5c4e_3b0e_4f4f_9a3e_ee1
 const FRIENDLY: &str = "Evenly";
 const FLOAT_SUBTYPE: GUID = GUID::from_u128(0x00000003_0000_0010_8000_00aa00389b71); // KSDATAFORMAT_SUBTYPE_IEEE_FLOAT
 const LOG_PATH: &str = r"C:\ProgramData\Evenly\apo.log";
+const LOG_MAX: u64 = 1 << 20;
 
 static MODULE: AtomicU64 = AtomicU64::new(0);
 static LOG_LOCK: Mutex<()> = Mutex::new(());
@@ -33,6 +34,10 @@ static LOG_LOCK: Mutex<()> = Mutex::new(());
 fn log(msg: &str) {
     let _g = LOG_LOCK.lock();
     if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(LOG_PATH) {
+        // APOProcess пишет строку раз в 500 блоков, пока идёт звук: без предела журнал растёт бесконечно
+        if f.metadata().map(|m| m.len() > LOG_MAX).unwrap_or(false) {
+            let _ = f.set_len(0);
+        }
         let t = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
         let _ = writeln!(f, "{t} pid={} {msg}", std::process::id());
     }

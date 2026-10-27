@@ -156,6 +156,12 @@
    "linux": "no_default_sink"
   },
   {
+   "id": "linux_sink_is_evenly",
+   "en": "the default output is \"Evenly\" itself: give the real output, for example: evenly-linux.sh start <sink>",
+   "ru": "выход по умолчанию сам «Evenly»: укажите настоящий выход, например: evenly-linux.sh start <выход>",
+   "linux": "sink_is_evenly"
+  },
+  {
    "id": "linux_already_running",
    "en": "already running",
    "ru": "уже запущен",

@@ -111,12 +111,26 @@ fn installed_dll() -> PathBuf {
 }
 
 /// dll рядом с треем (из пакета) отличается от установленной: пора обновить.
+/// Вызывается таймером раз в 3 с: файлы целиком перечитываем, только когда изменились их размер или время записи.
 fn update_available() -> bool {
+    type Stamp = Option<(u64, std::time::SystemTime)>;
+    static CACHE: std::sync::Mutex<Option<(Stamp, Stamp, bool)>> = std::sync::Mutex::new(None);
     let src = exe_path().parent().map(|p| p.join("evenly_apo.dll")).unwrap_or_default();
-    match (std::fs::read(&src), std::fs::read(installed_dll())) {
+    let dst = installed_dll();
+    let stamp = |p: &std::path::Path| -> Stamp { std::fs::metadata(p).ok().and_then(|m| Some((m.len(), m.modified().ok()?))) };
+    let (sa, sb) = (stamp(&src), stamp(&dst));
+    let mut cache = CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    if let Some((ca, cb, r)) = *cache {
+        if ca == sa && cb == sb {
+            return r;
+        }
+    }
+    let r = match (std::fs::read(&src), std::fs::read(&dst)) {
         (Ok(a), Ok(b)) => a != b,
         _ => false,
-    }
+    };
+    *cache = Some((sa, sb, r));
+    r
 }
 
 /// Обновляет установленный эффект dll из пакета с правами администратора (UAC один раз).
@@ -325,7 +339,8 @@ unsafe extern "system" fn wndproc(hwnd: HWND, msg: u32, wp: WPARAM, lp: LPARAM) 
     match msg {
         WM_TRAY => {
             let ev = (lp.0 as u32) & 0xffff;
-            if ev == WM_RBUTTONUP || ev == WM_LBUTTONUP || ev == WM_CONTEXTMENU {
+            // NOTIFYICON_VERSION_4: правый клик присылает WM_RBUTTONUP и затем WM_CONTEXTMENU; меню открываем один раз
+            if ev == WM_LBUTTONUP || ev == WM_CONTEXTMENU {
                 show_menu(hwnd);
             }
             LRESULT(0)

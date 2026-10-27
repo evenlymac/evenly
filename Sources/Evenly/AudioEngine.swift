@@ -154,7 +154,8 @@ final class AudioEngine {
         } catch { stop(); throw error }
         aggregateID = agg
 
-        let fmt = try Self.tapFormat(tap)
+        let fmt: AudioStreamBasicDescription
+        do { fmt = try Self.tapFormat(tap) } catch { stop(); throw error }  // иначе заглушающий tap остаётся жить
         let channels = max(Int(fmt.mChannelsPerFrame), 1)
         let norm = Normalizer(channelCount: channels, sampleRate: fmt.mSampleRate)
         norm.enabled = processingEnabled

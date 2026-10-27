@@ -74,6 +74,9 @@ function Ensure-Ctl {
   & icacls $CtlDir /grant '*S-1-5-32-545:(OI)(CI)M' | Out-Null   # BUILTIN\Users
 }
 
+# regsvr32 is a GUI-subsystem exe: '&' does not wait for it and leaves $LASTEXITCODE unset, so wait explicitly
+function Invoke-Regsvr32([string[]]$a) { (Start-Process regsvr32 -ArgumentList $a -Wait -PassThru).ExitCode }
+
 function Restart-Audio { if (-not $NoRestart) { Restart-Service -Name audiosrv -Force; Start-Sleep 2; (Get-Service audiosrv).Status } }
 
 if ($Action -eq 'status') {
@@ -89,6 +92,9 @@ if ($Action -eq 'install') {
   if (-not (Test-Path $Dll)) { throw "dll not found: $Dll" }
   if (Test-Path $StateFile) { throw 'already installed (state.json exists): run uninstall first' }
   if (-not $Endpoints) { $Endpoints = @(Get-Active) }
+  # an endpoint without an FxProperties key would abort the whole install on a null key: skip it with a note
+  $Endpoints = @($Endpoints | Where-Object {
+    if ($RK.OpenSubKey("$Render\$_\FxProperties")) { $true } else { Write-Warning "skipped endpoint without FxProperties: $_"; $false } })
   if (-not $Endpoints) { throw 'no active render endpoints' }
   New-Item -ItemType Directory -Force $InstDir, $DataDir, $BackupDir | Out-Null
   & icacls $DataDir /grant '*S-1-5-19:(OI)(CI)M' | Out-Null   # LOCAL SERVICE (audiodg) writes the log
@@ -110,7 +116,7 @@ if ($Action -eq 'install') {
   $state | ConvertTo-Json -Depth 5 | Set-Content -Encoding ASCII $StateFile
   # files + COM
   Copy-Item $Dll (Join-Path $InstDir 'evenly_apo.dll') -Force
-  & regsvr32 /s (Join-Path $InstDir 'evenly_apo.dll'); if ($LASTEXITCODE -ne 0) { throw "regsvr32 failed: $LASTEXITCODE" }
+  $rc = Invoke-Regsvr32 '/s', ('"' + (Join-Path $InstDir 'evenly_apo.dll') + '"'); if ($rc -ne 0) { throw "regsvr32 failed: $rc" }
   New-ItemProperty -Path "HKLM:\$AudioKey" -Name DisableProtectedAudioDG -Value 1 -PropertyType DWord -Force | Out-Null
   # crash dumps of audiodg.exe (WER LocalDumps, full dump, 3 newest) for post-mortem of APPCRASH; removed on uninstall
   $dumps = Join-Path $DataDir 'dumps'; New-Item -ItemType Directory -Force $dumps | Out-Null
@@ -142,8 +148,7 @@ if ($Action -eq 'update') {
   Get-ChildItem $InstDir -Filter 'evenly_apo.dll.old*' -ErrorAction SilentlyContinue | Remove-Item -Force -ErrorAction SilentlyContinue
   if (Test-Path $target) { Move-Item $target ($target + '.old' + (Get-Date -Format HHmmss)) -Force }
   Copy-Item $Dll $target -Force
-  # regsvr32 is a GUI-subsystem exe: '&' does not wait for it and leaves $LASTEXITCODE unset
-  $rc = (Start-Process regsvr32 -ArgumentList '/s', ('"' + $target + '"') -Wait -PassThru).ExitCode
+  $rc = Invoke-Regsvr32 '/s', ('"' + $target + '"')
   if ($rc -ne 0) { throw "regsvr32 failed: $rc" }
   if (-not $NoRestart) {
     if ($Hard) { Restart-Service -Name audiosrv -Force; Start-Sleep 2 }
@@ -160,6 +165,7 @@ if ($Action -eq 'uninstall') {
   $n = $SlotNum[$state.slot]
   foreach ($e in $state.endpoints) {
     $sub = "$Render\$($e.id)\FxProperties"
+    if (-not $RK.OpenSubKey($sub)) { "skipped removed endpoint: $($e.id)"; continue }   # device gone: nothing to restore, keep undoing the rest
     $k = Open-Key $sub
     foreach ($pair in @(@("$KeyClsid,$n", $e.clsid_before, 'String'), @("$KeyModes,$n", $e.modes_before, 'MultiString'))) {
       if ($null -eq $pair[1]) { $k.DeleteValue($pair[0], $false) }
@@ -176,7 +182,7 @@ if ($Action -eq 'uninstall') {
   Remove-Item -Recurse -Force 'HKLM:\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\audiodg.exe' -ErrorAction SilentlyContinue
   Remove-Item (Join-Path $CtlDir 'off') -Force -ErrorAction SilentlyContinue
   Restart-Audio
-  & regsvr32 /s /u (Join-Path $InstDir 'evenly_apo.dll')
+  [void](Invoke-Regsvr32 '/s', '/u', ('"' + (Join-Path $InstDir 'evenly_apo.dll') + '"'))   # wait: the dll is deleted below
   Remove-Item -Recurse -Force "HKLM:\SOFTWARE\Classes\CLSID\$Clsid", "HKLM:\SOFTWARE\Classes\AudioEngine\AudioProcessingObjects\$Clsid" -ErrorAction SilentlyContinue
   Move-Item $StateFile (Join-Path $BackupDir ("state-uninstalled-" + (Get-Date -Format yyyyMMdd-HHmmss) + ".json")) -Force
   Remove-Item (Join-Path $InstDir 'evenly_apo.dll*') -Force -ErrorAction SilentlyContinue   # incl. evenly_apo.dll.old* left by update

@@ -16,6 +16,7 @@ M() {   # M имя [подстановка {0}]: сообщение на язы�
   local s
   case "$1" in
     no_default_sink) if [ "$RU" = 1 ]; then s="нет выхода по умолчанию"; else s="no default output device"; fi ;;
+    sink_is_evenly) if [ "$RU" = 1 ]; then s="выход по умолчанию сам «Evenly»: укажите настоящий выход, например: evenly-linux.sh start <выход>"; else s="the default output is \"Evenly\" itself: give the real output, for example: evenly-linux.sh start <sink>"; fi ;;
     already_running) if [ "$RU" = 1 ]; then s="уже запущен"; else s="already running"; fi ;;
     started) if [ "$RU" = 1 ]; then s="Evenly запущен: выберите выход «Evenly» → {0}"; else s="Evenly started: choose the output \"Evenly\" → {0}"; fi ;;
     stopped) if [ "$RU" = 1 ]; then s="Evenly остановлен"; else s="Evenly stopped"; fi ;;
@@ -31,6 +32,8 @@ case "${1:-}" in
   start)
     real="${2:-$(pactl get-default-sink)}"
     [ -n "$real" ] || { M no_default_sink >&2; exit 1; }
+    # выход по умолчанию уже «Evenly» (пользователь выбрал его, а конвейер упал): вывод в него же дал бы петлю с подъёмом громкости
+    [ "$real" != evenly ] || { M sink_is_evenly >&2; exit 1; }
     [ -f "$PIDF" ] && kill -0 "$(cut -d' ' -f1 "$PIDF")" 2>/dev/null && { M already_running >&2; exit 0; }
     pactl list short sinks | grep -q $'\tevenly\t' || pactl load-module module-null-sink sink_name=evenly sink_properties=device.description=Evenly rate=$RATE channels=$CH format=float32le >/dev/null
     ( parec -d evenly.monitor --format=float32le --rate=$RATE --channels=$CH --latency-msec=20 \
