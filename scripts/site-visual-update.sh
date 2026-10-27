@@ -4,7 +4,7 @@
 # После этого просмотри снимки (site/visual-baseline/*.png), закоммить и запушь через scripts/ci-push.sh.
 set -eu
 cd "$(dirname "$0")/.."
-sha=${1:-$(git rev-parse HEAD)}
+sha=$(git rev-parse --verify "${1:-HEAD}^{commit}")   # gh --commit понимает только полный SHA
 run=$(~/bin/gh run list --repo evenlymac/evenly --workflow ci --commit "$sha" --json databaseId --jq '.[0].databaseId')
 [ -n "$run" ] || { echo "нет прогона ci для $sha" >&2; exit 1; }
 tmp=$(mktemp -d); ~/bin/gh run download "$run" --repo evenlymac/evenly -n site-visual -D "$tmp"
