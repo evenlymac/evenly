@@ -2,7 +2,7 @@
 "Launch Evenly at Login" = "Launch Evenly at Login";
 "Quit Evenly" = "Quit Evenly";
 "Launch Evenly at login?" = "Launch Evenly at login?";
-"Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login." = "Evenly levels your volume only while it is running. If it doesn't open at login, it stays off after every restart or sign-in until you start it yourself. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login.";
+"Evenly levels your volume through a system audio effect that keeps working even when this icon is closed. Launching at login keeps the icon in the tray after every restart, so you can turn leveling on or off. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login." = "Evenly levels your volume through a system audio effect that keeps working even when this icon is closed. Launching at login keeps the icon in the tray after every restart, so you can turn leveling on or off. You can change this at any time in the Evenly menu or in System Settings → General → Login Items. Evenly will ask again the next time it starts without launch at login.";
 "Launch at Login" = "Launch at Login";
 "Not Now" = "Not Now";
 "Evenly can't hear your Mac's audio" = "Evenly can't hear your Mac's audio";

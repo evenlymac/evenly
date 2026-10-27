@@ -4,8 +4,18 @@ build/
 *.app
 .DS_Store
 dist/
-build/
-.build/
+.swiftpm/
+xcuserdata/
+.venv/
+__pycache__/
+# снимки scripts/site-visual.py out
+/out/
+# подпись и ключи: только вне репозитория
+*.p12
+*.cer
+*.keychain-db
+.env
+*.env
 core/target/
 windows/apo/target/
 windows/harness/target/

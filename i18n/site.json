@@ -59,7 +59,7 @@
   {
    "id": "dl_linux",
    "en": "Download for Linux",
-   "ru": "Скачать для Linux "
+   "ru": "Скачать для Linux"
   },
   {
    "id": "experimental",
@@ -68,8 +68,8 @@
   },
   {
    "id": "fine",
-   "en": "macOS (.dmg, Apple silicon, macOS 14.2 or later) · Windows (.exe installer; the app is not signed, SmartScreen will ask you to confirm) · Linux (.tar.gz, PulseAudio or PipeWire)",
-   "ru": "macOS (.dmg, Apple silicon, macOS 14.2 и новее) · Windows (установщик .exe; приложение не подписано, SmartScreen спросит подтверждение) · Linux (.tar.gz, PulseAudio или PipeWire)"
+   "en": "macOS (.dmg, Apple silicon, macOS 14.2 or later; the app is not notarized by Apple, on first launch allow it in System Settings → Privacy & Security → Open Anyway) · Windows (.exe installer; the app is not signed, SmartScreen will ask you to confirm) · Linux (.tar.gz, x86_64, PulseAudio or PipeWire)",
+   "ru": "macOS (.dmg, Apple silicon, macOS 14.2 и новее; приложение не заверено Apple, при первом запуске разрешите его в Системных настройках → Конфиденциальность и безопасность → «Всё равно открыть») · Windows (установщик .exe; приложение не подписано, SmartScreen спросит подтверждение) · Linux (.tar.gz, x86_64, PulseAudio или PipeWire)"
   },
   {
    "id": "wave_alt",
@@ -158,13 +158,13 @@
   },
   {
    "id": "how1_h",
-   "en": "A menu bar icon",
-   "ru": "Значок в строке меню"
+   "en": "An icon in the menu bar or tray",
+   "ru": "Значок в строке меню или в трее"
   },
   {
    "id": "how1_p",
-   "en": "While the app is open, your sound is leveled. “{{str:toggle}}” pauses leveling without quitting the app. Quit it and everything is back as it was.",
-   "ru": "Приложение открыто — звук выровнен. Пункт «{{str:toggle}}» ставит выравнивание на паузу, не закрывая приложение. Закрыли — всё как было."
+   "en": "Evenly levels your sound in the background. “{{str:toggle}}” in its menu pauses leveling without stopping the audio, and turns it back on just as easily.",
+   "ru": "Evenly выравнивает звук в фоне. Пункт «{{str:toggle}}» в его меню ставит выравнивание на паузу, не прерывая звук, и так же легко включает обратно."
   },
   {
    "id": "how2_h",
@@ -208,13 +208,18 @@
   },
   {
    "id": "foot1",
-   "en": "Evenly 0.2. macOS (Apple silicon, 14.2 or later), Windows 10/11, Linux. Open source.",
-   "ru": "Evenly 0.2. macOS (Apple silicon, 14.2 и новее), Windows 10/11, Linux. Открытый исходный код."
+   "en": "Evenly for macOS (Apple silicon, 14.2 or later), Windows 10/11 and Linux. Source code is on GitHub.",
+   "ru": "Evenly для macOS (Apple silicon, 14.2 и новее), Windows 10/11 и Linux. Исходный код на GitHub."
   },
   {
    "id": "foot2",
    "en": "The diagrams on this page are illustrative. Videos with DRM protection have not been tested yet.",
    "ru": "Схемы на странице иллюстративные. Видео с защитой DRM пока не проверяли."
+  },
+  {
+   "id": "lang_label",
+   "en": "Language",
+   "ru": "Язык"
   },
   {
    "id": "site_word",
