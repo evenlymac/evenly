@@ -3,7 +3,7 @@
 # падает, если в русском меню остались английские пункты или в английском русские. Нужны разрешение Accessibility для ssh и build/Evenly.app (scripts/air-sync.sh).
 set -e
 cd "$(dirname "$0")/.."
-ssh goldengate@MacBookAir.local 'zsh -l' <<'REMOTE'
+ssh macbookair@MacBookAir.local 'zsh -l' <<'REMOTE'
 APP=~/projects/evenly-sync/build/Evenly.app/Contents/MacOS/Evenly
 menu() {  # $1 = en|ru
   pkill -x Evenly; sleep 1
