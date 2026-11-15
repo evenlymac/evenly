@@ -1,6 +1,6 @@
 #!/bin/bash
 # Пуш в main и запуск слежения за регрессией (CI на раннерах GitHub). usage: scripts/ci-push.sh
-# Дальше можно заниматься другим: красный результат превратится в блокировку релиза и разбор ~/.claude/evenly-ci/failure-<sha>.md, который сессия claude чинит сама (scripts/ci-watch.sh).
+# Дальше можно заниматься другим: красный результат превратится в блокировку релиза и разбор ~/GorbunCore/data/evenly-ci/failure-<sha>.md, который сессия claude чинит сама (scripts/ci-watch.sh).
 set -e
 cd "$(dirname "$0")/.."
 [ "$(git branch --show-current)" = main ] || { echo "ci-push: нужна ветка main" >&2; exit 1; }
@@ -9,6 +9,6 @@ git fetch -q https://github.com/evenlymac/evenly.git main 2>/dev/null || { echo 
 scripts/docs-sync.sh FETCH_HEAD HEAD >&2 || { echo "ci-push: docs-sync красный, допиши «Site: …» в сообщение коммита (git commit --amend)" >&2; exit 1; }
 git -c credential.helper= -c credential.helper='!/Users/macbookpro/bin/gh auth git-credential' push -q https://github.com/evenlymac/evenly.git main
 sha=$(git rev-parse HEAD)
-mkdir -p ~/.claude/evenly-ci
+mkdir -p ~/GorbunCore/data/evenly-ci
 nohup "$PWD/scripts/ci-watch.sh" "$sha" >/dev/null 2>&1 &
-echo "запушено ${sha:0:7}; слежение за CI запущено (журнал ~/.claude/evenly-ci/watch.log)"
+echo "запушено ${sha:0:7}; слежение за CI запущено (журнал ~/GorbunCore/data/evenly-ci/watch.log)"
